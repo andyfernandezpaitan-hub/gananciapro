@@ -10,5 +10,5 @@ window.GANANCIAPRO_CONFIG = Object.freeze({
     VERSION_POLITICA: "2026-10",
 
     /* Pon true SOLO cuando Google esté configurado en Supabase y la página esté publicada */
-    GOOGLE_ACTIVO: false
+    GOOGLE_ACTIVO: true
 });
