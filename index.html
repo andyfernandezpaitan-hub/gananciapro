@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1020">
+    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="GananciaPro: panel de control para gestionar ingresos, gastos y ganancias.">
+    <title>GananciaPro | Panel de control</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mejoras.css">
+    <script src="js/tema.js"></script>
+</head>
+<body data-sesion="cargando">
+    <header class="encabezado">
+        <div class="marca">
+            <div class="logo">G</div>
+            <div>
+                <h1>GananciaPro</h1>
+                <p>Control inteligente de tu negocio</p>
+            </div>
+        </div>
+        <div class="cuenta" id="cuenta" hidden>
+            <span id="correoUsuario"></span>
+            <button id="btnSalir" class="btn-salir" type="button">Cerrar sesión</button>
+        </div>
+        <button id="btnTema" class="btn-tema" type="button" aria-label="Cambiar entre modo claro y oscuro">&#9790;</button>
+    </header>
+
+    <main class="contenedor">
+        <p id="cargando" class="nota" role="status">Cargando…</p>
+
+        <section id="acceso" class="acceso" aria-labelledby="tituloAcceso">
+            <div class="acceso-tarjeta">
+                <h2 id="tituloAcceso">Accede a tu cuenta</h2>
+                <p class="nota">Tus ingresos y gastos quedan guardados en tu cuenta, privados y disponibles en cualquier dispositivo.</p>
+
+                <div id="bloqueGoogle" hidden>
+                    <button type="button" id="btnGoogle" class="btn-google">
+                        <svg class="icono-google" viewBox="0 0 48 48" width="18" height="18" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                        <span>Continuar con Google</span>
+                    </button>
+                    <p class="nota nota-google">Si es tu primera vez, te pediremos aceptar la Política de privacidad y los Términos de uso.</p>
+                    <p class="separador" aria-hidden="true"><span>o con tu correo</span></p>
+                </div>
+
+                <div id="pestanasAcceso" class="acceso-pestanas" role="tablist">
+                    <button type="button" role="tab" id="tabEntrar" aria-selected="true" aria-controls="formEntrar">Iniciar sesión</button>
+                    <button type="button" role="tab" id="tabCrear" aria-selected="false" aria-controls="formCrear">Crear cuenta</button>
+                </div>
+
+                <form id="formEntrar" class="acceso-form">
+                    <div class="campo">
+                        <label for="correoEntrar">Correo electrónico</label>
+                        <input type="email" id="correoEntrar" autocomplete="email" maxlength="254" required>
+                    </div>
+                    <div class="campo">
+                        <label for="claveEntrar">Contraseña</label>
+                        <input type="password" id="claveEntrar" autocomplete="current-password" maxlength="128" required>
+                    </div>
+                    <button type="submit">Entrar</button>
+                    <button type="button" id="btnOlvide" class="btn-enlace">¿Olvidaste tu contraseña?</button>
+                </form>
+
+                <form id="formCrear" class="acceso-form" hidden>
+                    <div class="campo">
+                        <label for="correoCrear">Correo electrónico</label>
+                        <input type="email" id="correoCrear" autocomplete="email" maxlength="254" required>
+                    </div>
+                    <div class="campo">
+                        <label for="claveCrear">Contraseña</label>
+                        <input type="password" id="claveCrear" autocomplete="new-password" minlength="10" maxlength="128" required>
+                        <p>Mínimo 10 caracteres, con letras y números.</p>
+                    </div>
+                    <div class="campo">
+                        <label for="claveCrear2">Repite la contraseña</label>
+                        <input type="password" id="claveCrear2" autocomplete="new-password" maxlength="128" required>
+                    </div>
+                    <label class="campo-check" for="aceptoPolitica">
+                        <input type="checkbox" id="aceptoPolitica" required>
+                        <span>He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> y los <a href="terminos.html" target="_blank" rel="noopener">Términos de uso</a>, y confirmo que soy mayor de edad.</span>
+                    </label>
+                    <button type="submit">Crear cuenta</button>
+                </form>
+
+                <form id="formRecuperar" class="acceso-form" hidden>
+                    <div class="campo">
+                        <label for="correoRecuperar">Correo de tu cuenta</label>
+                        <input type="email" id="correoRecuperar" autocomplete="email" maxlength="254" required>
+                    </div>
+                    <button type="submit">Enviar enlace</button>
+                    <button type="button" id="btnVolverEntrar" class="btn-enlace">Volver</button>
+                </form>
+
+                <form id="formNuevaClave" class="acceso-form" hidden>
+                    <div class="campo">
+                        <label for="claveNueva">Nueva contraseña</label>
+                        <input type="password" id="claveNueva" autocomplete="new-password" minlength="10" maxlength="128" required>
+                        <p>Mínimo 10 caracteres, con letras y números.</p>
+                    </div>
+                    <div class="campo">
+                        <label for="claveNueva2">Repite la nueva contraseña</label>
+                        <input type="password" id="claveNueva2" autocomplete="new-password" maxlength="128" required>
+                    </div>
+                    <button type="submit">Guardar contraseña</button>
+                </form>
+
+                <p id="mensajeAcceso" class="mensaje-acceso" role="status" aria-live="polite"></p>
+            </div>
+        </section>
+
+        <section id="consentimiento" class="aviso-tarjeta" aria-labelledby="tituloConsentimiento">
+            <h2 id="tituloConsentimiento">Antes de continuar</h2>
+            <p>Tu cuenta (<span id="correoConsentimiento"></span>) aún no tiene registrada la aceptación de nuestras políticas.</p>
+            <label class="campo-check" for="aceptoConsentimiento">
+                <input type="checkbox" id="aceptoConsentimiento">
+                <span>He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> y los <a href="terminos.html" target="_blank" rel="noopener">Términos de uso</a>, y confirmo que soy mayor de edad.</span>
+            </label>
+            <div class="acciones">
+                <button type="button" id="btnAceptarConsentimiento">Aceptar y continuar</button>
+                <button type="button" id="btnSalirConsentimiento" class="btn-secundario">Cerrar sesión</button>
+            </div>
+            <p id="mensajeConsentimiento" class="mensaje-acceso" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="migracion" class="aviso-tarjeta" aria-labelledby="tituloMigracion" hidden>
+            <h2 id="tituloMigracion">Datos de este navegador</h2>
+            <p id="textoMigracion"></p>
+            <div class="acciones">
+                <button type="button" id="btnSubirLocales">Subir a mi cuenta</button>
+                <button type="button" id="btnOmitirMigracion" class="btn-secundario">Ahora no</button>
+            </div>
+        </section>
+        <section class="bienvenida">
+            <p class="etiqueta">TU NEGOCIO, BAJO CONTROL</p>
+            <h2>Bienvenido a GananciaPro</h2>
+            <p>Organiza tus números y toma mejores decisiones para tu negocio.</p>
+            <button id="btnComenzar" type="button">Comenzar</button>
+            <p id="mensaje" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="operaciones">
+            <h2>Registrar operación</h2>
+            <p>Registra los ingresos y gastos de tu negocio.</p>
+
+            <form id="formOperacion">
+                <div class="campo">
+                    <label for="fechaOperacion">Fecha de operación</label>
+                    <input
+                        type="date"
+                        id="fechaOperacion"
+                        name="fechaOperacion"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="tipoOperacion">Tipo de operación</label>
+                    <select id="tipoOperacion" name="tipo" required>
+                        <option value="ingreso">Ingreso</option>
+                        <option value="gasto">Gasto</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="descripcion">Descripción</label>
+                    <input
+                        type="text"
+                        id="descripcion"
+                        name="descripcion"
+                        maxlength="100"
+                        placeholder="Ej.: Venta de productos"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="importe">Importe</label>
+                    <input
+                        type="number"
+                        inputmode="decimal"
+                        id="importe"
+                        name="importe"
+                        min="0.01"
+                        max="100000000"
+                        step="0.01"
+                        placeholder="0.00"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="monedaOperacion">Moneda</label>
+                    <select id="monedaOperacion" name="moneda" required>
+                        <optgroup label="Más usadas">
+                        <option value="PEN">PEN - Sol peruano</option>
+                        <option value="USD">USD - Dólar estadounidense</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - Libra esterlina</option>
+                        <option value="MXN">MXN - Peso mexicano</option>
+                        <option value="COP">COP - Peso colombiano</option>
+                        <option value="CLP">CLP - Peso chileno</option>
+                        <option value="ARS">ARS - Peso argentino</option>
+                        <option value="BRL">BRL - Real brasileño</option>
+                        <option value="CAD">CAD - Dólar canadiense</option>
+                        <option value="AUD">AUD - Dólar australiano</option>
+                        </optgroup>
+                        <optgroup label="Todas las monedas">
+                        <option value="AFN">AFN - Afgani afgano</option>
+                        <option value="MGA">MGA - Ariari malgache</option>
+                        <option value="PAB">PAB - Balboa panameño</option>
+                        <option value="THB">THB - Bat tailandés</option>
+                        <option value="ETB">ETB - Bir etíope</option>
+                        <option value="VES">VES - Bolívar venezolano</option>
+                        <option value="BOB">BOB - Boliviano</option>
+                        <option value="GHS">GHS - Cedi ghanés</option>
+                        <option value="KES">KES - Chelín keniano</option>
+                        <option value="SOS">SOS - Chelín somalí</option>
+                        <option value="TZS">TZS - Chelín tanzano</option>
+                        <option value="UGX">UGX - Chelín ugandés</option>
+                        <option value="CRC">CRC - Colón costarricense</option>
+                        <option value="SVC">SVC - Colón salvadoreño</option>
+                        <option value="NIO">NIO - Córdoba oro</option>
+                        <option value="CZK">CZK - Corona checa</option>
+                        <option value="DKK">DKK - Corona danesa</option>
+                        <option value="ISK">ISK - Corona islandesa</option>
+                        <option value="NOK">NOK - Corona noruega</option>
+                        <option value="SEK">SEK - Corona sueca</option>
+                        <option value="GMD">GMD - Dalasi gambiano</option>
+                        <option value="DZD">DZD - Dinar argelino</option>
+                        <option value="BHD">BHD - Dinar bareiní</option>
+                        <option value="IQD">IQD - Dinar iraquí</option>
+                        <option value="JOD">JOD - Dinar jordano</option>
+                        <option value="KWD">KWD - Dinar kuwaití</option>
+                        <option value="LYD">LYD - Dinar libio</option>
+                        <option value="MKD">MKD - Dinar macedonio</option>
+                        <option value="RSD">RSD - Dinar serbio</option>
+                        <option value="TND">TND - Dinar tunecino</option>
+                        <option value="AED">AED - Dírham de los Emiratos Árabes Unidos</option>
+                        <option value="MAD">MAD - Dírham marroquí</option>
+                        <option value="STN">STN - Dobra santotomense</option>
+                        <option value="BSD">BSD - Dólar bahameño</option>
+                        <option value="BBD">BBD - Dólar barbadense</option>
+                        <option value="BZD">BZD - Dólar beliceño</option>
+                        <option value="BMD">BMD - Dólar bermudeño</option>
+                        <option value="BND">BND - Dólar bruneano</option>
+                        <option value="KYD">KYD - Dólar de las Islas Caimán</option>
+                        <option value="TTD">TTD - Dólar de Trinidad y Tobago</option>
+                        <option value="XCD">XCD - Dólar del Caribe Oriental</option>
+                        <option value="FJD">FJD - Dólar fiyiano</option>
+                        <option value="GYD">GYD - Dólar guyanés</option>
+                        <option value="HKD">HKD - Dólar hongkonés</option>
+                        <option value="JMD">JMD - Dólar jamaicano</option>
+                        <option value="LRD">LRD - Dólar liberiano</option>
+                        <option value="NAD">NAD - Dólar namibio</option>
+                        <option value="NZD">NZD - Dólar neozelandés</option>
+                        <option value="SBD">SBD - Dólar salomonense</option>
+                        <option value="SGD">SGD - Dólar singapurense</option>
+                        <option value="SRD">SRD - Dólar surinamés</option>
+                        <option value="ZWL">ZWL - Dólar zimbabuense</option>
+                        <option value="VND">VND - Dong vietnamita</option>
+                        <option value="AMD">AMD - Dram armenio</option>
+                        <option value="CVE">CVE - Escudo de Cabo Verde</option>
+                        <option value="PLN">PLN - Esloti polaco</option>
+                        <option value="ANG">ANG - Florín antillano</option>
+                        <option value="AWG">AWG - Florín arubeño</option>
+                        <option value="HUF">HUF - Forinto húngaro</option>
+                        <option value="BIF">BIF - Franco burundés</option>
+                        <option value="XAF">XAF - Franco CFA de África Central</option>
+                        <option value="XOF">XOF - Franco CFA de África Occidental</option>
+                        <option value="XPF">XPF - Franco CFP</option>
+                        <option value="KMF">KMF - Franco comorense</option>
+                        <option value="CDF">CDF - Franco congoleño</option>
+                        <option value="GNF">GNF - Franco guineano</option>
+                        <option value="RWF">RWF - Franco ruandés</option>
+                        <option value="CHF">CHF - Franco suizo</option>
+                        <option value="DJF">DJF - Franco yibutiano</option>
+                        <option value="UAH">UAH - Grivna ucraniana</option>
+                        <option value="PYG">PYG - Guaraní paraguayo</option>
+                        <option value="BTN">BTN - Gultrum butanés</option>
+                        <option value="HTG">HTG - Gurde haitiano</option>
+                        <option value="MMK">MMK - Kiat de Myanmar</option>
+                        <option value="PGK">PGK - Kina papú</option>
+                        <option value="LAK">LAK - Kip laosiano</option>
+                        <option value="MWK">MWK - Kuacha malauí</option>
+                        <option value="ZMW">ZMW - Kuacha zambiano</option>
+                        <option value="AOA">AOA - Kuanza angoleño</option>
+                        <option value="GEL">GEL - Lari georgiano</option>
+                        <option value="ALL">ALL - Lek albanés</option>
+                        <option value="HNL">HNL - Lempira hondureño</option>
+                        <option value="SLE">SLE - Leona sierraleonesa</option>
+                        <option value="MDL">MDL - Leu moldavo</option>
+                        <option value="RON">RON - Leu rumano</option>
+                        <option value="SHP">SHP - Libra de Santa Elena</option>
+                        <option value="EGP">EGP - Libra egipcia</option>
+                        <option value="GIP">GIP - Libra gibraltareña</option>
+                        <option value="LBP">LBP - Libra libanesa</option>
+                        <option value="FKP">FKP - Libra malvinense</option>
+                        <option value="SYP">SYP - Libra siria</option>
+                        <option value="SDG">SDG - Libra sudanesa</option>
+                        <option value="SSP">SSP - Libra sursudanesa</option>
+                        <option value="SZL">SZL - Lilangeni esuatiní</option>
+                        <option value="TRY">TRY - Lira turca</option>
+                        <option value="LSL">LSL - Loti lesotense</option>
+                        <option value="AZN">AZN - Manat azerbaiyano</option>
+                        <option value="TMT">TMT - Manat turcomano</option>
+                        <option value="BAM">BAM - Marco convertible de Bosnia y Herzegovina</option>
+                        <option value="MZN">MZN - Metical mozambiqueño</option>
+                        <option value="NGN">NGN - Naira nigeriano</option>
+                        <option value="ERN">ERN - Nakfa eritreo</option>
+                        <option value="TWD">TWD - Nuevo dólar taiwanés</option>
+                        <option value="ILS">ILS - Nuevo séquel israelí</option>
+                        <option value="TOP">TOP - Paanga tongano</option>
+                        <option value="MOP">MOP - Pataca macaense</option>
+                        <option value="CUP">CUP - Peso cubano</option>
+                        <option value="DOP">DOP - Peso dominicano</option>
+                        <option value="PHP">PHP - Peso filipino</option>
+                        <option value="UYU">UYU - Peso uruguayo</option>
+                        <option value="BWP">BWP - Pula botsuano</option>
+                        <option value="GTQ">GTQ - Quetzal guatemalteco</option>
+                        <option value="ZAR">ZAR - Rand sudafricano</option>
+                        <option value="QAR">QAR - Rial catarí</option>
+                        <option value="IRR">IRR - Rial iraní</option>
+                        <option value="OMR">OMR - Rial omaní</option>
+                        <option value="SAR">SAR - Rial saudí</option>
+                        <option value="YER">YER - Rial yemení</option>
+                        <option value="KHR">KHR - Riel camboyano</option>
+                        <option value="MYR">MYR - Ringit malasio</option>
+                        <option value="BYN">BYN - Rublo bielorruso</option>
+                        <option value="RUB">RUB - Rublo ruso</option>
+                        <option value="MVR">MVR - Rufiya maldiva</option>
+                        <option value="LKR">LKR - Rupia esrilanquesa</option>
+                        <option value="INR">INR - Rupia india</option>
+                        <option value="IDR">IDR - Rupia indonesia</option>
+                        <option value="MUR">MUR - Rupia mauriciana</option>
+                        <option value="NPR">NPR - Rupia nepalí</option>
+                        <option value="PKR">PKR - Rupia pakistaní</option>
+                        <option value="SCR">SCR - Rupia seychellense</option>
+                        <option value="KGS">KGS - Som kirguís</option>
+                        <option value="TJS">TJS - Somoni tayiko</option>
+                        <option value="UZS">UZS - Sum uzbeko</option>
+                        <option value="BDT">BDT - Taka bangladesí</option>
+                        <option value="WST">WST - Tala samoano</option>
+                        <option value="KZT">KZT - Tengue kazajo</option>
+                        <option value="MNT">MNT - Tugrik mongol</option>
+                        <option value="MRU">MRU - Uguiya mauritano</option>
+                        <option value="VUV">VUV - Vatu vanuatense</option>
+                        <option value="KPW">KPW - Won norcoreano</option>
+                        <option value="KRW">KRW - Won surcoreano</option>
+                        <option value="JPY">JPY - Yen japonés</option>
+                        <option value="CNY">CNY - Yuan renminbi</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <button type="submit">Registrar operación</button>
+                <p id="mensajeOperacion" role="status" aria-live="polite"></p>
+
+                <div class="campo">
+                    <label for="archivoCSV">Recuperar respaldo CSV</label>
+                    <input
+                        type="file"
+                        id="archivoCSV"
+                        name="archivoCSV"
+                        accept=".csv,text/csv"
+                    >
+                    <p>Selecciona un respaldo exportado por GananciaPro.</p>
+                </div>
+
+                <button id="btnImportarCSV" type="button">
+                    Importar y reemplazar operaciones
+                </button>
+
+                <p id="mensajeImportacion" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <section class="resumen" aria-label="Resumen financiero">
+            <h2>Resumen financiero</h2>
+
+            <div class="tarjetas">
+                <article class="tarjeta tarjeta-ingresos">
+                    <div class="icono" aria-hidden="true">&#8599;</div>
+                    <p>Ingresos</p>
+                    <h3 id="totalIngresos">S/ 0.00</h3>
+                    <span>Ingresos registrados</span>
+                </article>
+
+                <article class="tarjeta tarjeta-gastos">
+                    <div class="icono" aria-hidden="true">&#8600;</div>
+                    <p>Gastos</p>
+                    <h3 id="totalGastos">S/ 0.00</h3>
+                    <span>Gastos registrados</span>
+                </article>
+
+                <article class="tarjeta tarjeta-balance">
+                    <div class="icono" aria-hidden="true">&#9878;</div>
+                    <p>Ganancia neta</p>
+                    <h3 id="balanceTotal">S/ 0.00</h3>
+                    <span>Ingresos menos gastos</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="historial">
+            <h2>Historial de operaciones</h2>
+
+            <div class="filtros" role="search" aria-label="Filtrar historial">
+                <div class="campo">
+                    <label for="filtroBusqueda">Buscar</label>
+                    <input type="search" id="filtroBusqueda" placeholder="Descripción..." autocomplete="off">
+                </div>
+                <div class="campo">
+                    <label for="filtroTipo">Tipo</label>
+                    <select id="filtroTipo">
+                        <option value="">Todos</option>
+                        <option value="ingreso">Ingresos</option>
+                        <option value="gasto">Gastos</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label for="filtroMoneda">Moneda</label>
+                    <select id="filtroMoneda">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label for="filtroDesde">Desde</label>
+                    <input type="date" id="filtroDesde">
+                </div>
+                <div class="campo">
+                    <label for="filtroHasta">Hasta</label>
+                    <input type="date" id="filtroHasta">
+                </div>
+                <button type="button" id="btnLimpiarFiltros" class="btn-secundario">Limpiar filtros</button>
+            </div>
+
+            <p id="contadorHistorial" class="nota" role="status" aria-live="polite"></p>
+            <ul id="listaOperaciones" class="lista-operaciones"></ul>
+        </section>
+        <section id="panelCuenta" class="panel-cuenta" aria-labelledby="tituloCuenta">
+            <h2 id="tituloCuenta">Tu cuenta y tus datos</h2>
+            <p class="nota">Puedes descargar una copia de tus datos o eliminar tu cuenta de forma definitiva. Más información en la <a href="privacidad.html">Política de privacidad</a>.</p>
+            <div class="acciones">
+                <button type="button" id="btnExportarCuenta" class="btn-secundario">Descargar mis datos (CSV)</button>
+                <button type="button" id="btnEliminarCuenta" class="btn-peligro">Eliminar mi cuenta y mis datos</button>
+            </div>
+            <p id="mensajeCuenta" class="mensaje-acceso" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 GananciaPro · <a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p>
+    </footer>
+
+    <script src="js/vendor/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/nube.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/acceso.js"></script>
+</body>
+</html>
