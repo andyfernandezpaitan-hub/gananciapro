@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="css/mejoras.css">
     <script src="js/tema.js"></script>
 </head>
-<body data-sesion="cargando">
+<body data-sesion="cargando" data-vista="finanzas">
     <header class="encabezado">
         <div class="marca">
             <div class="logo">G</div>
@@ -131,6 +131,11 @@
                 <button type="button" id="btnOmitirMigracion" class="btn-secundario">Ahora no</button>
             </div>
         </section>
+        <nav id="navApp" class="nav-app" aria-label="Secciones de la aplicación">
+            <button type="button" id="navFinanzas" role="tab" aria-selected="true">Finanzas</button>
+            <button type="button" id="navAlmacen" role="tab" aria-selected="false">Almacén</button>
+        </nav>
+
         <section class="bienvenida">
             <p class="etiqueta">TU NEGOCIO, BAJO CONTROL</p>
             <h2>Bienvenido a GananciaPro</h2>
@@ -447,6 +452,116 @@
             </div>
             <p id="mensajeCuenta" class="mensaje-acceso" role="status" aria-live="polite"></p>
         </section>
+        <section id="almacen" class="almacen" aria-labelledby="tituloAlmacen">
+            <div class="almacen-cab">
+                <div>
+                    <h2 id="tituloAlmacen">Almacén</h2>
+                    <p class="nota">Controla tus productos y su stock.</p>
+                </div>
+                <div class="acciones">
+                    <button type="button" id="btnNuevoProducto">Nuevo producto</button>
+                </div>
+            </div>
+
+            <div class="tarjetas tarjetas-almacen" aria-label="Resumen del almacén">
+                <article class="tarjeta"><p>Productos activos</p><h3 id="almProductos">0</h3></article>
+                <article class="tarjeta"><p>Unidades en stock</p><h3 id="almUnidades">0</h3></article>
+                <article class="tarjeta"><p>Poco stock</p><h3 id="almPoco">0</h3></article>
+                <article class="tarjeta tarjeta-gastos"><p>Agotados</p><h3 id="almAgotados">0</h3></article>
+            </div>
+
+            <div class="filtros filtros-almacen" role="search" aria-label="Filtrar productos">
+                <div class="campo">
+                    <label for="almBusqueda">Buscar</label>
+                    <input type="search" id="almBusqueda" placeholder="Nombre, talla, color o código" autocomplete="off">
+                </div>
+                <div class="campo">
+                    <label for="almCategoria">Categoría</label>
+                    <select id="almCategoria"><option value="">Todas</option></select>
+                </div>
+                <div class="campo">
+                    <label for="almEstado">Estado</label>
+                    <select id="almEstado">
+                        <option value="activos">Activos</option>
+                        <option value="poco">Poco stock</option>
+                        <option value="agotados">Agotados</option>
+                        <option value="inactivos">Inactivos</option>
+                        <option value="todos">Todos</option>
+                    </select>
+                </div>
+            </div>
+
+            <p id="contadorAlmacen" class="nota" role="status" aria-live="polite"></p>
+            <ul id="listaProductos" class="lista-productos"></ul>
+            <p id="mensajeAlmacen" class="mensaje-acceso" role="status" aria-live="polite"></p>
+        </section>
+
+        <dialog id="dlgProducto" aria-labelledby="tituloDlgProducto">
+            <form id="formProducto" class="acceso-form" method="dialog">
+                <h2 id="tituloDlgProducto">Nuevo producto</h2>
+                <div class="campo">
+                    <label for="prodNombre">Nombre</label>
+                    <input type="text" id="prodNombre" maxlength="120" required>
+                </div>
+                <div class="campo-doble">
+                    <div class="campo">
+                        <label for="prodTalla">Talla</label>
+                        <input type="text" id="prodTalla" maxlength="40">
+                    </div>
+                    <div class="campo">
+                        <label for="prodColor">Color</label>
+                        <input type="text" id="prodColor" maxlength="60">
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="prodCategoria">Categoría</label>
+                    <input type="text" id="prodCategoria" list="listaCategorias" maxlength="80" autocomplete="off" placeholder="Ej.: Ropa">
+                    <datalist id="listaCategorias"></datalist>
+                    <p>Si la categoría no existe, se crea sola.</p>
+                </div>
+                <div class="campo">
+                    <label for="prodCodigo">Código (opcional)</label>
+                    <input type="text" id="prodCodigo" maxlength="60">
+                </div>
+                <p id="mensajeProducto" class="mensaje-acceso" role="alert" aria-live="assertive"></p>
+                <div class="acciones">
+                    <button type="submit" id="btnGuardarProducto">Guardar</button>
+                    <button type="button" id="btnCancelarProducto" class="btn-secundario">Cancelar</button>
+                </div>
+            </form>
+        </dialog>
+
+        <dialog id="dlgMovimiento" aria-labelledby="tituloDlgMov">
+            <form id="formMovimiento" class="acceso-form" method="dialog">
+                <h2 id="tituloDlgMov">Mover stock</h2>
+                <p id="movProducto" class="nota"></p>
+                <div class="campo">
+                    <label for="movTipo">Tipo de movimiento</label>
+                    <select id="movTipo">
+                        <option value="entrada">Entrada (suma stock)</option>
+                        <option value="perdida">Pérdida (resta)</option>
+                        <option value="dano">Daño (resta)</option>
+                        <option value="uso_interno">Uso interno (resta)</option>
+                        <option value="ajuste_positivo">Ajuste + (suma)</option>
+                        <option value="ajuste_negativo">Ajuste − (resta)</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label for="movCantidad">Cantidad</label>
+                    <input type="number" id="movCantidad" min="1" max="1000000" step="1" inputmode="numeric" required>
+                </div>
+                <div class="campo">
+                    <label for="movNota">Nota (opcional)</label>
+                    <input type="text" id="movNota" maxlength="250">
+                </div>
+                <p id="mensajeMovimiento" class="mensaje-acceso" role="alert" aria-live="assertive"></p>
+                <div class="acciones">
+                    <button type="submit" id="btnGuardarMov">Registrar</button>
+                    <button type="button" id="btnCancelarMov" class="btn-secundario">Cancelar</button>
+                </div>
+            </form>
+        </dialog>
+
     </main>
 
     <footer>
@@ -458,5 +573,6 @@
     <script src="js/nube.js"></script>
     <script src="js/app.js"></script>
     <script src="js/acceso.js"></script>
+    <script src="js/almacen.js"></script>
 </body>
 </html>
