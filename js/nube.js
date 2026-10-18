@@ -342,6 +342,21 @@
             return data;
         },
 
+        /* Historial de movimientos (más recientes primero), por páginas */
+        async listarMovimientos({ desde = 0, limite = 50, productoId = "", tipo = "" } = {}) {
+            let consulta = cliente
+                .from("almacen_movimientos")
+                .select("id, producto_id, venta_id, tipo, cantidad, stock_anterior, stock_nuevo, nota, creado_en")
+                .order("creado_en", { ascending: false })
+                .range(desde, desde + limite - 1);
+
+            if (productoId) consulta = consulta.eq("producto_id", productoId);
+            if (tipo) consulta = consulta.eq("tipo", tipo);
+
+            const { data } = comprobar(await consulta);
+            return data;
+        },
+
         /* ----- Derecho de eliminación ----- */
         async eliminarCuenta() {
             comprobar(await cliente.rpc("eliminar_mi_cuenta"));

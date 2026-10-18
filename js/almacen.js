@@ -26,8 +26,19 @@
     let limiteFilas = PASO_FILAS;
     let productoEnEdicion = null;
     let productoEnMovimiento = null;
+    let movimientos = [];
+    let hayMasMovimientos = false;
+    const PASO_MOV = 50;
+    const TIPOS_HIST = { ...TIPOS, venta: { texto: "Venta", suma: false } };
 
     const entero = new Intl.NumberFormat("es-PE");
+
+    /* Cada categoría tiene siempre el mismo color (según su nombre) */
+    function tonoCategoria(nombre) {
+        let suma = 0;
+        for (const letra of nombre.trim().toLowerCase()) suma = (suma * 31 + letra.charCodeAt(0)) % 360;
+        return suma;
+    }
 
     function nombreCategoria(id) {
         return categorias.find((categoria) => categoria.id === id)?.nombre || "Sin categoría";
@@ -73,6 +84,7 @@
             cargado = true;
             decir("", "info");
             pintar();
+            cargarMovimientos(true);
         } catch (error) {
             cargado = false;
             decir(error.message, "error");
@@ -120,6 +132,21 @@
         return true;
     }
 
+    function pintarFiltroProductos() {
+        const select = $("histProducto");
+        const actual = select.value;
+        const opciones = [new Option("Todos", "")];
+
+        for (const producto of productos) {
+            const etiqueta = [producto.nombre, producto.talla && `T. ${producto.talla}`, producto.color]
+                .filter(Boolean).join(" · ");
+            opciones.push(new Option(etiqueta + (producto.activo ? "" : " (inactivo)"), producto.id));
+        }
+
+        select.replaceChildren(...opciones);
+        select.value = [...select.options].some((o) => o.value === actual) ? actual : "";
+    }
+
     function pintarResumen() {
         const activos = productos.filter((producto) => producto.activo);
 
@@ -141,6 +168,7 @@
 
     function pintar() {
         pintarFiltroCategorias();
+        pintarFiltroProductos();
         pintarResumen();
 
         const lista = $("listaProductos");
@@ -185,9 +213,18 @@
             detalle.textContent = [
                 producto.talla && `Talla ${producto.talla}`,
                 producto.color,
-                nombreCategoria(producto.categoria_id),
                 producto.codigo && `Cód. ${producto.codigo}`
             ].filter(Boolean).join(" · ");
+
+            if (producto.categoria_id) {
+                const nombreCat = nombreCategoria(producto.categoria_id);
+                const chip = document.createElement("span");
+                chip.className = "chip-cat";
+                chip.textContent = nombreCat;
+                chip.style.setProperty("--h", String(tonoCategoria(nombreCat)));
+                detalle.append(chip);
+            }
+
             info.append(titulo, detalle);
 
             insignia.className = `estado-stock estado-${estado}`;
@@ -198,6 +235,8 @@
 
             if (producto.activo) {
                 acciones.append(
+                    boton("Historial", "btn-secundario btn-chico", () => verHistorial(producto),
+                        `Ver movimientos de ${producto.nombre}`),
                     boton("Mover stock", "btn-secundario btn-chico", () => abrirMovimiento(producto),
                         `Mover stock de ${producto.nombre}`),
                     boton("Editar", "btn-secundario btn-chico", () => abrirProducto(producto),
@@ -236,6 +275,103 @@
         };
         campo.addEventListener("input", alCambiar);
         campo.addEventListener("change", alCambiar);
+    }
+
+    /* ----- Historial de movimientos ----- */
+    function nombreProducto(id) {
+        const producto = productos.find((p) => p.id === id);
+        if (!producto) return "Producto";
+        return [producto.nombre, producto.talla && `Talla ${producto.talla}`, producto.color]
+            .filter(Boolean).join(" · ");
+    }
+
+    function pintarMovimientos() {
+        const lista = $("listaMovimientos");
+        lista.replaceChildren();
+
+        $("contadorHist").textContent = movimientos.length
+            ? `Mostrando ${movimientos.length} ${movimientos.length === 1 ? "movimiento" : "movimientos"}${hayMasMovimientos ? " (hay más)" : ""}.`
+            : "";
+
+        if (movimientos.length === 0) {
+            const vacio = document.createElement("li");
+            vacio.className = "vacio";
+            vacio.textContent = "Todavía no hay movimientos con estos filtros.";
+            lista.appendChild(vacio);
+            return;
+        }
+
+        for (const mov of movimientos) {
+            const tipo = TIPOS_HIST[mov.tipo] || { texto: mov.tipo, suma: false };
+            const fila = document.createElement("li");
+            const info = document.createElement("div");
+            const titulo = document.createElement("strong");
+            const detalle = document.createElement("span");
+            const etiquetaTipo = document.createElement("span");
+            const cantidad = document.createElement("span");
+            const saldo = document.createElement("span");
+
+            info.className = "mov-info";
+            titulo.textContent = nombreProducto(mov.producto_id);
+            etiquetaTipo.className = `mov-tipo mov-tipo-${mov.tipo}`;
+            etiquetaTipo.textContent = tipo.texto;
+
+            detalle.className = "mov-detalle";
+            detalle.append(
+                etiquetaTipo,
+                [
+                    new Date(mov.creado_en).toLocaleString("es-PE", { dateStyle: "short", timeStyle: "short" }),
+                    mov.nota
+                ].filter(Boolean).join(" · ")
+            );
+            info.append(titulo, detalle);
+
+            cantidad.className = `mov-cantidad ${tipo.suma ? "mov-suma" : "mov-resta"}`;
+            cantidad.textContent = `${tipo.suma ? "+" : "−"}${entero.format(mov.cantidad)}`;
+
+            saldo.className = "mov-saldo";
+            saldo.textContent = `Stock: ${entero.format(mov.stock_anterior)} → ${entero.format(mov.stock_nuevo)}`;
+
+            fila.append(info, cantidad, saldo);
+            lista.appendChild(fila);
+        }
+
+        if (hayMasMovimientos) {
+            const mas = document.createElement("li");
+            mas.className = "ver-mas";
+            mas.appendChild(boton("Ver más movimientos", "btn-secundario", () => cargarMovimientos(false)));
+            lista.appendChild(mas);
+        }
+    }
+
+    async function cargarMovimientos(reiniciar) {
+        $("mensajeHist").textContent = "";
+
+        try {
+            const pagina = await Nube.listarMovimientos({
+                desde: reiniciar ? 0 : movimientos.length,
+                limite: PASO_MOV,
+                productoId: $("histProducto").value,
+                tipo: $("histTipo").value
+            });
+            movimientos = reiniciar ? pagina : [...movimientos, ...pagina];
+            hayMasMovimientos = pagina.length === PASO_MOV;
+            pintarMovimientos();
+        } catch (error) {
+            $("mensajeHist").textContent = error.message;
+            $("mensajeHist").dataset.tipo = "error";
+        }
+    }
+
+    for (const id of ["histProducto", "histTipo"]) {
+        $(id).addEventListener("change", () => cargarMovimientos(true));
+    }
+
+    function verHistorial(producto) {
+        $("histProducto").value = producto.id;
+        $("histTipo").value = "";
+        cargarMovimientos(true);
+        $("tituloMov").scrollIntoView?.({ behavior: "smooth", block: "start" });
     }
 
     /* ----- Producto nuevo / edición ----- */
@@ -367,6 +503,7 @@
                 p.id === productoEnMovimiento.id ? { ...p, stock: Number(stockNuevo) } : p
             );
             $("dlgMovimiento").close();
+            cargarMovimientos(true);
             decir(`${TIPOS[tipo].texto} registrada. Stock actual: ${entero.format(Number(stockNuevo))}.`, "ok");
             pintar();
         } catch (error) {
