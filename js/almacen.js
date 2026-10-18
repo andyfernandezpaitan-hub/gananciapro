@@ -54,6 +54,10 @@
         return svg;
     }
 
+    /* El servidor es quien manda; esto solo evita botones que fallarían */
+    const puedeEscribir = () => window.GP_ACCESO?.acceso !== false;
+    const AVISO_SIN_ACCESO = "Tu prueba terminó o tu suscripción no está activa. Puedes ver y descargar tus datos.";
+
     function nombreCategoria(id) {
         return categorias.find((categoria) => categoria.id === id)?.nombre || "Sin categoría";
     }
@@ -181,6 +185,8 @@
     }
 
     function pintar() {
+        $("btnNuevoProducto").disabled = !puedeEscribir();
+        $("btnVenta").disabled = !puedeEscribir();
         pintarFiltroCategorias();
         pintarFiltroProductos();
         pintarResumen();
@@ -265,6 +271,12 @@
                     () => cambiarActivo(producto),
                     `${producto.activo ? "Desactivar" : "Reactivar"} ${producto.nombre}`)
             );
+
+            if (!puedeEscribir()) {
+                for (const accion of acciones.querySelectorAll("button")) {
+                    if (!accion.getAttribute("aria-label").startsWith("Ver movimientos")) accion.disabled = true;
+                }
+            }
 
             fila.append(info, insignia, acciones);
             lista.appendChild(fila);
@@ -432,6 +444,11 @@
     }
 
     function abrirVenta() {
+        if (!puedeEscribir()) {
+            decir(AVISO_SIN_ACCESO, "error");
+            return;
+        }
+
         if (!productos.some((p) => p.activo && p.stock > 0)) {
             decir("No hay productos con stock para vender. Registra una entrada primero.", "error");
             return;
@@ -531,6 +548,14 @@
     }
 
     $("btnNuevoProducto").addEventListener("click", () => abrirProducto(null));
+
+    document.addEventListener("gp-acceso", () => {
+        if (cargado) pintar();
+        else {
+            $("btnNuevoProducto").disabled = !puedeEscribir();
+            $("btnVenta").disabled = !puedeEscribir();
+        }
+    });
     $("btnCancelarProducto").addEventListener("click", () => $("dlgProducto").close());
 
     /* Busca la categoría por nombre; si no existe, la crea (categoría automática) */

@@ -188,6 +188,90 @@
         }
     });
 
+    /* ----- Suscripción: prueba, planes y modo solo lectura ----- */
+    const DIA_MS = 86400000;
+
+    /* Solo para mostrar avisos; quien manda es el servidor (reglas de la base de datos) */
+    function calcularAcceso(fila, ahora = new Date()) {
+        if (!fila) return { acceso: true, estado: "desconocido", dias: null };
+
+        const hasta = (valor) => (valor ? new Date(valor) : null);
+
+        if (fila.estado === "cortesia") return { acceso: true, estado: "cortesia", dias: null };
+
+        if (fila.estado === "prueba" && hasta(fila.prueba_hasta) > ahora) {
+            return { acceso: true, estado: "prueba", dias: Math.ceil((hasta(fila.prueba_hasta) - ahora) / DIA_MS) };
+        }
+
+        if (["activa", "cancelada"].includes(fila.estado) && hasta(fila.acceso_hasta) > ahora) {
+            return { acceso: true, estado: fila.estado, dias: null, fin: hasta(fila.acceso_hasta) };
+        }
+
+        return { acceso: false, estado: fila.estado === "prueba" ? "prueba_vencida" : "sin_suscripcion", dias: null };
+    }
+
+    const TEXTO_SOLO_LECTURA =
+        "Puedes ver y descargar tus datos, pero no registrar nada nuevo hasta que te suscribas.";
+
+    function aplicarAcceso(info) {
+        const aviso = $("avisoSuscripcion");
+        let texto = "";
+        let nivel = "info";
+
+        if (info.estado === "prueba") {
+            texto = `Prueba gratis: te quedan ${info.dias} ${info.dias === 1 ? "día" : "días"}.`;
+            nivel = info.dias <= 3 ? "aviso" : "info";
+        } else if (info.estado === "cancelada") {
+            texto = `Tu suscripción termina el ${info.fin.toLocaleDateString("es-PE")}.`;
+            nivel = "aviso";
+        } else if (!info.acceso) {
+            texto = `${info.estado === "prueba_vencida" ? "Tu prueba terminó." : "Tu suscripción terminó."} ${TEXTO_SOLO_LECTURA}`;
+            nivel = "error";
+        }
+
+        window.GP_ACCESO = Object.freeze({ acceso: info.acceso, estado: info.estado, dias: info.dias });
+        document.body.dataset.acceso = info.acceso ? "si" : "no";
+
+        $("textoSuscripcion").textContent = texto;
+        aviso.dataset.nivel = nivel;
+        aviso.hidden = texto === "";
+
+        /* Formulario de Finanzas: bloquear registrar e importar (descargar y borrar siguen activos) */
+        if ($("btnImportarCSV")) $("btnImportarCSV").disabled = !info.acceso;
+        const registrar = $("formOperacion")?.querySelector('button[type="submit"]');
+        if (registrar) registrar.disabled = !info.acceso;
+        if ($("mensajeOperacion") && !info.acceso) $("mensajeOperacion").textContent = TEXTO_SOLO_LECTURA;
+
+        document.dispatchEvent(new CustomEvent("gp-acceso"));
+    }
+
+    async function cargarAcceso() {
+        try {
+            aplicarAcceso(calcularAcceso(await Nube.miAcceso()));
+        } catch (error) {
+            /* Si no se puede leer, no se bloquea nada en pantalla: el servidor decide */
+            console.error("No se pudo leer la suscripción:", error);
+        }
+    }
+
+    const dlgPlanes = $("dlgPlanes");
+
+    $("btnVerPlanes").addEventListener("click", () => {
+        $("textoPrecio").textContent = cfg.PRECIO_TEXTO || "El precio mensual se anunciará al activar los pagos.";
+        $("textoEstadoPlan").textContent = $("textoSuscripcion").textContent;
+
+        const url = String(cfg.CHECKOUT_URL || "");
+        const listo = /^https:\/\//.test(url);
+        const boton = $("btnSuscribirme");
+
+        boton.disabled = !listo;
+        boton.textContent = listo ? "Suscribirme" : "Suscribirme (próximamente)";
+        boton.onclick = listo ? () => window.open(url, "_blank", "noopener,noreferrer") : null;
+        dlgPlanes.showModal();
+    });
+
+    $("btnCerrarPlanes").addEventListener("click", () => dlgPlanes.close());
+
     /* ----- Entrar a la app ----- */
     async function entrar(sesion) {
         if (!sesion || recuperandoClave) return;
@@ -213,6 +297,7 @@
             $("correoUsuario").textContent = sesion.user.email || "";
             $("correoUsuario").title = sesion.user.email || "";
             $("cuenta").hidden = false;
+            await cargarAcceso();
             estado("si");
             revisarMigracion(sesion.user.id);
         } catch (error) {

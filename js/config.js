@@ -10,5 +10,10 @@ window.GANANCIAPRO_CONFIG = Object.freeze({
     VERSION_POLITICA: "2026-10",
 
     /* Pon true SOLO cuando Google esté configurado en Supabase y la página esté publicada */
-    GOOGLE_ACTIVO: true
+    GOOGLE_ACTIVO: true,
+
+    /* Cobros: se completan cuando el proveedor de pagos esté configurado.
+       Deja CHECKOUT_URL vacío y el botón "Suscribirme" aparece como "Próximamente". */
+    PRECIO_TEXTO: "",
+    CHECKOUT_URL: ""
 });

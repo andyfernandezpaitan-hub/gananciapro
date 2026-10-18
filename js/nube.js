@@ -47,7 +47,9 @@
             return "El almacén aún no está activado en tu base de datos.";
         }
         if (codigo === "42501") {
-            return "No tienes permiso para realizar esta acción.";
+            return texto.includes("row-level security")
+                ? "Tu prueba terminó o tu suscripción no está activa. Suscríbete para seguir registrando."
+                : "No tienes permiso para realizar esta acción.";
         }
 
         if (texto.includes("invalid login credentials")) {
@@ -191,6 +193,14 @@
 
         async cambiarClave(nuevaClave) {
             comprobar(await cliente.auth.updateUser({ password: nuevaClave }));
+        },
+
+        /* ----- Suscripción (solo lectura: la escribe el servidor) ----- */
+        async miAcceso() {
+            const { data } = comprobar(
+                await cliente.from("suscripciones").select("estado, prueba_hasta, acceso_hasta").maybeSingle()
+            );
+            return data;
         },
 
         /* ----- Consentimiento ----- */
