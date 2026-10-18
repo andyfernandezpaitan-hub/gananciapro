@@ -1464,3 +1464,287 @@ dialog h2 {
     background: hsl(var(--h) 45% 22%);
     color: hsl(var(--h) 75% 82%);
 }
+
+/* ---------- 13. VENTA ---------- */
+.venta-lineas {
+    display: grid;
+    gap: var(--sp-3);
+}
+
+.venta-linea {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 96px auto;
+    gap: var(--sp-2);
+    align-items: center;
+}
+
+.venta-linea select,
+.venta-linea input {
+    width: 100%;
+    min-height: 46px;
+    padding: var(--sp-3);
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--radio-sm);
+    background: var(--surface);
+    color: var(--texto);
+    font: inherit;
+}
+
+.venta-linea select:focus,
+.venta-linea input:focus {
+    outline: none;
+    border-color: var(--acento);
+    box-shadow: 0 0 0 4px var(--anillo);
+}
+
+.venta-linea button {
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .venta-linea {
+        grid-template-columns: minmax(0, 1fr) 88px;
+    }
+
+    .venta-linea button {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+}
+
+/* ==========================================================================
+   14. TEMA CÁLIDO Y CERCANO
+   Colores tierra y coral, formas más redondeadas, letra con carácter
+   e ilustraciones propias. Va al final para reemplazar los valores anteriores.
+   ========================================================================== */
+:root {
+    --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+    --radio-sm: 12px;
+    --radio: 16px;
+    --radio-lg: 24px;
+
+    --bg: #fbf5ec;
+    --surface: #fffdf9;
+    --surface-2: #f6ecdf;
+    --texto: #2d2118;
+    --texto-suave: #6b5a4b;
+    --borde: #eadccb;
+    --borde-fuerte: #d3bea6;
+    --acento: #c2410c;
+    --acento-hover: #9a3412;
+    --acento-texto: #ffffff;
+    --anillo: rgba(194, 65, 12, 0.3);
+
+    --ok: #2b7249;
+    --ok-fondo: #e1f0e5;
+    --mal: #b3372f;
+    --mal-fondo: #fbe5df;
+    --info: #0f5d6b;
+    --info-fondo: #d9eff1;
+
+    --sombra-sm: 0 1px 2px rgba(110, 66, 30, 0.08);
+    --sombra: 0 1px 2px rgba(110, 66, 30, 0.05), 0 10px 28px rgba(110, 66, 30, 0.09);
+    --sombra-lg: 0 2px 4px rgba(110, 66, 30, 0.06), 0 20px 44px rgba(110, 66, 30, 0.14);
+
+    --cab-fondo: rgba(48, 30, 20, 0.94);
+    --cab-texto: #fbf5ec;
+    --cab-suave: #dcc7b0;
+    --cab-borde: rgba(255, 255, 255, 0.1);
+
+    --ilu-1: #e0703a;
+    --ilu-2: #f7dfbd;
+    --ilu-3: #fbf1e2;
+    --ilu-4: #7a4a2e;
+    --ilu-5: #9fd0c2;
+    --ilu-6: #f2b45a;
+    --ilu-7: #5fa37a;
+    --ilu-sombra: rgba(110, 66, 30, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #17110d;
+        --surface: #231a14;
+        --surface-2: #1c1510;
+        --texto: #f6ebdd;
+        --texto-suave: #c9b49e;
+        --borde: #3a2c22;
+        --borde-fuerte: #56412f;
+        --acento: #f59e6b;
+        --acento-hover: #ffb48a;
+        --acento-texto: #2a1208;
+        --anillo: rgba(245, 158, 107, 0.4);
+        --ok: #7fd3a1;
+        --ok-fondo: rgba(127, 211, 161, 0.14);
+        --mal: #ff9a8f;
+        --mal-fondo: rgba(255, 154, 143, 0.14);
+        --info: #7fd0dc;
+        --info-fondo: rgba(127, 208, 220, 0.14);
+        --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+        --sombra: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.4);
+        --sombra-lg: 0 2px 4px rgba(0, 0, 0, 0.45), 0 20px 44px rgba(0, 0, 0, 0.55);
+        --ilu-1: #d9653a;
+        --ilu-2: #4a3626;
+        --ilu-3: #3a2b1f;
+        --ilu-4: #b9825a;
+        --ilu-5: #3f7467;
+        --ilu-6: #d9a04a;
+        --ilu-7: #4f9068;
+        --ilu-sombra: rgba(0, 0, 0, 0.3);
+    }
+}
+
+:root[data-theme="dark"] {
+    --bg: #17110d;
+    --surface: #231a14;
+    --surface-2: #1c1510;
+    --texto: #f6ebdd;
+    --texto-suave: #c9b49e;
+    --borde: #3a2c22;
+    --borde-fuerte: #56412f;
+    --acento: #f59e6b;
+    --acento-hover: #ffb48a;
+    --acento-texto: #2a1208;
+    --anillo: rgba(245, 158, 107, 0.4);
+    --ok: #7fd3a1;
+    --ok-fondo: rgba(127, 211, 161, 0.14);
+    --mal: #ff9a8f;
+    --mal-fondo: rgba(255, 154, 143, 0.14);
+    --info: #7fd0dc;
+    --info-fondo: rgba(127, 208, 220, 0.14);
+    --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.4);
+    --sombra-lg: 0 2px 4px rgba(0, 0, 0, 0.45), 0 20px 44px rgba(0, 0, 0, 0.55);
+    --ilu-1: #d9653a;
+    --ilu-2: #4a3626;
+    --ilu-3: #3a2b1f;
+    --ilu-4: #b9825a;
+    --ilu-5: #3f7467;
+    --ilu-6: #d9a04a;
+    --ilu-7: #4f9068;
+    --ilu-sombra: rgba(0, 0, 0, 0.3);
+}
+
+/* Fondo con luz cálida */
+body {
+    background:
+        radial-gradient(900px 520px at 88% -8%, rgba(244, 162, 97, 0.28), transparent 62%),
+        radial-gradient(760px 520px at -8% 32%, rgba(233, 196, 106, 0.22), transparent 62%),
+        var(--bg);
+    background-attachment: fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) body {
+        background:
+            radial-gradient(900px 520px at 88% -8%, rgba(217, 101, 58, 0.16), transparent 62%),
+            radial-gradient(760px 520px at -8% 32%, rgba(217, 160, 74, 0.1), transparent 62%),
+            var(--bg);
+        background-attachment: fixed;
+    }
+}
+
+:root[data-theme="dark"] body {
+    background:
+        radial-gradient(900px 520px at 88% -8%, rgba(217, 101, 58, 0.16), transparent 62%),
+        radial-gradient(760px 520px at -8% 32%, rgba(217, 160, 74, 0.1), transparent 62%),
+        var(--bg);
+    background-attachment: fixed;
+}
+
+/* Letra con carácter en títulos y cifras */
+h1,
+h2,
+.tarjeta h3,
+.marca h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* Botones y pestañas más redondeados */
+button {
+    border-radius: 999px;
+    padding: var(--sp-3) var(--sp-6);
+}
+
+.btn-chico {
+    padding: var(--sp-1) var(--sp-4);
+}
+
+.logo {
+    background: linear-gradient(135deg, #f08a4b, #c2410c);
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(194, 65, 12, 0.45);
+}
+
+.nav-app button {
+    border-radius: 0;
+}
+
+/* Ganancia neta como protagonista */
+.tarjeta-balance {
+    grid-column: 1 / -1;
+    order: -1;
+    padding: var(--sp-8) var(--sp-6);
+    border-color: transparent;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 92% 0%, rgba(255, 196, 120, 0.5), transparent 55%),
+        linear-gradient(135deg, #9a3412 0%, #c2410c 100%);
+}
+
+.tarjeta-balance::before {
+    display: none;
+}
+
+.tarjeta-balance p,
+.tarjeta-balance span {
+    color: rgba(255, 255, 255, 0.94);
+}
+
+.tarjeta-balance h3,
+.tarjeta-balance h3 .negativo {
+    color: #ffffff;
+    font-size: clamp(2rem, 9cqi, 3.2rem);
+}
+
+.tarjeta-balance .icono {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+/* Ilustraciones */
+.ilustracion {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 240 / 170;
+}
+
+.ilu-acceso {
+    width: min(220px, 70%);
+    margin: 0 auto var(--sp-4);
+}
+
+.ilu-bienvenida {
+    float: right;
+    width: min(240px, 38%);
+    margin: 0 0 var(--sp-3) var(--sp-4);
+}
+
+.ilu-vacio {
+    width: min(200px, 60%);
+    margin: 0 auto var(--sp-3);
+}
+
+.lista-productos li.vacio p {
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .ilu-bienvenida {
+        display: none;
+    }
+}
