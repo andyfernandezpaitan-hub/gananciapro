@@ -466,7 +466,7 @@
             <div class="tarjetas tarjetas-almacen" aria-label="Resumen del almacén">
                 <article class="tarjeta"><p>Productos activos</p><h3 id="almProductos">0</h3></article>
                 <article class="tarjeta"><p>Unidades en stock</p><h3 id="almUnidades">0</h3></article>
-                <article class="tarjeta"><p>Poco stock</p><h3 id="almPoco">0</h3></article>
+                <article class="tarjeta tarjeta-poco"><p>Poco stock</p><h3 id="almPoco">0</h3></article>
                 <article class="tarjeta tarjeta-gastos"><p>Agotados</p><h3 id="almAgotados">0</h3></article>
             </div>
 
@@ -494,6 +494,33 @@
             <p id="contadorAlmacen" class="nota" role="status" aria-live="polite"></p>
             <ul id="listaProductos" class="lista-productos"></ul>
             <p id="mensajeAlmacen" class="mensaje-acceso" role="status" aria-live="polite"></p>
+
+            <div class="almacen-hist">
+                <h3 id="tituloMov">Historial de movimientos</h3>
+                <p class="nota">Cada entrada y salida queda registrada, con el stock antes y después.</p>
+                <div class="filtros filtros-hist" role="search" aria-label="Filtrar movimientos">
+                    <div class="campo">
+                        <label for="histProducto">Producto</label>
+                        <select id="histProducto"><option value="">Todos</option></select>
+                    </div>
+                    <div class="campo">
+                        <label for="histTipo">Tipo</label>
+                        <select id="histTipo">
+                            <option value="">Todos</option>
+                            <option value="entrada">Entradas</option>
+                            <option value="venta">Ventas</option>
+                            <option value="perdida">Pérdidas</option>
+                            <option value="dano">Daños</option>
+                            <option value="uso_interno">Uso interno</option>
+                            <option value="ajuste_positivo">Ajustes +</option>
+                            <option value="ajuste_negativo">Ajustes −</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="contadorHist" class="nota" role="status" aria-live="polite"></p>
+                <ul id="listaMovimientos" class="lista-movimientos"></ul>
+                <p id="mensajeHist" class="mensaje-acceso" role="status" aria-live="polite"></p>
+            </div>
         </section>
 
         <dialog id="dlgProducto" aria-labelledby="tituloDlgProducto">
