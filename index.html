@@ -12,6 +12,44 @@
     <script src="js/tema.js"></script>
 </head>
 <body data-sesion="cargando" data-vista="finanzas">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+        <clipPath id="ilu-toldo"><rect x="30" y="40" width="180" height="40" rx="10"/></clipPath>
+    </defs>
+    <symbol id="ilu-tienda" viewBox="0 0 240 170">
+        <ellipse cx="120" cy="160" rx="108" ry="8" fill="var(--ilu-sombra)"/>
+        <rect x="42" y="72" width="156" height="88" rx="12" fill="var(--ilu-2)"/>
+        <g clip-path="url(#ilu-toldo)">
+            <rect x="30" y="40" width="36" height="40" fill="var(--ilu-1)"/>
+            <rect x="66" y="40" width="36" height="40" fill="var(--ilu-3)"/>
+            <rect x="102" y="40" width="36" height="40" fill="var(--ilu-1)"/>
+            <rect x="138" y="40" width="36" height="40" fill="var(--ilu-3)"/>
+            <rect x="174" y="40" width="36" height="40" fill="var(--ilu-1)"/>
+        </g>
+        <rect x="104" y="102" width="40" height="58" rx="8" fill="var(--ilu-4)"/>
+        <circle cx="137" cy="132" r="3" fill="var(--ilu-3)"/>
+        <rect x="54" y="98" width="40" height="34" rx="8" fill="var(--ilu-5)"/>
+        <rect x="154" y="98" width="34" height="34" rx="8" fill="var(--ilu-5)"/>
+        <path d="M60 106h14M60 114h22" stroke="var(--ilu-2)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="120" cy="22" r="15" fill="var(--ilu-6)"/>
+        <circle cx="120" cy="22" r="9" fill="none" stroke="var(--ilu-2)" stroke-width="3"/>
+        <rect x="14" y="138" width="22" height="22" rx="5" fill="var(--ilu-1)"/>
+        <path d="M25 138c-10-8-8-24 0-28 8 4 10 20 0 28zM25 138c8-6 18-6 22 0-8 6-18 6-22 0z" fill="var(--ilu-7)"/>
+    </symbol>
+    <symbol id="ilu-cajas" viewBox="0 0 240 170">
+        <ellipse cx="120" cy="160" rx="100" ry="8" fill="var(--ilu-sombra)"/>
+        <rect x="44" y="104" width="86" height="54" rx="10" fill="var(--ilu-1)"/>
+        <rect x="44" y="104" width="86" height="14" rx="7" fill="var(--ilu-3)"/>
+        <rect x="116" y="90" width="82" height="68" rx="10" fill="var(--ilu-2)"/>
+        <path d="M157 90v68" stroke="var(--ilu-1)" stroke-width="8"/>
+        <rect x="70" y="52" width="72" height="50" rx="10" fill="var(--ilu-4)"/>
+        <rect x="70" y="52" width="72" height="12" rx="6" fill="var(--ilu-1)"/>
+        <circle cx="176" cy="52" r="16" fill="var(--ilu-6)"/>
+        <path d="M168 52l6 6 10-12" fill="none" stroke="var(--ilu-3)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M30 158c-2-14 2-24 10-30 4 10 2 22-10 30zM30 158c8-12 20-14 28-10-6 10-16 14-28 10z" fill="var(--ilu-7)"/>
+    </symbol>
+</svg>
+
     <header class="encabezado">
         <div class="marca">
             <div class="logo">G</div>
@@ -32,6 +70,7 @@
 
         <section id="acceso" class="acceso" aria-labelledby="tituloAcceso">
             <div class="acceso-tarjeta">
+                <svg class="ilustracion ilu-acceso" aria-hidden="true" focusable="false"><use href="#ilu-tienda"/></svg>
                 <h2 id="tituloAcceso">Accede a tu cuenta</h2>
                 <p class="nota">Tus ingresos y gastos quedan guardados en tu cuenta, privados y disponibles en cualquier dispositivo.</p>
 
@@ -137,6 +176,7 @@
         </nav>
 
         <section class="bienvenida">
+            <svg class="ilustracion ilu-bienvenida" aria-hidden="true" focusable="false"><use href="#ilu-tienda"/></svg>
             <p class="etiqueta">TU NEGOCIO, BAJO CONTROL</p>
             <h2>Bienvenido a GananciaPro</h2>
             <p>Organiza tus números y toma mejores decisiones para tu negocio.</p>
@@ -459,7 +499,8 @@
                     <p class="nota">Controla tus productos y su stock.</p>
                 </div>
                 <div class="acciones">
-                    <button type="button" id="btnNuevoProducto">Nuevo producto</button>
+                    <button type="button" id="btnVenta">Registrar venta</button>
+                    <button type="button" id="btnNuevoProducto" class="btn-secundario">Nuevo producto</button>
                 </div>
             </div>
 
@@ -559,6 +600,40 @@
                 <div class="acciones">
                     <button type="submit" id="btnGuardarProducto">Guardar</button>
                     <button type="button" id="btnCancelarProducto" class="btn-secundario">Cancelar</button>
+                </div>
+            </form>
+        </dialog>
+
+        <dialog id="dlgVenta" aria-labelledby="tituloDlgVenta">
+            <form id="formVenta" class="acceso-form" method="dialog">
+                <h2 id="tituloDlgVenta">Registrar venta</h2>
+                <div id="ventaLineas" class="venta-lineas"></div>
+                <button type="button" id="btnAgregarLinea" class="btn-secundario btn-chico">+ Agregar otro producto</button>
+                <div class="campo-doble">
+                    <div class="campo">
+                        <label for="ventaImporte">Importe total de la venta</label>
+                        <input type="number" id="ventaImporte" min="0.01" max="100000000" step="0.01" inputmode="decimal" required>
+                    </div>
+                    <div class="campo">
+                        <label for="ventaMoneda">Moneda</label>
+                        <select id="ventaMoneda"></select>
+                    </div>
+                </div>
+                <div class="campo-doble">
+                    <div class="campo">
+                        <label for="ventaFecha">Fecha</label>
+                        <input type="date" id="ventaFecha" required>
+                    </div>
+                    <div class="campo">
+                        <label for="ventaDescripcion">Descripción</label>
+                        <input type="text" id="ventaDescripcion" maxlength="100" value="Venta de almacén">
+                    </div>
+                </div>
+                <p class="nota">El importe se registra como un ingreso en Finanzas y el stock se descuenta a la vez.</p>
+                <p id="mensajeVenta" class="mensaje-acceso" role="alert" aria-live="assertive"></p>
+                <div class="acciones">
+                    <button type="submit" id="btnGuardarVenta">Registrar venta</button>
+                    <button type="button" id="btnCancelarVenta" class="btn-secundario">Cancelar</button>
                 </div>
             </form>
         </dialog>
