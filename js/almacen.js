@@ -40,6 +40,20 @@
         return suma;
     }
 
+    /* Ilustración decorativa (definida en index.html como <symbol>) */
+    function ilustracion(id) {
+        const NS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(NS, "svg");
+        const uso = document.createElementNS(NS, "use");
+
+        svg.setAttribute("class", "ilustracion ilu-vacio");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("focusable", "false");
+        uso.setAttribute("href", `#${id}`);
+        svg.append(uso);
+        return svg;
+    }
+
     function nombreCategoria(id) {
         return categorias.find((categoria) => categoria.id === id)?.nombre || "Sin categoría";
     }
@@ -177,7 +191,9 @@
         if (productos.length === 0) {
             const vacio = document.createElement("li");
             vacio.className = "vacio";
-            vacio.textContent = "Aún no tienes productos. Crea el primero con «Nuevo producto».";
+            const mensaje = document.createElement("p");
+            mensaje.textContent = "Aún no tienes productos. Crea el primero con «Nuevo producto».";
+            vacio.append(ilustracion("ilu-cajas"), mensaje);
             lista.appendChild(vacio);
             $("contadorAlmacen").textContent = "";
             return;
@@ -373,6 +389,130 @@
         cargarMovimientos(true);
         $("tituloMov").scrollIntoView?.({ behavior: "smooth", block: "start" });
     }
+
+    /* ----- Registrar venta ----- */
+    function fechaHoy() {
+        const ahora = new Date();
+        return new Date(ahora.getTime() - ahora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    }
+
+    function etiquetaProducto(producto) {
+        return [producto.nombre, producto.talla && `Talla ${producto.talla}`, producto.color]
+            .filter(Boolean).join(" · ") + ` (stock ${entero.format(producto.stock)})`;
+    }
+
+    function agregarLinea() {
+        const vendibles = productos.filter((p) => p.activo && p.stock > 0);
+        const fila = document.createElement("div");
+        const select = document.createElement("select");
+        const cantidad = document.createElement("input");
+        const quitar = document.createElement("button");
+
+        fila.className = "venta-linea";
+
+        select.setAttribute("aria-label", "Producto");
+        select.append(new Option("Elige un producto", ""), ...vendibles.map((p) => new Option(etiquetaProducto(p), p.id)));
+
+        cantidad.type = "number";
+        cantidad.min = "1";
+        cantidad.step = "1";
+        cantidad.inputMode = "numeric";
+        cantidad.placeholder = "Cant.";
+        cantidad.setAttribute("aria-label", "Cantidad");
+
+        quitar.type = "button";
+        quitar.className = "btn-secundario btn-chico";
+        quitar.textContent = "Quitar";
+        quitar.addEventListener("click", () => {
+            if ($("ventaLineas").children.length > 1) fila.remove();
+        });
+
+        fila.append(select, cantidad, quitar);
+        $("ventaLineas").appendChild(fila);
+    }
+
+    function abrirVenta() {
+        if (!productos.some((p) => p.activo && p.stock > 0)) {
+            decir("No hay productos con stock para vender. Registra una entrada primero.", "error");
+            return;
+        }
+
+        $("ventaMoneda").replaceChildren(
+            ...[...$("monedaOperacion").children].map((nodo) => nodo.cloneNode(true))
+        );
+        $("ventaMoneda").value = "PEN";
+        $("ventaImporte").value = "";
+        $("ventaFecha").value = fechaHoy();
+        $("ventaDescripcion").value = "Venta de almacén";
+        $("mensajeVenta").textContent = "";
+        $("ventaLineas").replaceChildren();
+        agregarLinea();
+        $("dlgVenta").showModal();
+    }
+
+    $("btnVenta").addEventListener("click", abrirVenta);
+    $("btnAgregarLinea").addEventListener("click", agregarLinea);
+    $("btnCancelarVenta").addEventListener("click", () => $("dlgVenta").close());
+
+    function errorVenta(texto) {
+        $("mensajeVenta").textContent = texto;
+        $("mensajeVenta").dataset.tipo = "error";
+    }
+
+    $("formVenta").addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+
+        const items = [...$("ventaLineas").children].map((fila) => ({
+            producto_id: fila.querySelector("select").value,
+            cantidad: Number(fila.querySelector("input").value)
+        }));
+
+        if (items.some((item) => !item.producto_id)) return errorVenta("Elige un producto en cada línea.");
+        if (items.some((item) => !Number.isInteger(item.cantidad) || item.cantidad < 1)) {
+            return errorVenta("Cada cantidad debe ser un número entero mayor que cero.");
+        }
+        if (new Set(items.map((item) => item.producto_id)).size !== items.length) {
+            return errorVenta("Elegiste el mismo producto dos veces. Suma las cantidades en una sola línea.");
+        }
+
+        for (const item of items) {
+            const producto = productos.find((p) => p.id === item.producto_id);
+            if (producto && item.cantidad > producto.stock) {
+                return errorVenta(`Solo hay ${entero.format(producto.stock)} de «${producto.nombre}».`);
+            }
+        }
+
+        const importe = Number($("ventaImporte").value);
+
+        if (!Number.isFinite(importe) || importe <= 0 || importe > 100000000) {
+            return errorVenta("Escribe el importe total de la venta (mayor que cero).");
+        }
+        if (!$("ventaFecha").value) return errorVenta("La fecha es obligatoria.");
+
+        const guardar = $("btnGuardarVenta");
+        guardar.disabled = true;
+
+        try {
+            await Nube.registrarVenta(
+                items,
+                importe,
+                $("ventaFecha").value,
+                $("ventaMoneda").value,
+                $("ventaDescripcion").value.trim() || "Venta de almacén"
+            );
+
+            productos = await Nube.listarProductos();
+            $("dlgVenta").close();
+            pintar();
+            cargarMovimientos(true);
+            window.GananciaApp?.cargar?.().catch(() => {});
+            decir("Venta registrada. El stock se descontó y el ingreso ya está en Finanzas.", "ok");
+        } catch (error) {
+            errorVenta(error.message);
+        } finally {
+            guardar.disabled = false;
+        }
+    });
 
     /* ----- Producto nuevo / edición ----- */
     function abrirProducto(producto) {

@@ -342,6 +342,20 @@
             return data;
         },
 
+        /* Venta atómica: descuenta stock y crea el ingreso en Finanzas (todo o nada) */
+        async registrarVenta(productos, importe, fecha, moneda, descripcion) {
+            const { data } = comprobar(
+                await cliente.rpc("almacen_registrar_venta", {
+                    p_productos: productos,
+                    p_importe: importe,
+                    p_fecha: fecha,
+                    p_moneda: moneda,
+                    p_descripcion: descripcion
+                })
+            );
+            return data;
+        },
+
         /* Historial de movimientos (más recientes primero), por páginas */
         async listarMovimientos({ desde = 0, limite = 50, productoId = "", tipo = "" } = {}) {
             let consulta = cliente
