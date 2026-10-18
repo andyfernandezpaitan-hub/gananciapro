@@ -68,6 +68,11 @@
     <main class="contenedor">
         <p id="cargando" class="nota" role="status">Cargando…</p>
 
+        <div id="avisoSuscripcion" class="aviso-suscripcion" data-nivel="info" role="status" hidden>
+            <p id="textoSuscripcion"></p>
+            <button type="button" id="btnVerPlanes" class="btn-secundario btn-chico">Ver planes</button>
+        </div>
+
         <section id="acceso" class="acceso" aria-labelledby="tituloAcceso">
             <div class="acceso-tarjeta">
                 <svg class="ilustracion ilu-acceso" aria-hidden="true" focusable="false"><use href="#ilu-tienda"/></svg>
@@ -636,6 +641,23 @@
                     <button type="button" id="btnCancelarVenta" class="btn-secundario">Cancelar</button>
                 </div>
             </form>
+        </dialog>
+
+        <dialog id="dlgPlanes" aria-labelledby="tituloDlgPlanes">
+            <div class="acceso-form">
+                <h2 id="tituloDlgPlanes">Planes de GananciaPro</h2>
+                <ul class="lista-planes">
+                    <li><strong>14 días de prueba gratis</strong>, sin tarjeta.</li>
+                    <li><strong>Después, suscripción mensual</strong> con todo incluido: finanzas, almacén, multimoneda y respaldos.</li>
+                    <li>Si no te suscribes, <strong>tus datos siguen siendo tuyos</strong>: puedes verlos, descargarlos o eliminar tu cuenta cuando quieras.</li>
+                </ul>
+                <p id="textoPrecio" class="nota"></p>
+                <p id="textoEstadoPlan" class="mensaje-acceso" role="status"></p>
+                <div class="acciones">
+                    <button type="button" id="btnSuscribirme" disabled>Suscribirme (próximamente)</button>
+                    <button type="button" id="btnCerrarPlanes" class="btn-secundario">Cerrar</button>
+                </div>
+            </div>
         </dialog>
 
         <dialog id="dlgMovimiento" aria-labelledby="tituloDlgMov">
