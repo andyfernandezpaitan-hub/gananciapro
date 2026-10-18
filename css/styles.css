@@ -1748,3 +1748,88 @@ button {
         display: none;
     }
 }
+
+/* ---------- 15. SUSCRIPCIÓN Y PLANES ---------- */
+.aviso-suscripcion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--radio);
+    background: var(--info-fondo);
+    color: var(--info);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.aviso-suscripcion[hidden],
+body:not([data-sesion="si"]) .aviso-suscripcion {
+    display: none;
+}
+
+.aviso-suscripcion p {
+    margin: 0;
+}
+
+.aviso-suscripcion[data-nivel="aviso"] { background: var(--aviso-fondo); color: var(--aviso); }
+.aviso-suscripcion[data-nivel="error"] { background: var(--mal-fondo); color: var(--mal); }
+
+.aviso-suscripcion button {
+    margin: 0;
+    color: var(--texto);
+}
+
+.lista-planes {
+    margin: 0;
+    padding-left: var(--sp-6);
+    display: grid;
+    gap: var(--sp-3);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---------- 15. SUSCRIPCIÓN Y PLANES ---------- */
+.aviso-suscripcion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--radio);
+    background: var(--info-fondo);
+    color: var(--info);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.aviso-suscripcion[hidden],
+body:not([data-sesion="si"]) .aviso-suscripcion {
+    display: none;
+}
+
+.aviso-suscripcion p {
+    margin: 0;
+}
+
+.aviso-suscripcion[data-nivel="aviso"] { background: var(--aviso-fondo); color: var(--aviso); }
+.aviso-suscripcion[data-nivel="error"] { background: var(--mal-fondo); color: var(--mal); }
+
+.aviso-suscripcion button {
+    margin: 0;
+    color: var(--texto);
+}
+
+.lista-planes {
+    margin: 0;
+    padding-left: var(--sp-6);
+    display: grid;
+    gap: var(--sp-3);
+}
