@@ -18,5 +18,5 @@ window.GANANCIAPRO_CONFIG = Object.freeze({
     CHECKOUT_URL: "",
 
     /* Pon true cuando la función crear-pago y Polar estén listos: el botón "Suscribirme" abre el pago */
-    PAGOS_ACTIVOS: false
+    PAGOS_ACTIVOS: true
 });
