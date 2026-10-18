@@ -550,6 +550,11 @@
                     <label for="prodCodigo">Código (opcional)</label>
                     <input type="text" id="prodCodigo" maxlength="60">
                 </div>
+                <div class="campo" id="campoCantidadInicial">
+                    <label for="prodCantidad">Cantidad inicial (stock)</label>
+                    <input type="number" id="prodCantidad" min="0" max="1000000" step="1" inputmode="numeric" placeholder="0">
+                    <p>Cuántas unidades tienes ahora. Se registra como una entrada.</p>
+                </div>
                 <p id="mensajeProducto" class="mensaje-acceso" role="alert" aria-live="assertive"></p>
                 <div class="acciones">
                     <button type="submit" id="btnGuardarProducto">Guardar</button>
