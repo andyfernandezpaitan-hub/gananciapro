@@ -384,6 +384,8 @@
         $("prodCodigo").value = producto?.codigo || "";
         $("prodCategoria").value = producto?.categoria_id ? nombreCategoria(producto.categoria_id) : "";
         $("mensajeProducto").textContent = "";
+        $("campoCantidadInicial").hidden = Boolean(producto);
+        $("prodCantidad").value = "";
         $("dlgProducto").showModal();
         $("prodNombre").focus();
     }
@@ -418,6 +420,15 @@
             return;
         }
 
+        const textoCantidad = $("prodCantidad").value.trim();
+        const cantidadInicial = textoCantidad === "" ? 0 : Number(textoCantidad);
+
+        if (!productoEnEdicion && (!Number.isInteger(cantidadInicial) || cantidadInicial < 0 || cantidadInicial > 1000000)) {
+            $("mensajeProducto").textContent = "La cantidad inicial debe ser un número entero, de 0 a 1,000,000.";
+            $("mensajeProducto").dataset.tipo = "error";
+            return;
+        }
+
         const guardar = $("btnGuardarProducto");
         guardar.disabled = true;
 
@@ -431,16 +442,41 @@
                 codigo: $("prodCodigo").value.trim() || null
             };
 
+            let productoNuevo = null;
+
             if (productoEnEdicion) {
                 const actualizado = await Nube.actualizarProducto(productoEnEdicion.id, datos);
                 productos = productos.map((p) => (p.id === actualizado.id ? actualizado : p));
             } else {
                 const creado = await Nube.crearProducto({ ...datos, activo: true });
                 productos = [...productos, creado].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+                productoNuevo = creado;
+            }
+
+            /* Cantidad inicial: se guarda como una entrada (queda en el historial) */
+            let avisoStock = "";
+
+            if (productoNuevo && cantidadInicial > 0) {
+                try {
+                    const stockInicial = await Nube.registrarMovimiento(
+                        productoNuevo.id, "entrada", cantidadInicial, "Stock inicial"
+                    );
+                    productos = productos.map((p) =>
+                        p.id === productoNuevo.id ? { ...p, stock: Number(stockInicial) } : p
+                    );
+                    cargarMovimientos(true);
+                } catch (errorStock) {
+                    avisoStock = ` Pero no se pudo registrar el stock inicial (${errorStock.message}). Regístralo con «Mover stock».`;
+                }
             }
 
             $("dlgProducto").close();
-            decir(productoEnEdicion ? "Producto actualizado." : "Producto creado. Registra su primera entrada con «Mover stock».", "ok");
+            decir(
+                productoEnEdicion
+                    ? "Producto actualizado."
+                    : `Producto creado${cantidadInicial > 0 && !avisoStock ? ` con ${entero.format(cantidadInicial)} en stock` : ""}.${avisoStock}`,
+                avisoStock ? "error" : "ok"
+            );
             pintar();
         } catch (error) {
             $("mensajeProducto").textContent = error.message;
