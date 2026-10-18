@@ -1101,3 +1101,196 @@ footer a {
         box-shadow: none;
     }
 }
+
+/* ---------- 10. NAVEGACIÓN Y ALMACÉN ---------- */
+body:not([data-sesion="si"]) .nav-app,
+body:not([data-sesion="si"]) .almacen,
+body:not([data-vista="almacen"]) .almacen,
+body[data-vista="almacen"] .bienvenida,
+body[data-vista="almacen"] .operaciones,
+body[data-vista="almacen"] .resumen,
+body[data-vista="almacen"] .historial,
+body[data-vista="almacen"] .panel-cuenta,
+body[data-vista="almacen"] #migracion {
+    display: none;
+}
+
+.nav-app {
+    display: flex;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-6);
+    border-bottom: 1px solid var(--borde);
+}
+
+.nav-app button {
+    margin: 0 0 -1px;
+    padding: var(--sp-3) var(--sp-4);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--texto-suave);
+    box-shadow: none;
+}
+
+.nav-app button[aria-selected="true"] {
+    color: var(--texto);
+    border-bottom-color: var(--acento);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .nav-app button:hover {
+        background: transparent;
+        color: var(--texto);
+        box-shadow: none;
+    }
+}
+
+.almacen-cab {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--sp-4);
+}
+
+.almacen-cab h2 {
+    margin: 0 0 var(--sp-1);
+    font-size: var(--fs-lg);
+}
+
+.almacen-cab p {
+    margin: 0;
+}
+
+.tarjetas-almacen {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.tarjetas-almacen h3 {
+    font-size: var(--fs-xl);
+}
+
+.filtros-almacen {
+    grid-template-columns: 2fr 1fr 1fr;
+}
+
+.lista-productos {
+    margin: var(--sp-2) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-productos li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: var(--sp-3);
+    border-bottom: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+}
+
+.lista-productos li:last-child {
+    border-bottom: 0;
+}
+
+.lista-productos li.inactivo {
+    opacity: 0.6;
+}
+
+.lista-productos li.vacio {
+    display: block;
+    padding: var(--sp-8) var(--sp-3);
+    text-align: center;
+    color: var(--texto-suave);
+}
+
+.lista-productos li.ver-mas {
+    display: flex;
+    justify-content: center;
+}
+
+.prod-info {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.prod-info span {
+    color: var(--texto-suave);
+    font-size: var(--fs-sm);
+}
+
+.estado-stock {
+    padding: 2px var(--sp-3);
+    border-radius: 999px;
+    border: 1px solid var(--borde);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.estado-ok { background: var(--ok-fondo); color: var(--ok); border-color: transparent; }
+.estado-poco { background: var(--surface-2); color: var(--texto); }
+.estado-agotado { background: var(--mal-fondo); color: var(--mal); border-color: transparent; }
+
+.prod-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--sp-2);
+}
+
+.prod-acciones button,
+.lista-productos li.ver-mas button {
+    margin: 0;
+}
+
+.btn-chico {
+    padding: var(--sp-1) var(--sp-3);
+    font-size: var(--fs-xs);
+}
+
+dialog {
+    width: min(520px, calc(100% - var(--sp-8)));
+    padding: var(--sp-6);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    background: var(--surface);
+    color: var(--texto);
+    box-shadow: var(--sombra-lg);
+}
+
+dialog::backdrop {
+    background: rgba(10, 15, 29, 0.55);
+}
+
+dialog h2 {
+    margin: 0;
+    font-size: var(--fs-lg);
+}
+
+.campo-doble {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+}
+
+@media (max-width: 640px) {
+    .filtros-almacen,
+    .campo-doble {
+        grid-template-columns: 1fr;
+    }
+
+    .lista-productos li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .prod-acciones {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+}
