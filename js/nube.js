@@ -24,6 +24,7 @@
     );
 
     const COLUMNAS = "id, fecha, tipo, descripcion, importe, moneda";
+    const COLUMNAS_PRODUCTO = "id, nombre, talla, color, codigo, stock, activo, categoria_id";
     const TAMANO_PAGINA = 1000;
     const TAMANO_LOTE = 500;
 
@@ -31,6 +32,23 @@
     function traducirError(error) {
         const texto = String(error?.message || error || "").toLowerCase();
         const codigo = String(error?.code || "").toLowerCase();
+
+        /* Mensajes escritos por nuestras funciones del servidor (ya vienen en español) */
+        if (codigo === "p0001" && error?.message) {
+            return error.message;
+        }
+        if (codigo === "23505") {
+            return "Ya existe un registro igual (mismo nombre, talla y color, o el mismo código).";
+        }
+        if (codigo === "23514" || codigo === "22001") {
+            return "Algún dato no cumple los límites permitidos. Revísalo.";
+        }
+        if (codigo === "pgrst205" || codigo === "42p01") {
+            return "El almacén aún no está activado en tu base de datos.";
+        }
+        if (codigo === "42501") {
+            return "No tienes permiso para realizar esta acción.";
+        }
 
         if (texto.includes("invalid login credentials")) {
             return "Correo o contraseña incorrectos.";
@@ -260,6 +278,68 @@
                     await cliente.from("operaciones").delete().in("id", ids.slice(i, i + 100))
                 );
             }
+        },
+
+        /* ----- Almacén ----- */
+        async listarCategorias() {
+            const { data } = comprobar(
+                await cliente.from("almacen_categorias").select("id, nombre, activa").order("nombre")
+            );
+            return data;
+        },
+
+        async crearCategoria(nombre) {
+            const { data } = comprobar(
+                await cliente.from("almacen_categorias").insert([{ nombre }]).select("id, nombre, activa").single()
+            );
+            return data;
+        },
+
+        async listarProductos() {
+            const todos = [];
+
+            for (let desde = 0; ; desde += TAMANO_PAGINA) {
+                const { data } = comprobar(
+                    await cliente
+                        .from("almacen_productos")
+                        .select(COLUMNAS_PRODUCTO)
+                        .order("nombre", { ascending: true })
+                        .range(desde, desde + TAMANO_PAGINA - 1)
+                );
+
+                todos.push(...data);
+
+                if (data.length < TAMANO_PAGINA) break;
+            }
+
+            return todos;
+        },
+
+        async crearProducto(producto) {
+            const { data } = comprobar(
+                await cliente.from("almacen_productos").insert([producto]).select(COLUMNAS_PRODUCTO).single()
+            );
+            return data;
+        },
+
+        async actualizarProducto(id, cambios) {
+            const { data } = comprobar(
+                await cliente.from("almacen_productos").update(cambios).eq("id", id).select(COLUMNAS_PRODUCTO).single()
+            );
+            return data;
+        },
+
+        /* Entradas, pérdidas, daños, uso interno y ajustes (devuelve el stock nuevo) */
+        async registrarMovimiento(productoId, tipo, cantidad, nota) {
+            const { data } = comprobar(
+                await cliente.rpc("almacen_registrar_movimiento", {
+                    p_producto_id: productoId,
+                    p_tipo: tipo,
+                    p_cantidad: cantidad,
+                    p_nota: nota || null
+                })
+            );
+            return data;
         },
 
         /* ----- Derecho de eliminación ----- */
