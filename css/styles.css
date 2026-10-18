@@ -1294,3 +1294,173 @@ dialog h2 {
         justify-content: flex-start;
     }
 }
+
+/* ---------- 11. HISTORIAL DE MOVIMIENTOS ---------- */
+.almacen-hist {
+    margin-top: var(--sp-8);
+}
+
+.almacen-hist h3 {
+    margin: 0 0 var(--sp-2);
+    font-size: var(--fs-md);
+}
+
+.filtros-hist {
+    grid-template-columns: 1fr 1fr;
+}
+
+.lista-movimientos {
+    margin: var(--sp-2) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-movimientos li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: var(--sp-3);
+    border-bottom: 1px solid var(--borde);
+}
+
+.lista-movimientos li:last-child {
+    border-bottom: 0;
+}
+
+.lista-movimientos li.vacio {
+    display: block;
+    padding: var(--sp-8) var(--sp-3);
+    text-align: center;
+    color: var(--texto-suave);
+}
+
+.lista-movimientos li.ver-mas {
+    display: flex;
+    justify-content: center;
+}
+
+.lista-movimientos li.ver-mas button {
+    margin: 0;
+}
+
+.mov-info {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.mov-info span {
+    color: var(--texto-suave);
+    font-size: var(--fs-sm);
+}
+
+.mov-cantidad {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.mov-suma { color: var(--ok); }
+.mov-resta { color: var(--mal); }
+
+.mov-saldo {
+    color: var(--texto-suave);
+    font-size: var(--fs-sm);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .filtros-hist {
+        grid-template-columns: 1fr;
+    }
+
+    .lista-movimientos li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .mov-saldo {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ---------- 12. COLORES POR SIGNIFICADO ---------- */
+:root {
+    --aviso: #92400e;
+    --aviso-fondo: #fef3c7;
+    --info: #3730a3;
+    --info-fondo: #e0e7ff;
+    --neutro-fondo: #eceff5;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --aviso: #fbbf24;
+        --aviso-fondo: rgba(251, 191, 36, 0.14);
+        --info: #a5b4fc;
+        --info-fondo: rgba(129, 140, 248, 0.18);
+        --neutro-fondo: rgba(148, 163, 184, 0.16);
+    }
+}
+
+:root[data-theme="dark"] {
+    --aviso: #fbbf24;
+    --aviso-fondo: rgba(251, 191, 36, 0.14);
+    --info: #a5b4fc;
+    --info-fondo: rgba(129, 140, 248, 0.18);
+    --neutro-fondo: rgba(148, 163, 184, 0.16);
+}
+
+/* Poco stock: ámbar (no es error, es aviso) */
+.estado-poco { background: var(--aviso-fondo); color: var(--aviso); border-color: transparent; }
+.tarjeta-poco::before { background: var(--aviso); }
+.tarjeta-poco h3 { color: var(--aviso); }
+
+/* Tipo de movimiento: cada uno con su color */
+.mov-detalle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+.mov-tipo {
+    padding: 1px var(--sp-3);
+    border-radius: 999px;
+    background: var(--neutro-fondo);
+    color: var(--texto);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+}
+
+.mov-tipo-entrada { background: var(--ok-fondo); color: var(--ok); }
+.mov-tipo-venta { background: var(--info-fondo); color: var(--info); }
+.mov-tipo-perdida { background: var(--mal-fondo); color: var(--mal); }
+.mov-tipo-dano { background: var(--aviso-fondo); color: var(--aviso); }
+
+/* Categorías: un color estable por nombre (el tono lo calcula almacen.js) */
+.chip-cat {
+    --h: 220;
+    display: inline-block;
+    margin-left: var(--sp-2);
+    padding: 1px var(--sp-3);
+    border-radius: 999px;
+    background: hsl(var(--h) 70% 92%);
+    color: hsl(var(--h) 60% 26%);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .chip-cat {
+        background: hsl(var(--h) 45% 22%);
+        color: hsl(var(--h) 75% 82%);
+    }
+}
+
+:root[data-theme="dark"] .chip-cat {
+    background: hsl(var(--h) 45% 22%);
+    color: hsl(var(--h) 75% 82%);
+}
