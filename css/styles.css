@@ -1833,3 +1833,6 @@ body:not([data-sesion="si"]) .aviso-suscripcion {
     display: grid;
     gap: var(--sp-3);
 }
+
+/* Sprite SVG oculto (antes estilo en línea; movido aquí para la CSP) */
+.svg-sprite { position: absolute; }
