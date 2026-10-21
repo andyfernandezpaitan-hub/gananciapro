@@ -1,24 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://ckipjthrubmhvwphkhyf.supabase.co wss://ckipjthrubmhvwphkhyf.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0b1020">
     <meta name="color-scheme" content="light dark">
-    <meta name="description" content="GananciaPro: panel de control para gestionar ingresos, gastos y ganancias.">
+    <meta name="description" content="GananciaPro: lleva tus ingresos, gastos y almacén en un solo lugar. Prueba gratis 14 días, sin tarjeta.">
+    <meta property="og:title" content="GananciaPro: ingresos, gastos y almacén en un solo lugar">
+    <meta property="og:description" content="Prueba gratis 14 días. Multimoneda, privado y disponible en cualquier dispositivo.">
+    <meta property="og:type" content="website">
     <title>GananciaPro | Panel de control</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mejoras.css">
     <script src="js/tema.js"></script>
 </head>
 <body data-sesion="cargando" data-vista="finanzas">
-    <svg class="svg-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
         <clipPath id="ilu-toldo"><rect x="30" y="40" width="180" height="40" rx="10"/></clipPath>
     </defs>
+    <symbol id="ico-finanzas" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-almacen" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v9l-9 5-9-5zM3 8l9 5 9-5M12 13v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-moneda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M14.5 9.5c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.5 5 1.3 5 3.9 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2-.4-2.6-1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="ilu-tienda" viewBox="0 0 240 170">
         <ellipse cx="120" cy="160" rx="108" ry="8" fill="var(--ilu-sombra)"/>
         <rect x="42" y="72" width="156" height="88" rx="12" fill="var(--ilu-2)"/>
@@ -61,6 +64,13 @@
                 <p>Control inteligente de tu negocio</p>
             </div>
         </div>
+        <nav class="nav-portada" aria-label="Secciones">
+            <a href="#incluye">Qué incluye</a>
+            <a href="#como">Cómo funciona</a>
+            <a href="#precio">Precio</a>
+            <a href="#preguntas">Preguntas</a>
+            <button type="button" class="btn-secundario btn-chico" data-cta="entrar">Iniciar sesión</button>
+        </nav>
         <div class="cuenta" id="cuenta" hidden>
             <span id="correoUsuario"></span>
             <button id="btnSalir" class="btn-salir" type="button">Cerrar sesión</button>
@@ -74,6 +84,83 @@
         <div id="avisoSuscripcion" class="aviso-suscripcion" data-nivel="info" role="status" hidden>
             <p id="textoSuscripcion"></p>
             <button type="button" id="btnVerPlanes" class="btn-secundario btn-chico">Ver planes</button>
+        </div>
+
+        <div class="portada-zona">
+        <section class="portada portada-hero" aria-labelledby="tituloPortada">
+            <div class="hero-fondo" aria-hidden="true"><span class="mancha mancha-1" data-parallax="0.18"></span><span class="mancha mancha-2" data-parallax="-0.12"></span></div>
+            <p class="portada-sobre" data-aparece>Prueba gratis 14 días · Sin tarjeta</p>
+            <h2 id="tituloPortada" class="portada-titulo" data-aparece style="--i:1">Tus ingresos, gastos y almacén, <span class="resaltado">en un solo lugar.</span></h2>
+            <p class="portada-sub" data-aparece style="--i:2">Registra cada venta y cada gasto, controla tu inventario y mira tu ganancia real. En tu moneda, desde cualquier dispositivo.</p>
+            <div class="portada-acciones" data-aparece style="--i:3">
+                <button type="button" class="btn-cta" data-cta="crear">Empezar gratis</button>
+                <a class="enlace-cta" href="#como">Ver cómo funciona</a>
+            </div>
+            <svg class="ilustracion ilu-hero" data-aparece style="--i:4" aria-hidden="true" focusable="false"><use href="#ilu-tienda"/></svg>
+        </section>
+
+        <section id="incluye" class="portada portada-seccion" aria-labelledby="tituloIncluye">
+            <h2 id="tituloIncluye" class="portada-h2" data-aparece>Todo lo que tu negocio necesita.</h2>
+            <div class="tarjetas-portada">
+                <article class="tarjeta-portada" data-aparece style="--i:1">
+                    <svg class="icono-portada" aria-hidden="true" focusable="false"><use href="#ico-finanzas"/></svg>
+                    <h3>Finanzas claras</h3>
+                    <p>Anota ingresos y gastos en segundos y ve tu ganancia al instante. Filtra, busca y exporta a CSV cuando quieras.</p>
+                </article>
+                <article class="tarjeta-portada" data-aparece style="--i:2">
+                    <svg class="icono-portada" aria-hidden="true" focusable="false"><use href="#ico-almacen"/></svg>
+                    <h3>Almacén con control</h3>
+                    <p>Productos con categoría automática, entradas y salidas, y cuánto te queda. Cada venta se suma sola a tus finanzas.</p>
+                </article>
+                <article class="tarjeta-portada" data-aparece style="--i:3">
+                    <svg class="icono-portada" aria-hidden="true" focusable="false"><use href="#ico-moneda"/></svg>
+                    <h3>Tu moneda</h3>
+                    <p>Trabaja en soles, dólares, euros y más. Cada cliente elige la moneda de su negocio.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="como" class="portada escena" aria-labelledby="tituloComo">
+            <div class="escena-marco">
+                <h2 id="tituloComo" class="portada-h2" data-aparece>Empieza en tres pasos.</h2>
+                <p class="escena-numero" id="pasoNumero" aria-hidden="true">1</p>
+                <ol class="pasos-portada">
+                    <li data-paso="1"><h3>Crea tu cuenta</h3><p>Con tu correo o con Google. Tus 14 días de prueba empiezan solos.</p></li>
+                    <li data-paso="2"><h3>Registra tu día</h3><p>Anota ventas y gastos, y mueve tu almacén con entradas y salidas.</p></li>
+                    <li data-paso="3"><h3>Mira tu ganancia</h3><p>Resumen claro de lo que entra, lo que sale y lo que te queda.</p></li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="precio" class="portada portada-seccion" aria-labelledby="tituloPrecio">
+            <h2 id="tituloPrecio" class="portada-h2" data-aparece>Un precio simple.</h2>
+            <div class="caja-precio" data-aparece style="--i:1">
+                <p class="precio-grande" data-precio>9 USD al mes</p>
+                <ul class="lista-precio">
+                    <li>14 días de prueba gratis, sin tarjeta</li>
+                    <li>Finanzas y almacén incluidos</li>
+                    <li>Cancela cuando quieras</li>
+                    <li>Exporta o borra tus datos en cualquier momento</li>
+                </ul>
+                <button type="button" class="btn-cta" data-cta="crear">Empezar gratis</button>
+            </div>
+        </section>
+
+        <section id="datos" class="portada portada-seccion" aria-labelledby="tituloDatos">
+            <h2 id="tituloDatos" class="portada-h2" data-aparece>Tus datos son tuyos.</h2>
+            <p class="portada-sub" data-aparece style="--i:1">Cada cuenta ve solo su información. Puedes descargarla o eliminarla cuando quieras desde tu panel. Consulta la <a href="privacidad.html">política de privacidad</a>.</p>
+        </section>
+
+        <section id="preguntas" class="portada portada-seccion" aria-labelledby="tituloPreguntas">
+            <h2 id="tituloPreguntas" class="portada-h2" data-aparece>Preguntas frecuentes.</h2>
+            <div class="faq" data-aparece style="--i:1">
+                <details><summary>¿Necesito tarjeta para probar?</summary><p>No. Creas tu cuenta y tienes 14 días para usar todo.</p></details>
+                <details><summary>¿Qué pasa cuando termina la prueba?</summary><p>Puedes seguir viendo y descargando tus datos. Para seguir registrando necesitas suscribirte.</p></details>
+                <details><summary>¿Puedo cancelar?</summary><p>Sí, cuando quieras desde tu cuenta. Conservas el acceso hasta el final del periodo pagado.</p></details>
+                <details><summary>¿Puedo usar otra moneda que no sea el sol?</summary><p>Sí. Cada operación se guarda con la moneda que elijas.</p></details>
+                <details><summary>¿Dónde se pagan las suscripciones?</summary><p>Con Polar, un procesador de pagos seguro. GananciaPro no guarda los datos de tu tarjeta.</p></details>
+            </div>
+        </section>
         </div>
 
         <section id="acceso" class="acceso" aria-labelledby="tituloAcceso">
@@ -181,6 +268,7 @@
         <nav id="navApp" class="nav-app" aria-label="Secciones de la aplicación">
             <button type="button" id="navFinanzas" role="tab" aria-selected="true">Finanzas</button>
             <button type="button" id="navAlmacen" role="tab" aria-selected="false">Almacén</button>
+            <button type="button" id="navPanel" role="tab" aria-selected="false">Panel</button>
         </nav>
 
         <section class="bienvenida">
@@ -495,11 +583,54 @@
             <h2 id="tituloCuenta">Tu cuenta y tus datos</h2>
             <p class="nota">Puedes descargar una copia de tus datos o eliminar tu cuenta de forma definitiva. Más información en la <a href="privacidad.html">Política de privacidad</a>.</p>
             <div class="acciones">
+                <button type="button" id="btnGestionar" class="btn-secundario" hidden>Gestionar suscripción</button>
                 <button type="button" id="btnExportarCuenta" class="btn-secundario">Descargar mis datos (CSV)</button>
                 <button type="button" id="btnEliminarCuenta" class="btn-peligro">Eliminar mi cuenta y mis datos</button>
             </div>
             <p id="mensajeCuenta" class="mensaje-acceso" role="status" aria-live="polite"></p>
         </section>
+        <section id="tablero" class="tablero" aria-labelledby="tituloTablero">
+            <div class="tablero-cab">
+                <div>
+                    <h2 id="tituloTablero">Panel</h2>
+                    <p class="nota">Cómo va tu negocio en el mes elegido.</p>
+                </div>
+                <div class="tablero-filtros">
+                    <label>Mes <input type="month" id="tabMes"></label>
+                    <label>Moneda <select id="tabMoneda"></select></label>
+                </div>
+            </div>
+            <p id="tabMensaje" class="nota" role="status"></p>
+
+            <div class="kpis">
+                <article class="kpi"><p class="kpi-etiqueta">Ingresos</p><p class="kpi-valor" id="kpiIngresos">–</p><p class="kpi-delta" id="kpiIngresosD"></p></article>
+                <article class="kpi"><p class="kpi-etiqueta">Gastos</p><p class="kpi-valor" id="kpiGastos">–</p><p class="kpi-delta" id="kpiGastosD"></p></article>
+                <article class="kpi"><p class="kpi-etiqueta">Ganancia</p><p class="kpi-valor" id="kpiGanancia">–</p><p class="kpi-delta" id="kpiMargen"></p></article>
+                <article class="kpi"><p class="kpi-etiqueta">Operaciones</p><p class="kpi-valor" id="kpiOps">–</p><p class="kpi-delta" id="kpiOpsD"></p></article>
+            </div>
+
+            <div class="tablero-grid">
+                <article class="tablero-tarjeta tablero-ancha">
+                    <h3>Ingresos y gastos por día</h3>
+                    <p class="leyenda"><span class="punto punto-ing"></span>Ingresos <span class="punto punto-gas"></span>Gastos</p>
+                    <svg id="grafLinea" class="grafico" viewBox="0 0 640 240" role="img" aria-label="Gráfico de ingresos y gastos por día"></svg>
+                    <p id="grafLectura" class="lectura" aria-live="polite">Pasa el cursor por el gráfico para ver cada día.</p>
+                </article>
+                <article class="tablero-tarjeta">
+                    <h3>Mayores gastos</h3>
+                    <ul id="topGastos" class="barras"></ul>
+                </article>
+                <article class="tablero-tarjeta">
+                    <h3>Mayores ingresos</h3>
+                    <ul id="topIngresos" class="barras"></ul>
+                </article>
+                <article class="tablero-tarjeta tablero-ancha">
+                    <h3>Stock bajo en el almacén</h3>
+                    <ul id="stockBajo" class="barras"></ul>
+                </article>
+            </div>
+        </section>
+
         <section id="almacen" class="almacen" aria-labelledby="tituloAlmacen">
             <div class="almacen-cab">
                 <div>
@@ -706,5 +837,7 @@
     <script src="js/app.js"></script>
     <script src="js/acceso.js"></script>
     <script src="js/almacen.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/portada.js"></script>
 </body>
 </html>
