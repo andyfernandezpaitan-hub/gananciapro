@@ -18,5 +18,8 @@ window.GANANCIAPRO_CONFIG = Object.freeze({
     CHECKOUT_URL: "",
 
     /* Pon true cuando la función crear-pago y Polar estén listos: el botón "Suscribirme" abre el pago */
-    PAGOS_ACTIVOS: true
+    PAGOS_ACTIVOS: true,
+
+    /* Precio que se muestra en la portada pública (el cobro real lo define Polar) */
+    PRECIO_LANDING: "9 USD al mes"
 });
