@@ -186,6 +186,35 @@
 
     const gruposAbiertos = new Set();
 
+    /* La ropa siempre se muestra por tallas (desplegable), aunque tenga una sola */
+    function productoEsRopa(producto) {
+        return Boolean(producto.categoria_id) &&
+            /\bropa\b/.test(sinTildes(nombreCategoria(producto.categoria_id)));
+    }
+
+    const CATEGORIAS_SUGERIDAS = ["Ropa", "Zapatos", "Accesorios"];
+
+    function pintarChipsCategoria() {
+        const cont = $("chipsCategoria");
+        const nombres = categorias.map((c) => c.nombre);
+        for (const sugerida of CATEGORIAS_SUGERIDAS) {
+            if (!nombres.some((n) => sinTildes(n).trim() === sinTildes(sugerida))) nombres.push(sugerida);
+        }
+        cont.replaceChildren(...nombres.map((nombre) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "chip-cat chip-elegir";
+            chip.textContent = nombre;
+            chip.style.setProperty("--h", String(tonoCategoria(nombre)));
+            chip.addEventListener("click", () => {
+                $("prodCategoria").value = nombre;
+                actualizarModoTallas();
+                $("prodCategoria").dispatchEvent(new Event("input"));
+            });
+            return chip;
+        }));
+    }
+
     /* Orden natural de tallas: números de menor a mayor (2, 4, 6… 16) y luego letras (XS, S, M, L, XL…) */
     const ORDEN_LETRAS = ["xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"];
 
@@ -329,7 +358,7 @@
         }
 
         for (const [clave, items] of grupos) {
-            if (items.length === 1) {
+            if (items.length === 1 && !productoEsRopa(items[0])) {
                 lista.appendChild(filaProducto(items[0], false));
                 continue;
             }
@@ -356,7 +385,7 @@
             nombre.textContent = items[0].nombre;
             const resumen = document.createElement("span");
             const agotadas = estados.filter((e) => e === "agotado").length;
-            resumen.textContent = `${items.length} variantes` +
+            resumen.textContent = `${items.length} ${items.length === 1 ? "variante" : "variantes"}` +
                 (agotadas ? ` · ${agotadas} agotada${agotadas === 1 ? "" : "s"}` : "");
             textos.append(nombre, resumen);
 
@@ -652,6 +681,7 @@
         $("campoCantidadInicial").hidden = Boolean(producto);
         $("prodCantidad").value = "";
         $("filasTallas").replaceChildren();
+        pintarChipsCategoria();
         actualizarModoTallas();
         $("dlgProducto").showModal();
         $("prodNombre").focus();

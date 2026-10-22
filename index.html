@@ -742,7 +742,8 @@
                     <label for="prodCategoria">Categoría</label>
                     <input type="text" id="prodCategoria" list="listaCategorias" maxlength="80" autocomplete="off" placeholder="Ej.: Ropa">
                     <datalist id="listaCategorias"></datalist>
-                    <p>Si la categoría no existe, se crea sola.</p>
+                    <div id="chipsCategoria" class="chips-elegir" role="group" aria-label="Elegir categoría"></div>
+                    <p>Toca una categoría o escribe una nueva: si no existe, se crea sola. En <strong>Ropa</strong> cada producto se maneja por tallas.</p>
                 </div>
                 <div class="campo">
                     <label for="prodCodigo">Código (opcional)</label>

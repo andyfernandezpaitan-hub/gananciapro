@@ -2891,3 +2891,39 @@ dialog {
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
 }
+
+
+/* Categorías para elegir con un toque */
+.chips-elegir {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+}
+
+.chip-elegir {
+    margin: 0;
+    min-height: 36px;
+    padding: 4px 14px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease;
+}
+
+.chip-elegir:hover {
+    transform: translateY(-1px);
+    border-color: currentColor;
+}
+
+.chip-elegir:active {
+    transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chip-elegir {
+        transition: none;
+    }
+}
