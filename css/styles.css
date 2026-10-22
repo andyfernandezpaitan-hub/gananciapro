@@ -2882,6 +2882,16 @@ body[data-vista="panel"] #migracion {
     display: none;
 }
 
+.select-chico {
+    min-height: 36px;
+    padding: 4px 8px;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm, 8px);
+    background: var(--superficie, transparent);
+    color: inherit;
+    font: inherit;
+}
+
 .fila-talla input {
     min-height: 40px;
     padding: 6px 10px;

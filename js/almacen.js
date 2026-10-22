@@ -8,7 +8,7 @@
 
     if (!Nube || !$("almacen")) return;
 
-    const STOCK_BAJO = 3;
+    const STOCK_BAJO = 5; // igual que el Panel
     const PASO_FILAS = 50;
 
     const TIPOS = {
@@ -187,13 +187,27 @@
     const gruposAbiertos = new Set();
 
     /* La ropa siempre se muestra por tallas (desplegable), aunque tenga una sola */
+    // Categorías que se manejan por tallas (ropa, ropa interior, calzado…)
+    const RE_TALLAS = /\b(ropa|zapatos?|calzado|zapatillas?|sandalias?|botas?|pantys?|lenceria|interior|vestidos?|moda|infantil|bebe)\b/;
+
     function productoEsRopa(producto) {
         return Boolean(producto.categoria_id) &&
-            /\bropa\b/.test(sinTildes(nombreCategoria(producto.categoria_id)));
+            RE_TALLAS.test(sinTildes(nombreCategoria(producto.categoria_id)));
+    }
+
+    /* Normaliza para no duplicar variantes: «negro»/«NEGRO» → «Negro»; «xl» → «XL» */
+    function normalizarColor(texto) {
+        const t = texto.trim().replace(/\s+/g, " ");
+        return t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : "";
+    }
+
+    function normalizarTalla(texto) {
+        const t = texto.trim().replace(/\s+/g, " ");
+        return /^[a-z]{1,4}$/i.test(t) ? t.toUpperCase() : t.replace(/\b(eu|us|uk)\b/i, (m) => m.toUpperCase());
     }
 
     const CATEGORIAS_SUGERIDAS = [
-        "Ropa", "Zapatos", "Accesorios", "Bolsos", "Joyería", "Belleza", "Hogar", "Juguetes",
+        "Ropa", "Ropa interior", "Calzado", "Zapatos", "Accesorios", "Bolsos", "Joyería", "Belleza", "Hogar", "Juguetes",
         "Papelería", "Electrónica", "Alimentos", "Bebidas", "Limpieza", "Herramientas", "Repuestos"
     ];
 
@@ -829,7 +843,7 @@
 
     /* ----- Ropa: varias tallas de una vez ----- */
     function esRopa() {
-        return /\bropa\b/.test(sinTildes($("prodCategoria").value));
+        return RE_TALLAS.test(sinTildes($("prodCategoria").value));
     }
 
     function agregarFilaTalla(talla = "", cantidad = "") {
@@ -892,6 +906,14 @@
     $("btnMasTalla").addEventListener("click", () => agregarFilaTalla().focus());
     $("btnTallasNumeros").addEventListener("click", () => agregarTallas(["2", "4", "6", "8", "10", "12", "14", "16"]));
     $("btnTallasLetras").addEventListener("click", () => agregarTallas(["S", "M", "L", "XL"]));
+    $("btnTallasExtra").addEventListener("click", () => agregarTallas(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]));
+    $("btnTallaUnica").addEventListener("click", () => agregarTallas(["Única"]));
+    $("btnTallasInfantil").addEventListener("click", () => agregarTallas(["3 m", "6 m", "9 m", "12 m", "18 m", "24 m"]));
+    $("btnTallasCalzado").addEventListener("click", () => {
+        const sistema = $("sistemaTalla").value;
+        const rango = sistema === "US" ? [5, 6, 7, 8, 9, 10, 11, 12] : sistema === "UK" ? [3, 4, 5, 6, 7, 8, 9, 10] : [35, 36, 37, 38, 39, 40, 41, 42, 43, 44];
+        agregarTallas(rango.map((n) => `${n} ${sistema}`));
+    });
 
     async function guardarVariasTallas(nombre) {
         const aviso = $("mensajeProducto");
@@ -899,7 +921,7 @@
 
         const filas = [...$("filasTallas").children]
             .map((f) => ({
-                talla: f.querySelector("[data-t]").value.trim(),
+                talla: normalizarTalla(f.querySelector("[data-t]").value),
                 texto: f.querySelector("[data-c]").value.trim()
             }))
             .filter((f) => f.talla || f.texto);
@@ -925,7 +947,7 @@
 
         try {
             const categoriaId = await categoriaPorNombre($("prodCategoria").value);
-            const color = $("prodColor").value.trim();
+            const color = normalizarColor($("prodColor").value);
             const codigoBase = $("prodCodigo").value.trim();
             const rutaFoto = fotoNueva ? await Nube.subirFoto(fotoNueva) : null;
 
@@ -1036,8 +1058,8 @@
             const datos = {
                 categoria_id: categoriaId,
                 nombre,
-                talla: $("prodTalla").value.trim(),
-                color: $("prodColor").value.trim(),
+                talla: normalizarTalla($("prodTalla").value),
+                color: normalizarColor($("prodColor").value),
                 codigo: $("prodCodigo").value.trim() || null
             };
 

@@ -728,7 +728,11 @@
                     </div>
                     <div class="campo">
                         <label for="prodColor">Color</label>
-                        <input type="text" id="prodColor" maxlength="60">
+                        <input type="text" id="prodColor" maxlength="60" list="listaColores" autocomplete="off">
+                        <datalist id="listaColores">
+                            <option value="Negro"><option value="Blanco"><option value="Gris"><option value="Azul"><option value="Rojo"><option value="Verde">
+                            <option value="Amarillo"><option value="Rosado"><option value="Morado"><option value="Naranja"><option value="Beige"><option value="Marrón"><option value="Celeste"><option value="Dorado"><option value="Plateado">
+                        </datalist>
                     </div>
                 </div>
                 <div class="campo" id="bloqueTallas" hidden>
@@ -738,6 +742,11 @@
                         <button type="button" id="btnMasTalla" class="btn-secundario btn-chico">+ Agregar talla</button>
                         <button type="button" id="btnTallasNumeros" class="btn-secundario btn-chico">Tallas 2 a 16</button>
                         <button type="button" id="btnTallasLetras" class="btn-secundario btn-chico">S · M · L · XL</button>
+                        <button type="button" id="btnTallasExtra" class="btn-secundario btn-chico">XS a XXXL</button>
+                        <button type="button" id="btnTallaUnica" class="btn-secundario btn-chico">Talla única</button>
+                        <button type="button" id="btnTallasInfantil" class="btn-secundario btn-chico">Bebé / infantil</button>
+                        <select id="sistemaTalla" class="select-chico" aria-label="Sistema de tallas de calzado"><option value="EU">EU</option><option value="US">US</option><option value="UK">UK</option></select>
+                        <button type="button" id="btnTallasCalzado" class="btn-secundario btn-chico">Calzado</button>
                     </div>
                     <p>Cada talla se guarda como una variante de este producto y se despliega en la lista. El color es el mismo para todas.</p>
                 </div>
