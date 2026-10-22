@@ -680,6 +680,7 @@
         $("movProducto").textContent =
             `${producto.nombre}${producto.talla ? " · Talla " + producto.talla : ""}${producto.color ? " · " + producto.color : ""} — stock actual: ${entero.format(producto.stock)}`;
         $("movTipo").value = "entrada";
+        $("btnGuardarMov").textContent = "Registrar";
         $("movCantidad").value = "";
         $("movNota").value = "";
         $("mensajeMovimiento").textContent = "";
@@ -689,11 +690,43 @@
 
     $("btnCancelarMov").addEventListener("click", () => $("dlgMovimiento").close());
 
+    $("movTipo").addEventListener("change", () => {
+        $("btnGuardarMov").textContent = $("movTipo").value === "venta" ? "Continuar con la venta" : "Registrar";
+    });
+
     $("formMovimiento").addEventListener("submit", async (evento) => {
         evento.preventDefault();
 
         const tipo = $("movTipo").value;
         const cantidad = Number($("movCantidad").value);
+
+        /* Venta: se continúa en la ventana de venta, que registra el ingreso en Finanzas */
+        if (tipo === "venta") {
+            const aviso = $("mensajeMovimiento");
+            const elegido = productoEnMovimiento;
+
+            if (!Number.isInteger(cantidad) || cantidad < 1) {
+                aviso.textContent = "Indica una cantidad entera mayor que cero.";
+                aviso.dataset.tipo = "error";
+                return;
+            }
+
+            if (!elegido || cantidad > elegido.stock) {
+                aviso.textContent = `Solo hay ${entero.format(elegido ? elegido.stock : 0)} en stock.`;
+                aviso.dataset.tipo = "error";
+                return;
+            }
+
+            $("dlgMovimiento").close();
+            abrirVenta();
+
+            const primera = $("ventaLineas").firstElementChild;
+            if (primera) {
+                primera.querySelector("select").value = elegido.id;
+                primera.querySelector("input").value = String(cantidad);
+            }
+            return;
+        }
 
         if (!TIPOS[tipo] || !Number.isInteger(cantidad) || cantidad < 1) {
             $("mensajeMovimiento").textContent = "Indica una cantidad entera mayor que cero.";
