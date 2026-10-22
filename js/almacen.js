@@ -951,7 +951,31 @@
             const codigoBase = $("prodCodigo").value.trim();
             const rutaFoto = fotoNueva ? await Nube.subirFoto(fotoNueva) : null;
 
-            for (const f of filas) {
+            // Camino principal: todo o nada en el servidor (sql/07)
+            let atomico = false;
+            try {
+                const lista = await Nube.crearProductoConTallas({
+                    nombre,
+                    categoria_id: categoriaId,
+                    color,
+                    codigo_base: codigoBase,
+                    imagen_path: rutaFoto,
+                    tallas: filas.map((f) => ({ talla: f.talla, cantidad: f.cantidad }))
+                });
+                productos = [...productos, ...lista.map((p) => ({ ...p, stock: Number(p.stock) }))];
+                creadas = lista.length;
+                atomico = true;
+            } catch (e) {
+                // Si la función aún no está instalada en Supabase, se usa el método anterior
+                if (!/almacen_crear_producto_con_tallas|schema cache|does not exist/i.test(e.message || "")) {
+                    if (rutaFoto) Nube.borrarFoto(rutaFoto).catch(() => {});
+                    error(e.message);
+                    guardar.disabled = false;
+                    return;
+                }
+            }
+
+            for (const f of atomico ? [] : filas) {
                 try {
                     const creado = await Nube.crearProducto({
                         categoria_id: categoriaId,

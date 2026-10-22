@@ -423,6 +423,21 @@
             return data;
         },
 
+        /* Producto con varias tallas, todo o nada (sql/07). Devuelve la lista creada. */
+        async crearProductoConTallas(datos) {
+            const { data } = comprobar(
+                await cliente.rpc("almacen_crear_producto_con_tallas", {
+                    p_nombre: datos.nombre,
+                    p_categoria_id: datos.categoria_id || null,
+                    p_color: datos.color || "",
+                    p_codigo_base: datos.codigo_base || null,
+                    p_imagen_path: datos.imagen_path || null,
+                    p_tallas: datos.tallas
+                })
+            );
+            return data;
+        },
+
         async actualizarProducto(id, cambios) {
             const { data } = comprobar(
                 await cliente.from("almacen_productos").update(cambios).eq("id", id).select(columnasProducto()).single()
