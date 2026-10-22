@@ -2125,11 +2125,16 @@ body:not([data-sesion="no"]) .nav-portada {
     }
 
     .escena.escena-activa .pasos-portada {
+        width: min(640px, 100%);
         max-width: 640px;
         margin: 0 auto;
         grid-template-columns: 1fr;
         position: relative;
-        min-height: 140px;
+        min-height: 170px;
+    }
+
+    .escena.escena-activa .pasos-portada li {
+        text-align: center;
     }
 
     .escena.escena-activa .pasos-portada li {
