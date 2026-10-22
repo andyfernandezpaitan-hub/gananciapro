@@ -3565,3 +3565,93 @@ button.miniatura:focus-visible {
 :root[data-theme="dark"] .segmento button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.1); }
 :root[data-theme="dark"] .graf-tip { background: #1d1712; }
 :root[data-theme="dark"] .grafico .barra-ing { filter: drop-shadow(0 0 4px rgba(74, 222, 158, 0.35)); }
+
+/* ===== Libro de Reclamaciones y pie legal ===== */
+.rec-proveedor,
+.rec-constancia {
+    margin: var(--sp-4) 0;
+    padding: var(--sp-4);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--surface);
+}
+
+.rec-form h2 {
+    margin-top: var(--sp-5);
+}
+
+.rec-form textarea {
+    width: 100%;
+    font: inherit;
+    resize: vertical;
+}
+
+.rec-tipo {
+    display: grid;
+    gap: var(--sp-2);
+    margin: 0 0 var(--sp-3);
+    padding: var(--sp-3);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+.rec-tipo label {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: flex-start;
+}
+
+.rec-constancia dl {
+    display: grid;
+    grid-template-columns: minmax(120px, 200px) 1fr;
+    gap: var(--sp-2) var(--sp-4);
+    margin: 0 0 var(--sp-4);
+}
+
+.rec-constancia dt {
+    color: var(--texto-suave);
+    font-weight: 600;
+}
+
+.rec-constancia dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.rec-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+}
+
+.rec-acciones a.btn-cta {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.precio-nota {
+    margin: var(--sp-3) 0 0;
+    font-size: var(--fs-xs);
+    color: var(--texto-suave);
+}
+
+.precio-nota a {
+    color: inherit;
+}
+
+@media print {
+    .encabezado,
+    footer,
+    .rec-acciones,
+    .rec-form,
+    .rec-proveedor + .rec-form {
+        display: none;
+    }
+}
+
+@media (max-width: 520px) {
+    .rec-constancia dl {
+        grid-template-columns: 1fr;
+    }
+}

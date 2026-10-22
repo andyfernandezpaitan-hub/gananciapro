@@ -7,7 +7,7 @@
 window.GANANCIAPRO_CONFIG = Object.freeze({
     SUPABASE_URL: "https://ckipjthrubmhvwphkhyf.supabase.co",
     SUPABASE_CLAVE_PUBLICA: "sb_publishable_fOVtl4aovGr8zg2TBAPiUA_swtuMq9z",
-    VERSION_POLITICA: "2026-10",
+    VERSION_POLITICA: "2026-10-21",
 
     /* Pon true SOLO cuando Google esté configurado en Supabase y la página esté publicada */
     GOOGLE_ACTIVO: true,

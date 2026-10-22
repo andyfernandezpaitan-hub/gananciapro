@@ -99,7 +99,7 @@
         "Cargando…": "Loading…", "Abriendo Google…": "Opening Google…", "Creando tu cuenta…": "Creating your account…",
         "Tu cuenta y tus datos": "Your account and data",
         "Puedes descargar una copia de tus datos o eliminar tu cuenta de forma definitiva. Más información en la": "You can download a copy of your data or permanently delete your account. More information in the",
-        "Descargar mis datos (CSV)": "Download my data (CSV)", "Eliminar mi cuenta y mis datos": "Delete my account and data",
+        "Descargar mis datos": "Download my data", "Eliminar mi cuenta y mis datos": "Delete my account and data",
         "Gestionar suscripción": "Manage subscription", "Suscribirme (próximamente)": "Subscribe (coming soon)", "Suscribirme": "Subscribe",
         "Si no te suscribes,": "If you don't subscribe,", "tus datos siguen siendo tuyos": "your data is still yours",
         ": puedes verlos, descargarlos o eliminar tu cuenta cuando quieras.": ": you can view them, download them or delete your account whenever you want.",
@@ -216,8 +216,9 @@
         "Revisa tu bandeja (y la carpeta de spam) y luego inicia sesión.": "Check your inbox (and the spam folder) and then log in.",
         "Si el correo está registrado, recibirás un enlace para crear una nueva contraseña.": "If the email is registered, you will receive a link to create a new password.",
         "¿Quieres subirlas a tu cuenta? Los datos de este navegador no se borran.": "Do you want to upload them to your account? The data in this browser is not deleted.",
-        "Esto elimina tu cuenta y TODAS tus operaciones de forma permanente.": "This deletes your account and ALL your operations permanently.",
+        "Esto elimina tu cuenta y TODOS tus datos (operaciones, almacén y fotos) de forma permanente.": "This deletes your account and ALL your data (operations, warehouse and photos) permanently.",
         "No se puede deshacer.": "This cannot be undone.",
+        "Tienes una suscripción activa. Cancélala primero en «Gestionar suscripción» y luego elimina tu cuenta.": "You have an active subscription. Cancel it first in “Manage subscription” and then delete your account.",
         "Si quieres conservar una copia, cancela y usa «Descargar mis datos» primero.": "If you want to keep a copy, cancel and use “Download my data” first.",
         "Para confirmar, escribe ELIMINAR:": "To confirm, type DELETE:",
         "Tu cuenta y tus datos fueron eliminados.": "Your account and data were deleted.",
@@ -246,6 +247,8 @@
         "Activar modo claro": "Switch to light mode", "Activar modo oscuro": "Switch to dark mode", "Modo claro": "Light mode", "Modo oscuro": "Dark mode",
         "Cambiar entre modo claro y oscuro": "Switch between light and dark mode",
         "Secciones": "Sections", "Secciones de la aplicación": "App sections",
+        "El precio final, con los impuestos de tu país, se te muestra antes de pagar.": "The final price, including taxes for your country, is shown before you pay.",
+        "Condiciones de la suscripción": "Subscription terms", "Libro de Reclamaciones": "Complaints Book",
         "Mostrando": "Showing"
     };
 

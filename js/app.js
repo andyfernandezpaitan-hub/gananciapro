@@ -1,3 +1,4 @@
+
 "use strict";
 
 const CLAVE_DATOS = "gananciapro_operaciones_v1";
@@ -647,9 +648,7 @@ botonExportarCSV.addEventListener("click", exportarCSV);
 
 const botonExportarCuenta = document.getElementById("btnExportarCuenta");
 
-if (botonExportarCuenta) {
-    botonExportarCuenta.addEventListener("click", exportarCSV);
-}
+/* «Descargar mis datos» lo maneja acceso.js (incluye también el almacén) */
 
 function analizarLineaCSV(linea, separador = ";") {
     const columnas = [];

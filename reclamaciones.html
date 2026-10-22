@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://ckipjthrubmhvwphkhyf.supabase.co; font-src 'self'; connect-src 'self' https://ckipjthrubmhvwphkhyf.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1020">
+    <meta name="color-scheme" content="light dark">
+    <title>Libro de Reclamaciones | GananciaPro</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/tema.js"></script>
+</head>
+<body>
+    <header class="encabezado">
+        <div class="marca">
+            <div class="logo">G</div>
+            <div>
+                <h1>GananciaPro</h1>
+                <p>Control inteligente de tu negocio</p>
+            </div>
+        </div>
+        <button id="btnTema" class="btn-tema" type="button" aria-label="Cambiar entre modo claro y oscuro">&#9790;</button>
+    </header>
+
+    <main class="legal">
+        <h1>Libro de Reclamaciones</h1>
+        <p class="nota">Conforme al Código de Protección y Defensa del Consumidor (Ley 29571).</p>
+
+        <section class="rec-proveedor" aria-labelledby="recProv">
+            <h2 id="recProv">Datos del proveedor</h2>
+            <p>Andy Fernandez Paitan (persona natural) · DNI 60379954<br>Mariana Mendiguren 153, Carabayllo, Lima, Perú<br>Servicio: GananciaPro (aplicación web de finanzas y almacén)<br>Correo: <a href="mailto:paitan-andy@hotmail.com">paitan-andy@hotmail.com</a></p>
+        </section>
+
+        <form id="formReclamo" class="rec-form" novalidate autocomplete="on">
+            <h2>1. Tus datos</h2>
+            <div class="campo"><label for="recNombre">Nombre completo</label><input id="recNombre" name="nombre" type="text" maxlength="120" required autocomplete="name"></div>
+            <div class="campo-doble">
+                <div class="campo"><label for="recDoc">DNI o carné de extranjería</label><input id="recDoc" name="doc" type="text" maxlength="12" inputmode="numeric" required></div>
+                <div class="campo"><label for="recTel">Teléfono</label><input id="recTel" name="tel" type="tel" maxlength="20" autocomplete="tel"></div>
+            </div>
+            <div class="campo"><label for="recDom">Domicilio</label><input id="recDom" name="dom" type="text" maxlength="160" required autocomplete="street-address"></div>
+            <div class="campo"><label for="recCorreo">Correo electrónico</label><input id="recCorreo" name="correo" type="email" maxlength="120" required autocomplete="email"></div>
+
+            <h2>2. Servicio contratado</h2>
+            <div class="campo-doble">
+                <div class="campo"><label for="recMonto">Monto reclamado (opcional)</label><input id="recMonto" name="monto" type="text" maxlength="30" placeholder="Ej.: 9 USD"></div>
+                <div class="campo"><label for="recServicio">Servicio</label><input id="recServicio" name="servicio" type="text" maxlength="80" value="Suscripción a GananciaPro" required></div>
+            </div>
+
+            <h2>3. Detalle</h2>
+            <fieldset class="rec-tipo">
+                <legend>Tipo</legend>
+                <label><input type="radio" name="tipo" value="Reclamo" checked> <strong>Reclamo:</strong> disconformidad con el servicio contratado.</label>
+                <label><input type="radio" name="tipo" value="Queja"> <strong>Queja:</strong> malestar con la atención, no relacionado con el servicio.</label>
+            </fieldset>
+            <div class="campo"><label for="recDetalle">Detalle de lo ocurrido</label><textarea id="recDetalle" name="detalle" rows="5" maxlength="1500" required></textarea></div>
+            <div class="campo"><label for="recPedido">Qué pides (pedido del consumidor)</label><textarea id="recPedido" name="pedido" rows="3" maxlength="800" required></textarea></div>
+
+            <p id="recMensaje" class="mensaje" role="alert" aria-live="polite"></p>
+            <button type="submit" class="btn-cta">Generar constancia</button>
+            <p class="nota">Este formulario no guarda nada en nuestros servidores. Generas tu constancia y la envías desde tu correo. La formulación del reclamo no impide acudir a otras vías de solución de controversias ni al INDECOPI.</p>
+        </form>
+
+        <section id="recConstancia" class="rec-constancia" hidden aria-labelledby="recConsTit">
+            <h2 id="recConsTit">Constancia de reclamación</h2>
+            <dl id="recDatos"></dl>
+            <p>El proveedor responderá dentro del plazo que establece la ley. Las acciones adoptadas por el proveedor se informarán en la respuesta.</p>
+            <div class="rec-acciones">
+                <a id="recEnviar" class="btn-cta" href="#">Enviar por correo</a>
+                <button type="button" id="recImprimir" class="btn-secundario">Imprimir o guardar PDF</button>
+                <button type="button" id="recNuevo" class="btn-secundario">Nuevo reclamo</button>
+            </div>
+        </section>
+
+        <p><a href="index.html">&larr; Volver a GananciaPro</a></p>
+    </main>
+
+    <script src="js/reclamaciones.js"></script>
+
+    <footer>
+        <p>&copy; 2026 GananciaPro &middot; <a href="privacidad.html">Privacidad</a> &middot; <a href="terminos.html">T&eacute;rminos</a> &middot; <a href="reclamaciones.html">Libro de Reclamaciones</a></p>
+    </footer>
+</body>
+</html>

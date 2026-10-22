@@ -482,15 +482,38 @@
         };
     }
 
+    /* ----- Descargar todos mis datos (derecho de portabilidad): operaciones, almacén, fotos no incluidas ----- */
+    $("btnExportarCuenta").addEventListener("click", async () => {
+        const boton = $("btnExportarCuenta");
+        ocupado(boton, true);
+
+        try {
+            const datos = await Nube.exportarTodo();
+            const archivo = new Blob([JSON.stringify(datos, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(archivo);
+            const enlace = document.createElement("a");
+            enlace.href = url;
+            enlace.download = "GananciaPro-mis-datos.json";
+            document.body.appendChild(enlace);
+            enlace.click();
+            enlace.remove();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            $("mensajeCuenta").textContent = `No se pudo descargar: ${error.message}`;
+        } finally {
+            ocupado(boton, false);
+        }
+    });
+
     /* ----- Eliminar cuenta (derecho de supresión) ----- */
     $("btnEliminarCuenta").addEventListener("click", async () => {
         const respuesta = window.prompt(
-            "Esto elimina tu cuenta y TODAS tus operaciones de forma permanente. " +
+            "Esto elimina tu cuenta y TODOS tus datos (operaciones, almacén y fotos) de forma permanente. " +
             "No se puede deshacer.\n\nSi quieres conservar una copia, cancela y usa " +
             "«Descargar mis datos» primero.\n\nPara confirmar, escribe ELIMINAR:"
         );
 
-        if (respuesta !== "ELIMINAR") return;
+        if (!["ELIMINAR", "DELETE"].includes(String(respuesta || "").trim().toUpperCase())) return;
 
         const boton = $("btnEliminarCuenta");
         ocupado(boton, true);

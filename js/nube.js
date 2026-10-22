@@ -538,6 +538,32 @@
 
         /* ----- Derecho de eliminación ----- */
         async eliminarCuenta() {
+            const { data: sesion } = comprobar(await cliente.auth.getSession());
+            const usuario = sesion.session && sesion.session.user && sesion.session.user.id;
+
+            // No se elimina una cuenta que todavía paga una suscripción (sql/09 lo vuelve a comprobar)
+            try {
+                const { data: sus } = await cliente.from("suscripciones").select("estado").maybeSingle();
+                if (sus && sus.estado === "activa") {
+                    throw new Error("Tienes una suscripción activa. Cancélala primero en «Gestionar suscripción» y luego elimina tu cuenta.");
+                }
+            } catch (e) {
+                if (/suscripci/i.test(e.message || "")) throw e;
+            }
+
+            // Las fotos están en el almacenamiento y no se borran solas con la cuenta
+            if (usuario) {
+                try {
+                    for (let vuelta = 0; vuelta < 50; vuelta++) {
+                        const { data } = await cliente.storage.from("productos").list(usuario, { limit: 100 });
+                        if (!data || !data.length) break;
+                        await cliente.storage.from("productos").remove(data.map((f) => `${usuario}/${f.name}`));
+                    }
+                } catch (e) {
+                    /* Si el almacenamiento de fotos no existe, no hay nada que borrar */
+                }
+            }
+
             comprobar(await cliente.rpc("eliminar_mi_cuenta"));
 
             try {
@@ -545,6 +571,30 @@
             } catch (error) {
                 /* La cuenta ya no existe; se ignora */
             }
+        },
+
+        /* Todos los datos del usuario, para descargarlos (derecho de portabilidad) */
+        async exportarTodo() {
+            const tablas = ["operaciones", "almacen_categorias", "almacen_productos", "almacen_ventas",
+                "almacen_venta_detalles", "almacen_movimientos", "consentimientos", "suscripciones"];
+            const salida = { generado_en: new Date().toISOString(), version: 1 };
+
+            for (const tabla of tablas) {
+                const filas = [];
+                try {
+                    for (let desde = 0; desde < 100000; desde += 1000) {
+                        const { data, error } = await cliente.from(tabla).select("*").range(desde, desde + 999);
+                        if (error) throw error;
+                        filas.push(...data);
+                        if (data.length < 1000) break;
+                    }
+                } catch (e) {
+                    /* Tabla no instalada o sin datos: se deja vacía */
+                }
+                salida[tabla] = filas;
+            }
+
+            return salida;
         }
     };
 
