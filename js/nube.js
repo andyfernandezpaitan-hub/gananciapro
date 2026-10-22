@@ -281,6 +281,19 @@
             );
         },
 
+        /* ----- Resumen del Panel calculado en la base de datos (sql/05) ----- */
+        async resumenPanel(mes, moneda) {
+            const { data } = comprobar(
+                await cliente.rpc("resumen_panel", { p_mes: `${mes}-01`, p_moneda: moneda })
+            );
+            return data;
+        },
+
+        async monedasPanel() {
+            const { data } = comprobar(await cliente.rpc("panel_monedas"));
+            return Array.isArray(data) ? data : [];
+        },
+
         /* ----- Operaciones (cada cliente solo ve las suyas: RLS) ----- */
         async listarOperaciones() {
             const todas = [];

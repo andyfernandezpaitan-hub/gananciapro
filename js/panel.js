@@ -11,7 +11,10 @@
     const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let operaciones = [];
     let productos = [];
+    let monedas = [];
+    let usaServidor = false;
     let cargando = false;
+    let pedido = 0;
 
     function moneda(valor, codigo) {
         try {
@@ -66,16 +69,19 @@
     }
 
     /* ----- Gráfico de líneas por día ----- */
-    function dibujarLinea(lista, mes, codigo) {
+    function dibujarLinea(porDia, mes, codigo) {
         const svg = $("grafLinea");
         svg.replaceChildren();
         const [a, m] = mes.split("-").map(Number);
         const dias = new Date(a, m, 0).getDate();
         const ing = new Array(dias).fill(0);
         const gas = new Array(dias).fill(0);
-        for (const o of lista) {
-            const dia = Number(String(o.fecha).slice(8, 10)) - 1;
-            if (dia >= 0 && dia < dias) (o.tipo === "ingreso" ? ing : gas)[dia] += Number(o.importe || 0);
+        for (const f of porDia) {
+            const dia = Number(f.dia) - 1;
+            if (dia >= 0 && dia < dias) {
+                ing[dia] += Number(f.ingresos || 0);
+                gas[dia] += Number(f.gastos || 0);
+            }
         }
 
         const W = 640, H = 240, izq = 46, der = 12, arr = 12, aba = 28;
@@ -168,12 +174,47 @@
         return [...mapa].map(([nombre, valor]) => ({ nombre, valor })).sort((p, q) => q.valor - p.valor).slice(0, 5);
     }
 
+    /* ----- Resumen: lo calcula la base de datos; si aún no está instalada, se calcula aquí ----- */
+    function resumenLocal(mes, codigo) {
+        const lista = del(mes, codigo);
+        const antes = del(mesAnterior(mes), codigo);
+        const dias = new Map();
+        for (const o of lista) {
+            const d = Number(String(o.fecha).slice(8, 10));
+            const f = dias.get(d) || { dia: d, ingresos: 0, gastos: 0 };
+            f[o.tipo === "ingreso" ? "ingresos" : "gastos"] += Number(o.importe || 0);
+            dias.set(d, f);
+        }
+        const resumir = (l) => ({ ingresos: sumar(l, "ingreso"), gastos: sumar(l, "gasto"), operaciones: l.length });
+        return {
+            actual: resumir(lista),
+            previo: resumir(antes),
+            dias: [...dias.values()],
+            top_gastos: top(lista, "gasto"),
+            top_ingresos: top(lista, "ingreso")
+        };
+    }
+
+    async function obtenerResumen(mes, codigo) {
+        if (usaServidor) {
+            try {
+                return await window.Nube.resumenPanel(mes, codigo);
+            } catch (e) {
+                usaServidor = false;
+            }
+        }
+        if (!operaciones.length) {
+            operaciones = await window.Nube.listarOperaciones();
+        }
+        return resumenLocal(mes, codigo);
+    }
+
     /* ----- Pintar todo ----- */
-    function pintar() {
+    async function pintar() {
         const selMes = $("tabMes");
         const selMon = $("tabMoneda");
         const mes = selMes.value || mesActual();
-        const usadas = [...new Set(operaciones.map((o) => o.moneda))].sort();
+        const usadas = monedas.length ? monedas : [...new Set(operaciones.map((o) => o.moneda))].sort();
         const previa = selMon.value;
         selMon.replaceChildren();
         for (const c of (usadas.length ? usadas : ["PEN"])) {
@@ -185,35 +226,43 @@
         selMon.value = usadas.includes(previa) ? previa : selMon.options[0].value;
         const codigo = selMon.value;
 
-        const lista = del(mes, codigo);
-        const antes = del(mesAnterior(mes), codigo);
-        const ingresos = sumar(lista, "ingreso");
-        const gastos = sumar(lista, "gasto");
+        const mio = ++pedido;
+        let datos;
+        try {
+            datos = await obtenerResumen(mes, codigo);
+        } catch (e) {
+            $("tabMensaje").textContent = "No se pudo cargar el panel. Revisa tu conexión e inténtalo de nuevo.";
+            return;
+        }
+        if (mio !== pedido) return;
+
+        const ingresos = Number(datos.actual.ingresos);
+        const gastos = Number(datos.actual.gastos);
+        const cuantas = Number(datos.actual.operaciones);
         const ganancia = ingresos - gastos;
 
         $("kpiIngresos").textContent = moneda(ingresos, codigo);
         $("kpiGastos").textContent = moneda(gastos, codigo);
         $("kpiGanancia").textContent = moneda(ganancia, codigo);
-        $("kpiOps").textContent = String(lista.length);
-        delta($("kpiIngresosD"), ingresos, sumar(antes, "ingreso"), false);
-        delta($("kpiGastosD"), gastos, sumar(antes, "gasto"), true);
-        delta($("kpiOpsD"), lista.length, antes.length, false);
+        $("kpiOps").textContent = String(cuantas);
+        delta($("kpiIngresosD"), ingresos, Number(datos.previo.ingresos), false);
+        delta($("kpiGastosD"), gastos, Number(datos.previo.gastos), true);
+        delta($("kpiOpsD"), cuantas, Number(datos.previo.operaciones), false);
         const margen = $("kpiMargen");
         margen.removeAttribute("data-signo");
         margen.textContent = ingresos > 0 ? "Margen " + ((ganancia / ingresos) * 100).toFixed(0) + "%" : "";
         if (ingresos > 0) margen.setAttribute("data-signo", ganancia >= 0 ? "bien" : "mal");
 
-        dibujarLinea(lista, mes, codigo);
-        barras($("topGastos"), top(lista, "gasto"), (v) => moneda(v, codigo));
-        barras($("topIngresos"), top(lista, "ingreso"), (v) => moneda(v, codigo));
+        dibujarLinea(datos.dias, mes, codigo);
+        barras($("topGastos"), datos.top_gastos.map((f) => ({ nombre: f.nombre || "Sin descripción", valor: Number(f.valor) })), (v) => moneda(v, codigo));
+        barras($("topIngresos"), datos.top_ingresos.map((f) => ({ nombre: f.nombre || "Sin descripción", valor: Number(f.valor) })), (v) => moneda(v, codigo));
         $("topGastos").dataset.tipo = "gasto";
         $("topIngresos").dataset.tipo = "ingreso";
 
         const bajos = productos
             .filter((p) => p.activo !== false && Number(p.stock) <= 5)
             .sort((p, q) => Number(p.stock) - Number(q.stock))
-            .slice(0, 6)
-            .map((p) => ({ nombre: [p.nombre, p.talla, p.color].filter(Boolean).join(" · "), valor: Math.max(Number(p.stock), 0.0001) }));
+            .slice(0, 6);
         const ul = $("stockBajo");
         ul.dataset.tipo = "stock";
         if (!bajos.length) {
@@ -223,10 +272,13 @@
             li.textContent = "Todo en orden: ningún producto con 5 unidades o menos.";
             ul.appendChild(li);
         } else {
-            barras(ul, bajos.map((b) => ({ nombre: b.nombre, valor: 6 - Math.min(5, Math.round(b.valor)) })), () => "")
-            const filas = ul.querySelectorAll(".fila span:last-child");
-            const orig = productos.filter((p) => p.activo !== false && Number(p.stock) <= 5).sort((p, q) => Number(p.stock) - Number(q.stock)).slice(0, 6);
-            filas.forEach((s, i) => { s.textContent = orig[i] ? orig[i].stock + " u." : ""; });
+            barras(ul, bajos.map((p) => ({
+                nombre: [p.nombre, p.talla, p.color].filter(Boolean).join(" · "),
+                valor: 6 - Math.min(5, Math.max(0, Math.round(Number(p.stock))))
+            })), () => "");
+            ul.querySelectorAll(".fila span:last-child").forEach((s, i) => {
+                s.textContent = bajos[i] ? bajos[i].stock + " u." : "";
+            });
         }
     }
 
@@ -236,14 +288,24 @@
         const msg = $("tabMensaje");
         msg.textContent = "Cargando…";
         try {
-            const [ops, prods] = await Promise.all([
-                window.Nube.listarOperaciones(),
-                window.Nube.listarProductos().catch(() => [])
-            ]);
-            operaciones = Array.isArray(ops) ? ops : [];
-            productos = Array.isArray(prods) ? prods : [];
-            msg.textContent = operaciones.length ? "" : "Aún no hay operaciones. Registra la primera en Finanzas.";
-            pintar();
+            operaciones = [];
+            monedas = [];
+            usaServidor = false;
+
+            const prods = window.Nube.listarProductos().catch(() => []);
+            try {
+                monedas = await window.Nube.monedasPanel();
+                usaServidor = true;
+            } catch (e) {
+                /* La función de la base de datos aún no está instalada: se calcula aquí */
+                operaciones = await window.Nube.listarOperaciones();
+            }
+            productos = await prods;
+            if (!Array.isArray(productos)) productos = [];
+
+            const hay = usaServidor ? monedas.length > 0 : operaciones.length > 0;
+            msg.textContent = hay ? "" : "Aún no hay operaciones. Registra la primera en Finanzas.";
+            await pintar();
         } catch (e) {
             msg.textContent = "No se pudo cargar el panel. Revisa tu conexión e inténtalo de nuevo.";
         } finally {

@@ -2687,3 +2687,40 @@ body[data-vista="panel"] #migracion {
     font-weight: 800;
     color: #f7a569;
 }
+
+
+/* Ajustes de la portada (fondo sin bordes cortados y anclas bajo el encabezado) */
+.portada-zona {
+    overflow-x: clip;
+}
+
+.portada-hero {
+    overflow: visible;
+}
+
+.hero-fondo {
+    inset: -80px 0 0;
+}
+
+.mancha {
+    filter: none;
+    opacity: 0.6;
+}
+
+.mancha-1 {
+    background: radial-gradient(circle, var(--ilu-1) 0%, transparent 68%);
+    width: 460px;
+    height: 460px;
+    opacity: 0.38;
+}
+
+.mancha-2 {
+    background: radial-gradient(circle, var(--ilu-6) 0%, transparent 68%);
+    width: 420px;
+    height: 420px;
+    opacity: 0.45;
+}
+
+.portada[id] {
+    scroll-margin-top: 84px;
+}
