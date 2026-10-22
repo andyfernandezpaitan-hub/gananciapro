@@ -195,6 +195,9 @@
         "Todo en orden: ningún producto con 5 unidades o menos.": "All good: no product with 5 units or fewer.",
         "Aún no hay operaciones. Registra la primera en Finanzas.": "No operations yet. Record the first one in Finance.",
         "No se pudo cargar el panel. Revisa tu conexión e inténtalo de nuevo.": "The dashboard could not be loaded. Check your connection and try again.",
+        "Por día": "By day", "Acumulado": "Cumulative", "7 días": "7 days", "Periodo": "Period", "Vista": "View",
+        "Ganancia acumulada": "Cumulative profit", "Gráfico de la ganancia acumulada": "Cumulative profit chart",
+        "Ver tabla": "View table",
         "Unidades": "Units", "Margen": "Margin", "Resumen": "Summary",
         // Cuenta / suscripción / errores
         "Puedes ver y descargar tus datos, pero no registrar nada nuevo hasta que te suscribas.": "You can view and download your data, but not record anything new until you subscribe.",

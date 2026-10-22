@@ -18,7 +18,7 @@
 
     function moneda(valor, codigo) {
         try {
-            return new Intl.NumberFormat("es-PE", { style: "currency", currency: codigo }).format(valor);
+            return new Intl.NumberFormat(window.GP_IDIOMA ? window.GP_IDIOMA.locale() : "es-PE", { style: "currency", currency: codigo }).format(valor);
         } catch (e) {
             return valor.toFixed(2) + " " + codigo;
         }
@@ -68,81 +68,290 @@
         return nodo;
     }
 
-    /* ----- Gráfico de líneas por día ----- */
-    function dibujarLinea(porDia, mes, codigo) {
-        const svg = $("grafLinea");
-        svg.replaceChildren();
-        const [a, m] = mes.split("-").map(Number);
+    /* ----- Gráfico por día: barras (ingresos/gastos) o ganancia acumulada ----- */
+    const grafico = { datos: null, mes: "", codigo: "", modo: "dia", rango: "mes" };
+
+    const localeActual = () => (window.GP_IDIOMA ? window.GP_IDIOMA.locale() : "es-PE");
+
+    function monedaCorta(valor, codigo) {
+        try {
+            return new Intl.NumberFormat(localeActual(), { style: "currency", currency: codigo, notation: "compact", maximumFractionDigits: 1 }).format(valor);
+        } catch (e) {
+            return compacto(valor);
+        }
+    }
+
+    function escala(min, max) {
+        const rango = Math.max(max - min, 1e-9);
+        const bruto = rango / 4;
+        const mag = Math.pow(10, Math.floor(Math.log10(bruto)));
+        const n = bruto / mag;
+        const paso = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * mag;
+        let lo = Math.floor(min / paso) * paso;
+        let hi = Math.ceil(max / paso) * paso;
+        if (hi === lo) hi = lo + paso;
+        return { lo, hi, paso };
+    }
+
+    function barraPath(x, arriba, w, base) {
+        const h = base - arriba;
+        if (h <= 0.5) return "";
+        const r = Math.min(4, w / 2, h);
+        return "M" + x + " " + base + "V" + (arriba + r) + "Q" + x + " " + arriba + " " + (x + r) + " " + arriba +
+            "H" + (x + w - r) + "Q" + (x + w) + " " + arriba + " " + (x + w) + " " + (arriba + r) + "V" + base + "Z";
+    }
+
+    function itemsGrafico() {
+        const [a, m] = grafico.mes.split("-").map(Number);
         const dias = new Date(a, m, 0).getDate();
         const ing = new Array(dias).fill(0);
         const gas = new Array(dias).fill(0);
-        for (const f of porDia) {
-            const dia = Number(f.dia) - 1;
-            if (dia >= 0 && dia < dias) {
-                ing[dia] += Number(f.ingresos || 0);
-                gas[dia] += Number(f.gastos || 0);
+        for (const f of grafico.datos || []) {
+            const d = Number(f.dia) - 1;
+            if (d >= 0 && d < dias) {
+                ing[d] += Number(f.ingresos || 0);
+                gas[d] += Number(f.gastos || 0);
             }
         }
+        let ini = 1, fin = dias;
+        if (grafico.rango === "7") {
+            fin = grafico.mes === mesActual() ? Math.min(dias, new Date().getDate()) : dias;
+            ini = Math.max(1, fin - 6);
+        }
+        const items = [];
+        let acum = 0;
+        for (let d = ini; d <= fin; d++) {
+            const g = ing[d - 1] - gas[d - 1];
+            acum += g;
+            items.push({ fecha: new Date(a, m - 1, d), ing: ing[d - 1], gas: gas[d - 1], gan: g, acum });
+        }
+        return items;
+    }
 
-        const W = 640, H = 240, izq = 46, der = 12, arr = 12, aba = 28;
-        const bruto = Math.max(1, ...ing, ...gas);
-        const potencia = Math.pow(10, Math.floor(Math.log10(bruto)));
-        const f = bruto / potencia;
-        const maximo = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * potencia;
-        const x = (i) => izq + (dias === 1 ? 0 : (i / (dias - 1)) * (W - izq - der));
-        const y = (v) => arr + (1 - v / maximo) * (H - arr - aba);
+    function leyendaGrafico() {
+        const ley = $("grafLeyenda");
+        ley.replaceChildren();
+        const item = (clase, texto) => {
+            const b = document.createElement("span");
+            b.className = "ley-item";
+            const punto = document.createElement("span");
+            punto.className = "punto " + clase;
+            b.append(punto, document.createTextNode(texto));
+            ley.appendChild(b);
+        };
+        if (grafico.modo === "dia") {
+            item("punto-ing", "Ingresos");
+            item("punto-gas punto-rayas", "Gastos");
+        } else {
+            item("punto-gan", "Ganancia acumulada");
+        }
+    }
+
+    function tablaGrafico(items) {
+        const cuerpo = $("grafTablaCuerpo");
+        cuerpo.replaceChildren();
+        const f = (d) => d.toLocaleDateString(localeActual(), { day: "numeric", month: "short" });
+        for (const it of items) {
+            if (!it.ing && !it.gas) continue;
+            const tr = document.createElement("tr");
+            for (const t of [f(it.fecha), moneda(it.ing, grafico.codigo), moneda(it.gas, grafico.codigo), moneda(it.gan, grafico.codigo)]) {
+                const td = document.createElement("td");
+                td.textContent = t;
+                tr.appendChild(td);
+            }
+            cuerpo.appendChild(tr);
+        }
+    }
+
+    function dibujarGrafico() {
+        if (!grafico.datos) return;
+        const svg = $("grafLinea");
+        const tip = $("grafTip");
+        const ancho = Math.round(svg.parentElement.clientWidth);
+        if (!ancho) return;
+
+        svg.replaceChildren();
+        tip.hidden = true;
+        const items = itemsGrafico();
+        const codigo = grafico.codigo;
+        const acumulado = grafico.modo === "acum";
+        $("grafTitulo").textContent = acumulado ? "Ganancia acumulada" : "Ingresos y gastos por día";
+        // La ganancia acumulada se dibuja solo hasta hoy (no se inventan días futuros)
+        const [ay, am] = grafico.mes.split("-").map(Number);
+        const hoy = new Date();
+        const ultimo = (hoy.getFullYear() === ay && hoy.getMonth() + 1 === am)
+            ? items.reduce((k, it, i) => (it.fecha <= hoy ? i : k), 0)
+            : items.length - 1;
+        const W = Math.max(280, ancho), H = ancho < 420 ? 240 : 280;
+        const der = 10, arr = 20, aba = 30;
+        svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+        svg.setAttribute("aria-label", acumulado ? "Gráfico de la ganancia acumulada" : "Gráfico de ingresos y gastos por día");
+        leyendaGrafico();
+        tablaGrafico(items);
+
+        const hayDatos = items.some((it) => it.ing || it.gas);
+        const valores = acumulado ? items.map((it) => it.acum) : items.flatMap((it) => [it.ing, it.gas]);
+        const { lo, hi, paso } = escala(Math.min(0, ...valores), Math.max(0, ...valores));
+        const etiquetas = [];
+        for (let v = lo; v <= hi + paso / 2; v += paso) etiquetas.push(monedaCorta(v, codigo));
+        const izq = Math.ceil(Math.max(...etiquetas.map((t) => t.length)) * 6.4) + 16;
+        const y = (v) => arr + ((hi - v) / (hi - lo)) * (H - arr - aba);
+        const n = items.length;
+        const banda = (W - izq - der) / n;
+        const xc = (i) => izq + banda * (i + 0.5);
 
         const defs = el("defs", {});
-        for (const [id, clase] of [["gradIng", "ing"], ["gradGas", "gas"]]) {
+        for (const [id, clase] of [["barIng", "ing"], ["barGas", "gas"], ["areaGan", "gan"]]) {
             const g = el("linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 });
-            g.appendChild(el("stop", { offset: "0%", class: "parada-" + clase, "stop-opacity": "0.38" }));
-            g.appendChild(el("stop", { offset: "100%", class: "parada-" + clase, "stop-opacity": "0" }));
+            const arriba = id === "areaGan" ? "0.35" : "1";
+            const abajo = id === "areaGan" ? "0" : "0.62";
+            g.appendChild(el("stop", { offset: "0%", class: "parada-" + clase, "stop-opacity": arriba }));
+            g.appendChild(el("stop", { offset: "100%", class: "parada-" + clase, "stop-opacity": abajo }));
             defs.appendChild(g);
         }
+        const rayas = el("pattern", { id: "rayasGas", width: 6, height: 6, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+        rayas.appendChild(el("rect", { width: 2.2, height: 6, class: "raya" }));
+        defs.appendChild(rayas);
         svg.appendChild(defs);
 
-        for (let k = 0; k <= 4; k++) {
-            const v = (maximo / 4) * k;
-            svg.appendChild(el("line", { class: "eje", x1: izq, x2: W - der, y1: y(v), y2: y(v) }));
-            const t = el("text", { x: izq - 6, y: y(v) + 4, "text-anchor": "end" });
-            t.textContent = compacto(v);
-            svg.appendChild(t);
-        }
-        for (const d of [1, Math.ceil(dias / 2), dias]) {
-            const t = el("text", { x: x(d - 1), y: H - 8, "text-anchor": "middle" });
-            t.textContent = String(d);
+        // Cuadrícula y eje Y
+        for (let v = lo; v <= hi + paso / 2; v += paso) {
+            svg.appendChild(el("line", { class: "eje" + (Math.abs(v) < paso / 1000 ? " eje-cero" : ""), x1: izq, x2: W - der, y1: y(v), y2: y(v) }));
+            const t = el("text", { x: izq - 8, y: y(v) + 4, "text-anchor": "end" });
+            t.textContent = monedaCorta(v, codigo);
             svg.appendChild(t);
         }
 
-        const trazo = (serie) => serie.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("");
-        const cierre = "L" + x(dias - 1) + " " + y(0) + "L" + x(0) + " " + y(0) + "Z";
-        svg.appendChild(el("path", { class: "area area-gas", fill: "url(#gradGas)", d: trazo(gas) + cierre }));
-        svg.appendChild(el("path", { class: "area area-ing", fill: "url(#gradIng)", d: trazo(ing) + cierre }));
-        for (const [clase, serie] of [["linea-gas", gas], ["linea-ing", ing]]) {
-            const p = el("path", { class: "linea " + clase + (reducido ? "" : " dibuja"), d: trazo(serie), pathLength: "1" });
-            svg.appendChild(p);
+        // Eje X: fechas cortas, sin amontonarse
+        const cada = Math.max(1, Math.ceil(54 / banda));
+        const fechaCorta = (d) => d.toLocaleDateString(localeActual(), { day: "numeric", month: "short" });
+        items.forEach((it, i) => {
+            if (i % cada !== 0 && i !== n - 1) return;
+            if (i !== 0 && i % cada !== 0 && (n - 1 - Math.floor((n - 1) / cada) * cada) < cada / 2) return;
+            const t = el("text", { x: xc(i), y: H - 9, "text-anchor": "middle" });
+            t.textContent = fechaCorta(it.fecha);
+            svg.appendChild(t);
+        });
+
+        const banda_hover = el("rect", { class: "banda-hover", y: arr, height: H - arr - aba, width: banda, visibility: "hidden" });
+        svg.appendChild(banda_hover);
+
+        if (!hayDatos) {
+            const t = el("text", { class: "grafico-vacio", x: (izq + W - der) / 2, y: (arr + H - aba) / 2, "text-anchor": "middle" });
+            t.textContent = "Sin datos este mes.";
+            svg.appendChild(t);
+        } else if (!acumulado) {
+            const bw = Math.max(3, Math.min(22, banda * 0.36));
+            const base = y(0);
+            let mayor = -1;
+            items.forEach((it, i) => { if (it.ing > 0 && (mayor < 0 || it.ing > items[mayor].ing)) mayor = i; });
+            items.forEach((it, i) => {
+                const cx = xc(i);
+                const grupo = el("g", { class: "barra-grupo" + (reducido ? "" : " crece"), style: "--i:" + Math.min(i, 30) });
+                const dI = barraPath(cx - bw - 1, y(it.ing), bw, base);
+                const dG = barraPath(cx + 1, y(it.gas), bw, base);
+                if (dI) grupo.appendChild(el("path", { class: "barra barra-ing", fill: "url(#barIng)", d: dI }));
+                if (dG) {
+                    grupo.appendChild(el("path", { class: "barra barra-gas", fill: "url(#barGas)", d: dG }));
+                    grupo.appendChild(el("path", { class: "barra-rayas", fill: "url(#rayasGas)", d: dG }));
+                }
+                svg.appendChild(grupo);
+            });
+            if (mayor >= 0 && n <= 31) {
+                const t = el("text", { class: "etiqueta-max", x: xc(mayor) - bw / 2 - 1, y: y(items[mayor].ing) - 6, "text-anchor": "middle" });
+                t.textContent = monedaCorta(items[mayor].ing, codigo);
+                svg.appendChild(t);
+            }
+        } else {
+            const pts = items.slice(0, ultimo + 1).map((it, i) => [xc(i), y(it.acum)]);
+            const trazo = pts.map((q, i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join("");
+            const cero = y(0);
+            svg.appendChild(el("path", { class: "area-gan", fill: "url(#areaGan)", d: trazo + "L" + pts[pts.length - 1][0] + " " + cero + "L" + pts[0][0] + " " + cero + "Z" }));
+            svg.appendChild(el("path", { class: "linea linea-gan" + (reducido ? "" : " dibuja"), d: trazo, pathLength: "1" }));
+            const ult = pts[pts.length - 1];
+            svg.appendChild(el("circle", { class: "punto-final", cx: ult[0], cy: ult[1], r: 5 }));
+            const t = el("text", { class: "etiqueta-max", x: Math.min(ult[0], W - der - 24), y: ult[1] - 12, "text-anchor": "middle" });
+            t.textContent = monedaCorta(items[pts.length - 1].acum, codigo);
+            svg.appendChild(t);
         }
 
-        const guia = el("line", { class: "guia", y1: arr, y2: H - aba, visibility: "hidden" });
-        svg.appendChild(guia);
+        // Detalle al pasar el cursor o tocar
         const lectura = $("grafLectura");
+        const filaTip = (clase, etiqueta, valor) => {
+            const f = document.createElement("div");
+            f.className = "tip-fila";
+            const e = document.createElement("span");
+            if (clase) { const p = document.createElement("span"); p.className = "punto " + clase; e.appendChild(p); }
+            e.appendChild(document.createTextNode(etiqueta));
+            const v = document.createElement("strong");
+            v.textContent = valor;
+            f.append(e, v);
+            return f;
+        };
 
         function mostrar(clientX) {
             const r = svg.getBoundingClientRect();
             if (!r.width) return;
             const px = ((clientX - r.left) / r.width) * W;
-            const i = Math.min(dias - 1, Math.max(0, Math.round(((px - izq) / (W - izq - der)) * (dias - 1))));
-            guia.setAttribute("x1", x(i));
-            guia.setAttribute("x2", x(i));
-            guia.setAttribute("visibility", "visible");
-            lectura.textContent = "Día " + (i + 1) + ": ingresos " + moneda(ing[i], codigo) + " · gastos " + moneda(gas[i], codigo);
+            const i = Math.min(n - 1, Math.max(0, Math.floor((px - izq) / banda)));
+            const it = items[i];
+            banda_hover.setAttribute("x", izq + banda * i);
+            banda_hover.setAttribute("visibility", "visible");
+
+            tip.replaceChildren();
+            const titulo = document.createElement("p");
+            titulo.className = "tip-titulo";
+            titulo.textContent = it.fecha.toLocaleDateString(localeActual(), { weekday: "short", day: "numeric", month: "short" });
+            tip.append(titulo, filaTip("punto-ing", "Ingresos", moneda(it.ing, codigo)), filaTip("punto-gas punto-rayas", "Gastos", moneda(it.gas, codigo)), filaTip("", "Ganancia", moneda(it.gan, codigo)));
+            if (acumulado) tip.appendChild(filaTip("punto-gan", "Ganancia acumulada", moneda(it.acum, codigo)));
+            tip.hidden = false;
+
+            const escalaPx = r.width / W;
+            const ancho_tip = tip.offsetWidth;
+            let izqPx = xc(i) * escalaPx - ancho_tip / 2;
+            izqPx = Math.max(4, Math.min(r.width - ancho_tip - 4, izqPx));
+            tip.style.left = izqPx + "px";
+            tip.style.top = "6px";
+            lectura.textContent = titulo.textContent + ": " + moneda(it.ing, codigo) + " / " + moneda(it.gas, codigo);
+        }
+        function ocultar() {
+            banda_hover.setAttribute("visibility", "hidden");
+            tip.hidden = true;
         }
         svg.onpointermove = (e) => mostrar(e.clientX);
-        svg.onpointerleave = () => {
-            guia.setAttribute("visibility", "hidden");
-            lectura.textContent = "Pasa el cursor por el gráfico para ver cada día.";
-        };
+        svg.onpointerdown = (e) => mostrar(e.clientX);
+        svg.onpointerleave = ocultar;
     }
+
+    function dibujarLinea(porDia, mes, codigo) {
+        grafico.datos = porDia;
+        grafico.mes = mes;
+        grafico.codigo = codigo;
+        dibujarGrafico();
+    }
+
+    function iniciarControlesGrafico() {
+        for (const b of document.querySelectorAll("[data-graf-modo], [data-graf-rango]")) {
+            b.addEventListener("click", () => {
+                if (b.dataset.grafModo) grafico.modo = b.dataset.grafModo;
+                if (b.dataset.grafRango) grafico.rango = b.dataset.grafRango;
+                for (const o of document.querySelectorAll("[data-graf-modo], [data-graf-rango]")) {
+                    const activo = o.dataset.grafModo ? o.dataset.grafModo === grafico.modo : o.dataset.grafRango === grafico.rango;
+                    o.setAttribute("aria-pressed", String(activo));
+                }
+                dibujarGrafico();
+            });
+        }
+        if (window.ResizeObserver) {
+            let anterior = 0;
+            new ResizeObserver(() => {
+                const w = $("grafLinea").parentElement.clientWidth;
+                if (w && Math.abs(w - anterior) > 2) { anterior = w; dibujarGrafico(); }
+            }).observe($("grafLinea").parentElement);
+        }
+        document.addEventListener("gp-idioma", dibujarGrafico);
+    }
+    iniciarControlesGrafico();
 
     /* ----- Barras horizontales ----- */
     function barras(ul, filas, formato) {

@@ -623,10 +623,32 @@
 
             <div class="tablero-grid">
                 <article class="tablero-tarjeta tablero-ancha">
-                    <h3>Ingresos y gastos por día</h3>
-                    <p class="leyenda"><span class="punto punto-ing"></span>Ingresos <span class="punto punto-gas"></span>Gastos</p>
-                    <svg id="grafLinea" class="grafico" viewBox="0 0 640 240" role="img" aria-label="Gráfico de ingresos y gastos por día"></svg>
-                    <p id="grafLectura" class="lectura" aria-live="polite">Pasa el cursor por el gráfico para ver cada día.</p>
+                    <div class="graf-cabecera">
+                        <h3 id="grafTitulo">Ingresos y gastos por día</h3>
+                        <div class="graf-controles">
+                            <div class="segmento" role="group" aria-label="Periodo">
+                                <button type="button" class="seg-btn" data-graf-rango="mes" aria-pressed="true">Mes</button>
+                                <button type="button" class="seg-btn" data-graf-rango="7" aria-pressed="false">7 días</button>
+                            </div>
+                            <div class="segmento" role="group" aria-label="Vista">
+                                <button type="button" class="seg-btn" data-graf-modo="dia" aria-pressed="true">Por día</button>
+                                <button type="button" class="seg-btn" data-graf-modo="acum" aria-pressed="false">Acumulado</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="grafLeyenda" class="leyenda"></p>
+                    <div class="graf-wrap">
+                        <svg id="grafLinea" class="grafico" viewBox="0 0 640 280" role="img" aria-label="Gráfico de ingresos y gastos por día"></svg>
+                        <div id="grafTip" class="graf-tip" hidden></div>
+                    </div>
+                    <p id="grafLectura" class="lectura solo-lector" aria-live="polite"></p>
+                    <details class="graf-tabla">
+                        <summary>Ver tabla</summary>
+                        <table>
+                            <thead><tr><th scope="col">Fecha</th><th scope="col">Ingresos</th><th scope="col">Gastos</th><th scope="col">Ganancia</th></tr></thead>
+                            <tbody id="grafTablaCuerpo"></tbody>
+                        </table>
+                    </details>
                 </article>
                 <article class="tablero-tarjeta">
                     <h3>Mayores gastos</h3>
