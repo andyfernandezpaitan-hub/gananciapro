@@ -229,6 +229,7 @@
             const estado = estadoStock(producto);
 
             fila.className = producto.activo ? "" : "inactivo";
+            fila.dataset.estado = estado;
 
             info.className = "prod-info";
             titulo.textContent = producto.nombre;
@@ -250,8 +251,15 @@
             info.append(titulo, detalle);
 
             insignia.className = `estado-stock estado-${estado}`;
-            insignia.textContent =
-                estado === "agotado" ? "Agotado" : `${entero.format(producto.stock)} en stock`;
+            if (estado === "agotado") {
+                insignia.textContent = "Agotado";
+            } else {
+                const numero = document.createElement("b");
+                const unidad = document.createElement("small");
+                numero.textContent = entero.format(producto.stock);
+                unidad.textContent = estado === "poco" ? "quedan pocas" : "en stock";
+                insignia.append(numero, unidad);
+            }
 
             acciones.className = "prod-acciones";
 
@@ -259,7 +267,7 @@
                 acciones.append(
                     boton("Historial", "btn-secundario btn-chico", () => verHistorial(producto),
                         `Ver movimientos de ${producto.nombre}`),
-                    boton("Mover stock", "btn-secundario btn-chico", () => abrirMovimiento(producto),
+                    boton("Mover stock", "btn-secundario btn-chico btn-mover", () => abrirMovimiento(producto),
                         `Mover stock de ${producto.nombre}`),
                     boton("Editar", "btn-secundario btn-chico", () => abrirProducto(producto),
                         `Editar ${producto.nombre}`)

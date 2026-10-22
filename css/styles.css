@@ -2513,3 +2513,128 @@ body[data-vista="panel"] #migracion {
         transition: none;
     }
 }
+
+
+/* ==========================================================================
+   18. ALMACÉN: productos más claros y diferenciados
+   Cada producto es una tarjeta con franja de color según su stock.
+   ========================================================================== */
+.lista-productos {
+    display: grid;
+    gap: var(--sp-3);
+}
+
+.lista-productos li {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "info stock"
+        "acc acc";
+    padding: var(--sp-4) var(--sp-4) var(--sp-4) calc(var(--sp-4) + 6px);
+    background: var(--surface);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra-sm);
+    overflow: hidden;
+}
+
+.lista-productos li:last-child {
+    border-bottom: 1px solid var(--borde);
+}
+
+.lista-productos li[data-estado]::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: var(--ok);
+}
+
+.lista-productos li[data-estado="poco"]::before {
+    background: var(--aviso, #d99a1f);
+}
+
+.lista-productos li[data-estado="agotado"]::before {
+    background: var(--mal);
+}
+
+.lista-productos li[data-estado="agotado"] {
+    background: var(--mal-fondo);
+}
+
+.lista-productos li .prod-info {
+    grid-area: info;
+}
+
+.lista-productos li .estado-stock {
+    grid-area: stock;
+}
+
+.lista-productos li .prod-acciones {
+    grid-area: acc;
+    justify-content: flex-start;
+    padding-top: var(--sp-3);
+    border-top: 1px dashed var(--borde);
+}
+
+.prod-info strong {
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+}
+
+.prod-info span {
+    font-size: 0.92rem;
+}
+
+.lista-productos li .estado-stock {
+    display: grid;
+    justify-items: center;
+    min-width: 76px;
+    padding: 6px 12px;
+    border-radius: var(--radio-sm);
+    line-height: 1.1;
+}
+
+.estado-stock b {
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.estado-stock small {
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.lista-productos li[data-estado="agotado"] .estado-stock {
+    background: var(--mal);
+    color: #fff;
+    font-size: 0.85rem;
+    align-content: center;
+}
+
+.prod-acciones .btn-mover {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: var(--acento-texto);
+}
+
+.prod-acciones .btn-mover:hover {
+    background: var(--acento-hover);
+}
+
+.prod-acciones button {
+    min-height: 36px;
+}
+
+@media (min-width: 900px) {
+    .lista-productos li {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-areas: "info stock acc";
+    }
+
+    .lista-productos li .prod-acciones {
+        padding-top: 0;
+        border-top: 0;
+        justify-content: flex-end;
+    }
+}
