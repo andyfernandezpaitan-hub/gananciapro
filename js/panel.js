@@ -69,7 +69,7 @@
     }
 
     /* ----- Gráfico por día: barras (ingresos/gastos) o ganancia acumulada ----- */
-    const grafico = { datos: null, mes: "", codigo: "", modo: "dia", rango: "mes" };
+    const grafico = { datos: null, mes: "", codigo: "", modo: "dia", rango: "mes", extra: [], claveExtra: "" };
 
     const localeActual = () => (window.GP_IDIOMA ? window.GP_IDIOMA.locale() : "es-PE");
 
@@ -101,6 +101,84 @@
             "H" + (x + w - r) + "Q" + (x + w) + " " + arriba + " " + (x + w) + " " + (arriba + r) + "V" + base + "Z";
     }
 
+    const pad = (n) => String(n).padStart(2, "0");
+    const iso = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+
+    /* Ventana de fechas del gráfico largo: termina en el mes elegido (o en hoy si es el actual) */
+    function ventanaLarga() {
+        const [a, m] = grafico.mes.split("-").map(Number);
+        const meses = grafico.rango === "12m" ? 12 : 3;
+        const desde = new Date(a, m - meses, 1);
+        let hasta = new Date(a, m, 0);
+        const hoy = new Date();
+        if (hasta > hoy) hasta = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+        return { desde, hasta };
+    }
+
+    function itemsLargos() {
+        const { desde, hasta } = ventanaLarga();
+        const porFecha = new Map();
+        for (const f of grafico.extra || []) {
+            porFecha.set(String(f.fecha).slice(0, 10), { ing: Number(f.ingresos || 0), gas: Number(f.gastos || 0) });
+        }
+        const items = [];
+        const loc = localeActual();
+        const mensual = grafico.rango === "12m";
+        let ini = new Date(desde);
+        while (ini <= hasta) {
+            let fin;
+            if (mensual) fin = new Date(ini.getFullYear(), ini.getMonth() + 1, 0);
+            else { fin = new Date(ini); fin.setDate(fin.getDate() + 6); }
+            if (fin > hasta) fin = new Date(hasta);
+            let ing = 0, gas = 0;
+            for (let d = new Date(ini); d <= fin; d.setDate(d.getDate() + 1)) {
+                const f = porFecha.get(iso(d));
+                if (f) { ing += f.ing; gas += f.gas; }
+            }
+            const etiqueta = mensual
+                ? ini.toLocaleDateString(loc, { month: "short" })
+                : ini.toLocaleDateString(loc, { day: "numeric", month: "short" });
+            const titulo = mensual
+                ? ini.toLocaleDateString(loc, { month: "long", year: "numeric" })
+                : ini.toLocaleDateString(loc, { day: "numeric", month: "short" }) + " – " + fin.toLocaleDateString(loc, { day: "numeric", month: "short" });
+            items.push({ fecha: new Date(ini), etiqueta, titulo, ing, gas, gan: ing - gas, acum: 0 });
+            ini = mensual ? new Date(ini.getFullYear(), ini.getMonth() + 1, 1) : new Date(fin.getFullYear(), fin.getMonth(), fin.getDate() + 1);
+        }
+        let acum = 0;
+        for (const it of items) { acum += it.gan; it.acum = acum; }
+        return items;
+    }
+
+    /* Trae del servidor (o calcula aquí) los totales por día de un rango largo */
+    async function cargarRangoLargo() {
+        const { desde, hasta } = ventanaLarga();
+        const clave = [grafico.mes, grafico.rango, grafico.codigo, usaServidor].join("|");
+        if (grafico.claveExtra === clave) return;
+        let filas = [];
+        if (usaServidor) {
+            try {
+                filas = await window.Nube.resumenRango(iso(desde), iso(hasta), grafico.codigo);
+            } catch (e) {
+                filas = null;
+            }
+        }
+        if (!usaServidor || filas === null) {
+            if (!operaciones.length) operaciones = await window.Nube.listarOperaciones();
+            const mapa = new Map();
+            for (const o of operaciones) {
+                if (o.moneda !== grafico.codigo) continue;
+                const f = String(o.fecha).slice(0, 10);
+                if (f < iso(desde) || f > iso(hasta)) continue;
+                const x = mapa.get(f) || { fecha: f, ingresos: 0, gastos: 0 };
+                x[o.tipo === "ingreso" ? "ingresos" : "gastos"] += Number(o.importe || 0);
+                mapa.set(f, x);
+            }
+            filas = [...mapa.values()];
+        }
+        grafico.extra = filas;
+        grafico.claveExtra = clave;
+    }
+
     function itemsGrafico() {
         const [a, m] = grafico.mes.split("-").map(Number);
         const dias = new Date(a, m, 0).getDate();
@@ -113,6 +191,7 @@
                 gas[d] += Number(f.gastos || 0);
             }
         }
+        if (grafico.rango === "3m" || grafico.rango === "12m") return itemsLargos();
         let ini = 1, fin = dias;
         if (grafico.rango === "7") {
             fin = grafico.mes === mesActual() ? Math.min(dias, new Date().getDate()) : dias;
@@ -154,7 +233,7 @@
         for (const it of items) {
             if (!it.ing && !it.gas) continue;
             const tr = document.createElement("tr");
-            for (const t of [f(it.fecha), moneda(it.ing, grafico.codigo), moneda(it.gas, grafico.codigo), moneda(it.gan, grafico.codigo)]) {
+            for (const t of [it.titulo || f(it.fecha), moneda(it.ing, grafico.codigo), moneda(it.gas, grafico.codigo), moneda(it.gan, grafico.codigo)]) {
                 const td = document.createElement("td");
                 td.textContent = t;
                 tr.appendChild(td);
@@ -175,7 +254,7 @@
         const items = itemsGrafico();
         const codigo = grafico.codigo;
         const acumulado = grafico.modo === "acum";
-        $("grafTitulo").textContent = acumulado ? "Ganancia acumulada" : "Ingresos y gastos por día";
+        $("grafTitulo").textContent = acumulado ? "Ganancia acumulada" : grafico.rango === "3m" ? "Ingresos y gastos por semana" : grafico.rango === "12m" ? "Ingresos y gastos por mes" : "Ingresos y gastos por día";
         // La ganancia acumulada se dibuja solo hasta hoy (no se inventan días futuros)
         const [ay, am] = grafico.mes.split("-").map(Number);
         const hoy = new Date();
@@ -229,7 +308,7 @@
             if (i % cada !== 0 && i !== n - 1) return;
             if (i !== 0 && i % cada !== 0 && (n - 1 - Math.floor((n - 1) / cada) * cada) < cada / 2) return;
             const t = el("text", { x: xc(i), y: H - 9, "text-anchor": "middle" });
-            t.textContent = fechaCorta(it.fecha);
+            t.textContent = it.etiqueta || fechaCorta(it.fecha);
             svg.appendChild(t);
         });
 
@@ -301,7 +380,7 @@
             tip.replaceChildren();
             const titulo = document.createElement("p");
             titulo.className = "tip-titulo";
-            titulo.textContent = it.fecha.toLocaleDateString(localeActual(), { weekday: "short", day: "numeric", month: "short" });
+            titulo.textContent = it.titulo || it.fecha.toLocaleDateString(localeActual(), { weekday: "short", day: "numeric", month: "short" });
             tip.append(titulo, filaTip("punto-ing", "Ingresos", moneda(it.ing, codigo)), filaTip("punto-gas punto-rayas", "Gastos", moneda(it.gas, codigo)), filaTip("", "Ganancia", moneda(it.gan, codigo)));
             if (acumulado) tip.appendChild(filaTip("punto-gan", "Ganancia acumulada", moneda(it.acum, codigo)));
             tip.hidden = false;
@@ -327,7 +406,11 @@
         grafico.datos = porDia;
         grafico.mes = mes;
         grafico.codigo = codigo;
-        dibujarGrafico();
+        if (grafico.rango === "3m" || grafico.rango === "12m") {
+            cargarRangoLargo().then(dibujarGrafico).catch(() => { grafico.rango = "mes"; dibujarGrafico(); });
+        } else {
+            dibujarGrafico();
+        }
     }
 
     function iniciarControlesGrafico() {
@@ -339,7 +422,11 @@
                     const activo = o.dataset.grafModo ? o.dataset.grafModo === grafico.modo : o.dataset.grafRango === grafico.rango;
                     o.setAttribute("aria-pressed", String(activo));
                 }
-                dibujarGrafico();
+                if (grafico.rango === "3m" || grafico.rango === "12m") {
+                    cargarRangoLargo().then(dibujarGrafico).catch(() => dibujarGrafico());
+                } else {
+                    dibujarGrafico();
+                }
             });
         }
         if (window.ResizeObserver) {

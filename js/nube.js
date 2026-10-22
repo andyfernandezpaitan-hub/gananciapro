@@ -294,6 +294,14 @@
             return data;
         },
 
+        /* Totales por día entre dos fechas (YYYY-MM-DD), para el gráfico de 3 meses y año */
+        async resumenRango(desde, hasta, moneda) {
+            const { data } = comprobar(
+                await cliente.rpc("resumen_rango", { p_desde: desde, p_hasta: hasta, p_moneda: moneda })
+            );
+            return Array.isArray(data) ? data : [];
+        },
+
         async monedasPanel() {
             const { data } = comprobar(await cliente.rpc("panel_monedas"));
             return Array.isArray(data) ? data : [];

@@ -187,7 +187,7 @@
         "Si solo quieres ocultarlo, usa «Desactivar».": "If you only want to hide it, use “Deactivate”.",
         // Panel
         "Cómo va tu negocio en el mes elegido.": "How your business is doing in the chosen month.",
-        "Ingresos y gastos por día": "Income and expenses by day", "Gráfico de ingresos y gastos por día": "Chart of income and expenses by day",
+        "Ingresos y gastos por día": "Income and expenses by day", "Ingresos y gastos por semana": "Income and expenses by week", "Ingresos y gastos por mes": "Income and expenses by month", "Gráfico de ingresos y gastos por día": "Chart of income and expenses by day",
         "Pasa el cursor por el gráfico para ver cada día.": "Hover over the chart to see each day.",
         "Mayores gastos": "Top expenses", "Mayores ingresos": "Top income", "Stock bajo en el almacén": "Low stock in the warehouse",
         "Sin datos este mes.": "No data this month.", "Sin descripción": "No description",
@@ -195,7 +195,7 @@
         "Todo en orden: ningún producto con 5 unidades o menos.": "All good: no product with 5 units or fewer.",
         "Aún no hay operaciones. Registra la primera en Finanzas.": "No operations yet. Record the first one in Finance.",
         "No se pudo cargar el panel. Revisa tu conexión e inténtalo de nuevo.": "The dashboard could not be loaded. Check your connection and try again.",
-        "Por día": "By day", "Acumulado": "Cumulative", "7 días": "7 days", "Periodo": "Period", "Vista": "View",
+        "Por día": "By day", "Acumulado": "Cumulative", "7 días": "7 days", "3 meses": "3 months", "Año": "Year", "Periodo": "Period", "Vista": "View",
         "Ganancia acumulada": "Cumulative profit", "Gráfico de la ganancia acumulada": "Cumulative profit chart",
         "Ver tabla": "View table",
         "Unidades": "Units", "Margen": "Margin", "Resumen": "Summary",
