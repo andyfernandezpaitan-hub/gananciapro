@@ -719,7 +719,7 @@
                     <input type="text" id="prodNombre" maxlength="120" required>
                 </div>
                 <div class="campo-doble">
-                    <div class="campo">
+                    <div class="campo" id="campoTalla">
                         <label for="prodTalla">Talla</label>
                         <input type="text" id="prodTalla" maxlength="40">
                     </div>
@@ -727,6 +727,16 @@
                         <label for="prodColor">Color</label>
                         <input type="text" id="prodColor" maxlength="60">
                     </div>
+                </div>
+                <div class="campo" id="bloqueTallas" hidden>
+                    <label>Tallas y cantidades</label>
+                    <div id="filasTallas" class="filas-tallas"></div>
+                    <div class="atajos-tallas">
+                        <button type="button" id="btnMasTalla" class="btn-secundario btn-chico">+ Agregar talla</button>
+                        <button type="button" id="btnTallasNumeros" class="btn-secundario btn-chico">Tallas 2 a 16</button>
+                        <button type="button" id="btnTallasLetras" class="btn-secundario btn-chico">S · M · L · XL</button>
+                    </div>
+                    <p>Cada talla se guarda como una variante de este producto y se despliega en la lista. El color es el mismo para todas.</p>
                 </div>
                 <div class="campo">
                     <label for="prodCategoria">Categoría</label>

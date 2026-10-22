@@ -651,11 +651,162 @@
         $("mensajeProducto").textContent = "";
         $("campoCantidadInicial").hidden = Boolean(producto);
         $("prodCantidad").value = "";
+        $("filasTallas").replaceChildren();
+        actualizarModoTallas();
         $("dlgProducto").showModal();
         $("prodNombre").focus();
     }
 
     $("btnNuevoProducto").addEventListener("click", () => abrirProducto(null));
+
+    /* ----- Ropa: varias tallas de una vez ----- */
+    function esRopa() {
+        return /\bropa\b/.test(sinTildes($("prodCategoria").value));
+    }
+
+    function agregarFilaTalla(talla = "", cantidad = "") {
+        const fila = document.createElement("div");
+        const t = document.createElement("input");
+        const c = document.createElement("input");
+        const quitar = document.createElement("button");
+
+        fila.className = "fila-talla";
+        t.type = "text";
+        t.maxLength = 40;
+        t.placeholder = "Talla";
+        t.value = talla;
+        t.dataset.t = "1";
+        t.setAttribute("aria-label", "Talla");
+        c.type = "number";
+        c.min = "0";
+        c.max = "1000000";
+        c.step = "1";
+        c.inputMode = "numeric";
+        c.placeholder = "Cantidad";
+        c.value = cantidad;
+        c.dataset.c = "1";
+        c.setAttribute("aria-label", "Cantidad de esta talla");
+        quitar.type = "button";
+        quitar.className = "btn-secundario btn-chico";
+        quitar.textContent = "Quitar";
+        quitar.addEventListener("click", () => {
+            if ($("filasTallas").children.length > 1) fila.remove();
+        });
+
+        fila.append(t, c, quitar);
+        $("filasTallas").appendChild(fila);
+        return t;
+    }
+
+    function agregarTallas(lista) {
+        const existentes = new Set(
+            [...$("filasTallas").querySelectorAll("[data-t]")].map((i) => sinTildes(i.value).trim())
+        );
+        // Reutiliza las filas vacías antes de crear otras nuevas
+        const vacias = [...$("filasTallas").children].filter((f) => !f.querySelector("[data-t]").value.trim() && !f.querySelector("[data-c]").value.trim());
+        for (const talla of lista) {
+            if (existentes.has(sinTildes(talla))) continue;
+            const hueco = vacias.shift();
+            if (hueco) hueco.querySelector("[data-t]").value = talla;
+            else agregarFilaTalla(talla);
+        }
+    }
+
+    function actualizarModoTallas() {
+        const varias = !productoEnEdicion && esRopa();
+        $("bloqueTallas").hidden = !varias;
+        $("campoTalla").hidden = varias;
+        $("campoCantidadInicial").hidden = Boolean(productoEnEdicion) || varias;
+        if (varias && !$("filasTallas").children.length) agregarFilaTalla();
+    }
+
+    $("prodCategoria").addEventListener("input", actualizarModoTallas);
+    $("btnMasTalla").addEventListener("click", () => agregarFilaTalla().focus());
+    $("btnTallasNumeros").addEventListener("click", () => agregarTallas(["2", "4", "6", "8", "10", "12", "14", "16"]));
+    $("btnTallasLetras").addEventListener("click", () => agregarTallas(["S", "M", "L", "XL"]));
+
+    async function guardarVariasTallas(nombre) {
+        const aviso = $("mensajeProducto");
+        const error = (texto) => { aviso.textContent = texto; aviso.dataset.tipo = "error"; };
+
+        const filas = [...$("filasTallas").children]
+            .map((f) => ({
+                talla: f.querySelector("[data-t]").value.trim(),
+                texto: f.querySelector("[data-c]").value.trim()
+            }))
+            .filter((f) => f.talla || f.texto);
+
+        if (!filas.length) return error("Agrega al menos una talla.");
+
+        const vistas = new Set();
+        for (const f of filas) {
+            if (!f.talla) return error("Hay una cantidad sin talla.");
+            f.cantidad = f.texto === "" ? 0 : Number(f.texto);
+            if (!Number.isInteger(f.cantidad) || f.cantidad < 0 || f.cantidad > 1000000) {
+                return error(`La cantidad de la talla ${f.talla} debe ser un entero de 0 a 1,000,000.`);
+            }
+            const clave = sinTildes(f.talla).trim();
+            if (vistas.has(clave)) return error(`La talla ${f.talla} está repetida.`);
+            vistas.add(clave);
+        }
+
+        const guardar = $("btnGuardarProducto");
+        guardar.disabled = true;
+        const fallos = [];
+        let creadas = 0;
+
+        try {
+            const categoriaId = await categoriaPorNombre($("prodCategoria").value);
+            const color = $("prodColor").value.trim();
+            const codigoBase = $("prodCodigo").value.trim();
+
+            for (const f of filas) {
+                try {
+                    const creado = await Nube.crearProducto({
+                        categoria_id: categoriaId,
+                        nombre,
+                        talla: f.talla,
+                        color,
+                        codigo: codigoBase ? `${codigoBase}-${f.talla}` : null,
+                        activo: true
+                    });
+                    creadas += 1;
+                    let stock = 0;
+
+                    if (f.cantidad > 0) {
+                        try {
+                            stock = Number(await Nube.registrarMovimiento(creado.id, "entrada", f.cantidad, "Stock inicial"));
+                        } catch (e) {
+                            fallos.push(`stock de la talla ${f.talla}`);
+                        }
+                    }
+                    productos = [...productos, { ...creado, stock }];
+                } catch (e) {
+                    fallos.push(`talla ${f.talla} (${e.message})`);
+                }
+            }
+        } catch (e) {
+            error(e.message);
+            guardar.disabled = false;
+            return;
+        }
+
+        productos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+        if (creadas > 0) {
+            gruposAbiertos.add(sinTildes(nombre).trim());
+            cargarMovimientos(true);
+            $("dlgProducto").close();
+            decir(
+                `Se crearon ${creadas} ${creadas === 1 ? "talla" : "tallas"} de «${nombre}».` +
+                    (fallos.length ? ` Con problemas: ${fallos.join("; ")}.` : ""),
+                fallos.length ? "error" : "ok"
+            );
+            pintar();
+        } else {
+            error(`No se pudo crear ninguna talla: ${fallos.join("; ")}.`);
+        }
+        guardar.disabled = false;
+    }
 
     document.addEventListener("gp-acceso", () => {
         if (cargado) pintar();
@@ -690,6 +841,11 @@
         if (!nombre) {
             $("mensajeProducto").textContent = "El nombre es obligatorio.";
             $("mensajeProducto").dataset.tipo = "error";
+            return;
+        }
+
+        if (!productoEnEdicion && esRopa()) {
+            await guardarVariasTallas(nombre);
             return;
         }
 

@@ -2854,3 +2854,40 @@ body[data-vista="panel"] #migracion {
         transition: none;
     }
 }
+
+
+/* ==========================================================================
+   21. FORMULARIO DE ROPA: varias tallas con cantidad
+   ========================================================================== */
+.filas-tallas {
+    display: grid;
+    gap: var(--sp-2);
+}
+
+.fila-talla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: var(--sp-2);
+    align-items: center;
+}
+
+.atajos-tallas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+}
+
+.campo[hidden] {
+    display: none;
+}
+
+.fila-talla input {
+    min-height: 40px;
+    padding: 6px 10px;
+}
+
+dialog {
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+}
