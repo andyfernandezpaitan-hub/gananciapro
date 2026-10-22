@@ -186,6 +186,28 @@
 
     const gruposAbiertos = new Set();
 
+    /* Orden natural de tallas: números de menor a mayor (2, 4, 6… 16) y luego letras (XS, S, M, L, XL…) */
+    const ORDEN_LETRAS = ["xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"];
+
+    function ordenTalla(talla) {
+        const t = sinTildes(talla).trim();
+        if (!t) return [3, 0, ""];
+        const numero = parseFloat(t.replace(",", "."));
+        if (!Number.isNaN(numero)) return [0, numero, t];
+        const i = ORDEN_LETRAS.indexOf(t);
+        return i >= 0 ? [1, i, t] : [2, 0, t];
+    }
+
+    function compararVariantes(a, b) {
+        const colorA = sinTildes(a.color), colorB = sinTildes(b.color);
+        if (colorA !== colorB) return colorA < colorB ? -1 : 1;
+        const x = ordenTalla(a.talla), y = ordenTalla(b.talla);
+        for (let k = 0; k < 3; k++) {
+            if (x[k] !== y[k]) return x[k] < y[k] ? -1 : 1;
+        }
+        return 0;
+    }
+
     function pintar() {
         $("btnNuevoProducto").disabled = !puedeEscribir();
         $("btnVenta").disabled = !puedeEscribir();
@@ -355,7 +377,7 @@
             const variantes = document.createElement("ul");
             variantes.className = "variantes";
             variantes.hidden = !abierto;
-            for (const p of items) variantes.appendChild(filaProducto(p, true));
+            for (const p of [...items].sort(compararVariantes)) variantes.appendChild(filaProducto(p, true));
 
             cabecera.addEventListener("click", () => {
                 const ahora = variantes.hidden;
