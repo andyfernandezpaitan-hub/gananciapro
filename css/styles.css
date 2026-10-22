@@ -2638,3 +2638,52 @@ body[data-vista="panel"] #migracion {
         justify-content: flex-end;
     }
 }
+
+
+/* ==========================================================================
+   19. LOGOTIPO
+   G abierta con una flecha de crecimiento saliendo de la abertura.
+   ========================================================================== */
+.logo {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(140deg, #f59a5b 0%, #d9531a 55%, #a73a0d 100%);
+    box-shadow: 0 6px 18px rgba(194, 65, 12, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.logo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.28), transparent 45%);
+    pointer-events: none;
+}
+
+.logo svg {
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+}
+
+.logo-g,
+.logo-flecha {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.logo-g {
+    stroke: #ffffff;
+    stroke-width: 3.6;
+}
+
+.logo-flecha {
+    stroke: #ffe3a8;
+    stroke-width: 3;
+}
+
+.marca-pro {
+    margin-left: 1px;
+    font-weight: 800;
+    color: #f7a569;
+}
