@@ -188,7 +188,7 @@
 
     /* La ropa siempre se muestra por tallas (desplegable), aunque tenga una sola */
     // Categorías que se manejan por tallas (ropa, ropa interior, calzado…)
-    const RE_TALLAS = /\b(ropa|zapatos?|calzado|zapatillas?|sandalias?|botas?|pantys?|lenceria|interior|vestidos?|moda|infantil|bebe)\b/;
+    const RE_TALLAS = /\b(ropa|zapatos?|calzado|zapatillas?|sandalias?|botas?|pantys?|lenceria|interior|vestidos?|moda|infantil|bebe|clothing|clothes|apparel|shoes?|footwear|sneakers?|sandals?|underwear|lingerie|dress(?:es)?|kids?|baby)\b/;
 
     function productoEsRopa(producto) {
         return Boolean(producto.categoria_id) &&
@@ -211,10 +211,16 @@
         "Papelería", "Electrónica", "Alimentos", "Bebidas", "Limpieza", "Herramientas", "Repuestos"
     ];
 
+    const CATEGORIAS_SUGERIDAS_EN = [
+        "Clothing", "Underwear", "Footwear", "Shoes", "Accessories", "Bags", "Jewelry", "Beauty", "Home", "Toys",
+        "Stationery", "Electronics", "Food", "Drinks", "Cleaning", "Tools", "Spare parts"
+    ];
+
     function pintarChipsCategoria() {
         const cont = $("chipsCategoria");
         const nombres = categorias.map((c) => c.nombre);
-        for (const sugerida of CATEGORIAS_SUGERIDAS) {
+        const sugeridas = window.GP_IDIOMA && window.GP_IDIOMA.actual() === "en" ? CATEGORIAS_SUGERIDAS_EN : CATEGORIAS_SUGERIDAS;
+        for (const sugerida of sugeridas) {
             if (!nombres.some((n) => sinTildes(n).trim() === sinTildes(sugerida))) nombres.push(sugerida);
         }
         cont.replaceChildren(...nombres.map((nombre) => {
@@ -358,7 +364,9 @@
             acciones.append(
                 boton(producto.activo ? "Desactivar" : "Reactivar", "btn-secundario btn-chico",
                     () => cambiarActivo(producto),
-                    `${producto.activo ? "Desactivar" : "Reactivar"} ${producto.nombre}`)
+                    `${producto.activo ? "Desactivar" : "Reactivar"} ${producto.nombre}`),
+                boton("Eliminar", "btn-secundario btn-chico btn-eliminar", () => eliminarProducto(producto),
+                    `Eliminar ${producto.nombre}`)
             );
 
             if (!puedeEscribir()) {
@@ -513,7 +521,7 @@
             detalle.append(
                 etiquetaTipo,
                 [
-                    new Date(mov.creado_en).toLocaleString("es-PE", { dateStyle: "short", timeStyle: "short" }),
+                    new Date(mov.creado_en).toLocaleString((window.GP_IDIOMA ? window.GP_IDIOMA.locale() : "es-PE"), { dateStyle: "short", timeStyle: "short" }),
                     mov.nota
                 ].filter(Boolean).join(" · ")
             );
@@ -840,6 +848,7 @@
     }
 
     $("btnNuevoProducto").addEventListener("click", () => abrirProducto(null));
+    document.addEventListener("gp-idioma", pintarChipsCategoria);
 
     /* ----- Ropa: varias tallas de una vez ----- */
     function esRopa() {
@@ -1145,6 +1154,24 @@
             const actualizado = await Nube.actualizarProducto(producto.id, { activo: !producto.activo });
             productos = productos.map((p) => (p.id === actualizado.id ? actualizado : p));
             decir(actualizado.activo ? "Producto reactivado." : "Producto desactivado.", "ok");
+            pintar();
+        } catch (error) {
+            decir(error.message, "error");
+        }
+    }
+
+    async function eliminarProducto(producto) {
+        const detalle = `${producto.nombre}${producto.talla ? " · Talla " + producto.talla : ""}${producto.color ? " · " + producto.color : ""}`;
+        if (!window.confirm(
+            `¿Eliminar «${detalle}» para siempre? Se borran también sus movimientos de stock. Esto no se puede deshacer.\n\n` +
+            "Si solo quieres ocultarlo, usa «Desactivar»."
+        )) return;
+
+        try {
+            await Nube.eliminarProducto(producto.id);
+            productos = productos.filter((p) => p.id !== producto.id);
+            cargarMovimientos(true);
+            decir("Producto eliminado.", "ok");
             pintar();
         } catch (error) {
             decir(error.message, "error");

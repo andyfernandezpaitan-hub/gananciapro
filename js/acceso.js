@@ -225,7 +225,7 @@
             texto = `Prueba gratis: te quedan ${info.dias} ${info.dias === 1 ? "día" : "días"}.`;
             nivel = info.dias <= 3 ? "aviso" : "info";
         } else if (info.estado === "cancelada") {
-            texto = `Tu suscripción termina el ${info.fin.toLocaleDateString("es-PE")}.`;
+            texto = `Tu suscripción termina el ${info.fin.toLocaleDateString((window.GP_IDIOMA ? window.GP_IDIOMA.locale() : "es-PE"))}.`;
             nivel = "aviso";
         } else if (!info.acceso) {
             texto = `${info.estado === "prueba_vencida" ? "Tu prueba terminó." : "Tu suscripción terminó."} ${TEXTO_SOLO_LECTURA}`;

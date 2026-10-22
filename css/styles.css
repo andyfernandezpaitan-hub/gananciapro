@@ -3339,3 +3339,43 @@ button.miniatura:focus-visible {
 .tablero-grid {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
 }
+
+/* Botón de idioma (junto al de tema) */
+.btn-idioma {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+/* Móvil estrecho: el botón de idioma no debe causar desborde en la portada */
+@media (max-width: 480px) {
+    .encabezado .btn-tema {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-portada {
+        margin-right: var(--sp-1);
+    }
+
+    .encabezado .marca p {
+        display: none;
+    }
+}
+
+@media (max-width: 360px) {
+    .encabezado {
+        gap: var(--sp-2);
+        padding-inline: var(--sp-3);
+    }
+
+    .nav-portada .btn-chico {
+        padding-inline: 10px;
+        font-size: var(--fs-xs);
+    }
+
+    .encabezado .btn-tema {
+        width: 34px;
+        height: 34px;
+    }
+}

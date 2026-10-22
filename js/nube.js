@@ -438,6 +438,13 @@
             return data;
         },
 
+        /* Elimina un producto sin ventas (sql/08) y borra su foto si ya nadie la usa */
+        async eliminarProducto(id) {
+            const { data } = comprobar(await cliente.rpc("almacen_eliminar_producto", { p_producto_id: id }));
+            if (data && data.imagen_path) await this.borrarFoto(data.imagen_path);
+            return true;
+        },
+
         async actualizarProducto(id, cambios) {
             const { data } = comprobar(
                 await cliente.from("almacen_productos").update(cambios).eq("id", id).select(columnasProducto()).single()
