@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://ckipjthrubmhvwphkhyf.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://ckipjthrubmhvwphkhyf.supabase.co; font-src 'self'; connect-src 'self' https://ckipjthrubmhvwphkhyf.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0b1020">
@@ -745,6 +745,17 @@
                     <div id="chipsCategoria" class="chips-elegir" role="group" aria-label="Elegir categoría"></div>
                     <p>Toca una categoría o escribe una nueva: si no existe, se crea sola. En <strong>Ropa</strong> cada producto se maneja por tallas.</p>
                 </div>
+                <div class="campo" id="campoFoto" hidden>
+                    <label for="prodFoto">Foto de referencia (opcional)</label>
+                    <div class="foto-editor">
+                        <img id="prodFotoVista" alt="Vista previa de la foto" hidden>
+                        <div class="foto-controles">
+                            <input type="file" id="prodFoto" accept="image/jpeg,image/png,image/webp">
+                            <button type="button" id="btnQuitarFoto" class="btn-secundario btn-chico" hidden>Quitar foto</button>
+                        </div>
+                    </div>
+                    <p>JPG, PNG o WEBP. Se reduce sola y se quitan los datos ocultos de la foto (como la ubicación).</p>
+                </div>
                 <div class="campo">
                     <label for="prodCodigo">Código (opcional)</label>
                     <input type="text" id="prodCodigo" maxlength="60">
@@ -811,6 +822,11 @@
                     <button type="button" id="btnCerrarPlanes" class="btn-secundario">Cerrar</button>
                 </div>
             </div>
+        </dialog>
+
+        <dialog id="dlgFoto" aria-label="Foto del producto" class="dlg-foto">
+            <img id="fotoGrande" alt="">
+            <div class="acciones"><button type="button" id="btnCerrarFoto" class="btn-secundario">Cerrar</button></div>
         </dialog>
 
         <dialog id="dlgMovimiento" aria-labelledby="tituloDlgMov">

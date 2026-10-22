@@ -192,7 +192,10 @@
             /\bropa\b/.test(sinTildes(nombreCategoria(producto.categoria_id)));
     }
 
-    const CATEGORIAS_SUGERIDAS = ["Ropa", "Zapatos", "Accesorios"];
+    const CATEGORIAS_SUGERIDAS = [
+        "Ropa", "Zapatos", "Accesorios", "Bolsos", "Joyería", "Belleza", "Hogar", "Juguetes",
+        "Papelería", "Electrónica", "Alimentos", "Bebidas", "Limpieza", "Herramientas", "Repuestos"
+    ];
 
     function pintarChipsCategoria() {
         const cont = $("chipsCategoria");
@@ -309,6 +312,11 @@
 
             info.append(titulo, detalle);
 
+            if (producto.imagen_path) {
+                info.classList.add("con-foto");
+                info.prepend(miniatura(producto, true));
+            }
+
             insignia.className = `estado-stock estado-${estado}`;
             if (estado === "agotado") {
                 insignia.textContent = "Agotado";
@@ -388,6 +396,12 @@
             resumen.textContent = `${items.length} ${items.length === 1 ? "variante" : "variantes"}` +
                 (agotadas ? ` · ${agotadas} agotada${agotadas === 1 ? "" : "s"}` : "");
             textos.append(nombre, resumen);
+
+            const conFoto = items.find((p) => p.imagen_path);
+            if (conFoto) {
+                textos.classList.add("con-foto");
+                textos.prepend(miniatura(conFoto, false));
+            }
 
             const cifra = document.createElement("span");
             cifra.className = `estado-stock estado-${estadoGrupo === "poco" ? "poco" : estadoGrupo}`;
@@ -669,6 +683,121 @@
     });
 
     /* ----- Producto nuevo / edición ----- */
+    /* ----- Fotos de referencia ----- */
+    let fotoNueva = null;      // imagen ya reducida, lista para subir
+    let quitarFoto = false;
+    let vistaFoto = "";        // URL temporal de la vista previa
+
+    function soltarVista() {
+        if (vistaFoto) URL.revokeObjectURL(vistaFoto);
+        vistaFoto = "";
+    }
+
+    function mostrarVista(url) {
+        const img = $("prodFotoVista");
+        img.hidden = !url;
+        if (url) img.src = url; else img.removeAttribute("src");
+        $("btnQuitarFoto").hidden = !url;
+    }
+
+    async function reducirImagen(archivo) {
+        const mapa = await createImageBitmap(archivo, { imageOrientation: "from-image" });
+        const escala = Math.min(1, 800 / Math.max(mapa.width, mapa.height));
+        const lienzo = document.createElement("canvas");
+        lienzo.width = Math.max(1, Math.round(mapa.width * escala));
+        lienzo.height = Math.max(1, Math.round(mapa.height * escala));
+        const ctx = lienzo.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+        ctx.drawImage(mapa, 0, 0, lienzo.width, lienzo.height);
+        mapa.close();
+
+        const aBlob = (tipo, calidad) => new Promise((ok) => lienzo.toBlob(ok, tipo, calidad));
+        let blob = await aBlob("image/webp", 0.82);
+        if (!blob || blob.type !== "image/webp") blob = await aBlob("image/jpeg", 0.85);
+        if (!blob) throw new Error("No se pudo preparar la foto.");
+        return blob;
+    }
+
+    $("prodFoto").addEventListener("change", async () => {
+        const archivo = $("prodFoto").files[0];
+        const aviso = $("mensajeProducto");
+        if (!archivo) return;
+
+        if (!/^image\/(jpeg|png|webp)$/.test(archivo.type)) {
+            aviso.textContent = "La foto debe ser JPG, PNG o WEBP.";
+            aviso.dataset.tipo = "error";
+            $("prodFoto").value = "";
+            return;
+        }
+
+        if (archivo.size > 15 * 1024 * 1024) {
+            aviso.textContent = "La foto es muy pesada (máximo 15 MB).";
+            aviso.dataset.tipo = "error";
+            $("prodFoto").value = "";
+            return;
+        }
+
+        try {
+            fotoNueva = await reducirImagen(archivo);
+            quitarFoto = false;
+            soltarVista();
+            vistaFoto = URL.createObjectURL(fotoNueva);
+            mostrarVista(vistaFoto);
+            aviso.textContent = "";
+        } catch (e) {
+            aviso.textContent = "No se pudo leer esa imagen. Prueba con otra foto.";
+            aviso.dataset.tipo = "error";
+            $("prodFoto").value = "";
+        }
+    });
+
+    $("btnQuitarFoto").addEventListener("click", () => {
+        fotoNueva = null;
+        quitarFoto = true;
+        soltarVista();
+        mostrarVista("");
+        $("prodFoto").value = "";
+    });
+
+    /* Una foto puede compartirse entre tallas: solo se borra si ningún producto la usa */
+    async function limpiarFotoSiSinUso(ruta) {
+        if (!ruta) return;
+        if (productos.some((p) => p.imagen_path === ruta)) return;
+        await Nube.borrarFoto(ruta);
+    }
+
+    function miniatura(producto, comoBoton) {
+        const marco = document.createElement(comoBoton ? "button" : "span");
+        const img = document.createElement("img");
+        marco.className = "miniatura";
+        if (comoBoton) {
+            marco.type = "button";
+            marco.setAttribute("aria-label", `Ver foto de ${producto.nombre}`);
+            marco.addEventListener("click", async () => {
+                const url = await Nube.urlFoto(producto.imagen_path);
+                if (!url) return;
+                $("fotoGrande").src = url;
+                $("fotoGrande").alt = `Foto de ${producto.nombre}`;
+                $("dlgFoto").showModal();
+            });
+        }
+        img.alt = comoBoton ? "" : `Foto de ${producto.nombre}`;
+        img.width = 56;
+        img.height = 56;
+        img.loading = "lazy";
+        img.decoding = "async";
+        marco.appendChild(img);
+        Nube.urlFoto(producto.imagen_path).then((url) => {
+            if (url) img.src = url; else marco.remove();
+        });
+        return marco;
+    }
+
+    $("btnCerrarFoto").addEventListener("click", () => $("dlgFoto").close());
+    $("dlgFoto").addEventListener("click", (e) => { if (e.target === $("dlgFoto")) $("dlgFoto").close(); });
+    $("dlgFoto").addEventListener("close", () => $("fotoGrande").removeAttribute("src"));
+
     function abrirProducto(producto) {
         productoEnEdicion = producto || null;
         $("tituloDlgProducto").textContent = producto ? "Editar producto" : "Nuevo producto";
@@ -680,6 +809,15 @@
         $("mensajeProducto").textContent = "";
         $("campoCantidadInicial").hidden = Boolean(producto);
         $("prodCantidad").value = "";
+        fotoNueva = null;
+        quitarFoto = false;
+        soltarVista();
+        $("prodFoto").value = "";
+        $("campoFoto").hidden = !Nube.fotosDisponibles();
+        mostrarVista("");
+        if (producto?.imagen_path) {
+            Nube.urlFoto(producto.imagen_path).then((url) => { if (productoEnEdicion === producto && !fotoNueva && !quitarFoto) mostrarVista(url); });
+        }
         $("filasTallas").replaceChildren();
         pintarChipsCategoria();
         actualizarModoTallas();
@@ -789,6 +927,7 @@
             const categoriaId = await categoriaPorNombre($("prodCategoria").value);
             const color = $("prodColor").value.trim();
             const codigoBase = $("prodCodigo").value.trim();
+            const rutaFoto = fotoNueva ? await Nube.subirFoto(fotoNueva) : null;
 
             for (const f of filas) {
                 try {
@@ -798,7 +937,8 @@
                         talla: f.talla,
                         color,
                         codigo: codigoBase ? `${codigoBase}-${f.talla}` : null,
-                        activo: true
+                        activo: true,
+                        ...(rutaFoto ? { imagen_path: rutaFoto } : {})
                     });
                     creadas += 1;
                     let stock = 0;
@@ -902,10 +1042,15 @@
             };
 
             let productoNuevo = null;
+            const fotoAnterior = productoEnEdicion?.imagen_path || null;
+
+            if (fotoNueva) datos.imagen_path = await Nube.subirFoto(fotoNueva);
+            else if (quitarFoto && productoEnEdicion) datos.imagen_path = null;
 
             if (productoEnEdicion) {
                 const actualizado = await Nube.actualizarProducto(productoEnEdicion.id, datos);
                 productos = productos.map((p) => (p.id === actualizado.id ? actualizado : p));
+                if (fotoAnterior && fotoAnterior !== actualizado.imagen_path) await limpiarFotoSiSinUso(fotoAnterior);
             } else {
                 const creado = await Nube.crearProducto({ ...datos, activo: true });
                 productos = [...productos, creado].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));

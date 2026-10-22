@@ -24,7 +24,12 @@
     );
 
     const COLUMNAS = "id, fecha, tipo, descripcion, importe, moneda";
-    const COLUMNAS_PRODUCTO = "id, nombre, talla, color, codigo, stock, activo, categoria_id";
+    const COLUMNAS_BASE_PRODUCTO = "id, nombre, talla, color, codigo, stock, activo, categoria_id";
+    /* La foto necesita el SQL 06; si aún no está instalado se trabaja sin fotos */
+    let fotosActivas = true;
+    const columnasProducto = () => fotosActivas ? COLUMNAS_BASE_PRODUCTO + ", imagen_path" : COLUMNAS_BASE_PRODUCTO;
+    const faltaColumnaFoto = (error) => Boolean(error) && /imagen_path/i.test(String(error.message || ""));
+    const FOTOS_CACHE = new Map();
     const TAMANO_PAGINA = 1000;
     const TAMANO_LOTE = 500;
 
@@ -386,13 +391,22 @@
             const todos = [];
 
             for (let desde = 0; ; desde += TAMANO_PAGINA) {
-                const { data } = comprobar(
-                    await cliente
+                let respuesta = await cliente
+                    .from("almacen_productos")
+                    .select(columnasProducto())
+                    .order("nombre", { ascending: true })
+                    .range(desde, desde + TAMANO_PAGINA - 1);
+
+                if (respuesta.error && fotosActivas && faltaColumnaFoto(respuesta.error)) {
+                    fotosActivas = false;
+                    respuesta = await cliente
                         .from("almacen_productos")
-                        .select(COLUMNAS_PRODUCTO)
+                        .select(columnasProducto())
                         .order("nombre", { ascending: true })
-                        .range(desde, desde + TAMANO_PAGINA - 1)
-                );
+                        .range(desde, desde + TAMANO_PAGINA - 1);
+                }
+
+                const { data } = comprobar(respuesta);
 
                 todos.push(...data);
 
@@ -404,16 +418,58 @@
 
         async crearProducto(producto) {
             const { data } = comprobar(
-                await cliente.from("almacen_productos").insert([producto]).select(COLUMNAS_PRODUCTO).single()
+                await cliente.from("almacen_productos").insert([producto]).select(columnasProducto()).single()
             );
             return data;
         },
 
         async actualizarProducto(id, cambios) {
             const { data } = comprobar(
-                await cliente.from("almacen_productos").update(cambios).eq("id", id).select(COLUMNAS_PRODUCTO).single()
+                await cliente.from("almacen_productos").update(cambios).eq("id", id).select(columnasProducto()).single()
             );
             return data;
+        },
+
+        /* ----- Fotos de producto (almacenamiento privado, carpeta propia) ----- */
+        fotosDisponibles() {
+            return fotosActivas;
+        },
+
+        async subirFoto(blob) {
+            const { data } = comprobar(await cliente.auth.getSession());
+            const usuario = data.session && data.session.user && data.session.user.id;
+            if (!usuario) throw new Error("Tu sesión terminó. Vuelve a entrar.");
+
+            const ext = blob.type === "image/webp" ? "webp" : blob.type === "image/png" ? "png" : "jpg";
+            const ruta = `${usuario}/${crypto.randomUUID()}.${ext}`;
+            const { error } = await cliente.storage.from("productos").upload(ruta, blob, {
+                contentType: blob.type,
+                cacheControl: "3600",
+                upsert: false
+            });
+            if (error) throw new Error("No se pudo subir la foto. Revisa que el paso SQL de fotos esté instalado.");
+            return ruta;
+        },
+
+        async borrarFoto(ruta) {
+            if (!ruta) return;
+            FOTOS_CACHE.delete(ruta);
+            try {
+                await cliente.storage.from("productos").remove([ruta]);
+            } catch (e) {
+                /* Si no se puede borrar ahora, queda sin uso y no afecta al cliente */
+            }
+        },
+
+        async urlFoto(ruta) {
+            if (!ruta) return "";
+            const guardada = FOTOS_CACHE.get(ruta);
+            if (guardada && guardada.hasta > Date.now()) return guardada.url;
+
+            const { data, error } = await cliente.storage.from("productos").createSignedUrl(ruta, 3600);
+            if (error || !data) return "";
+            FOTOS_CACHE.set(ruta, { url: data.signedUrl, hasta: Date.now() + 50 * 60 * 1000 });
+            return data.signedUrl;
         },
 
         /* Entradas, pérdidas, daños, uso interno y ajustes (devuelve el stock nuevo) */

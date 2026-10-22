@@ -2927,3 +2927,106 @@ dialog {
         transition: none;
     }
 }
+
+
+/* ==========================================================================
+   22. FOTOS DE REFERENCIA
+   ========================================================================== */
+.foto-editor {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+}
+
+.foto-editor img {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: var(--radio);
+    border: 1px solid var(--borde);
+    background: var(--surface-2);
+}
+
+.foto-editor img[hidden] {
+    display: none;
+}
+
+.foto-controles {
+    display: grid;
+    gap: var(--sp-2);
+    justify-items: start;
+}
+
+.miniatura {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    margin: 0;
+    flex: none;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    background: var(--surface-2);
+    cursor: zoom-in;
+    display: block;
+    grid-row: span 2;
+}
+
+span.miniatura {
+    cursor: inherit;
+}
+
+.miniatura img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+button.miniatura:hover {
+    transform: none;
+    box-shadow: var(--sombra);
+}
+
+button.miniatura:focus-visible {
+    outline: 3px solid var(--anillo);
+    outline-offset: 2px;
+}
+
+.prod-info.con-foto,
+.grupo-textos.con-foto {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--sp-3);
+    align-items: center;
+}
+
+.prod-info.con-foto > strong,
+.grupo-textos.con-foto > strong {
+    align-self: end;
+}
+
+.prod-info.con-foto > span:not(.miniatura),
+.grupo-textos.con-foto > span:not(.miniatura) {
+    align-self: start;
+}
+
+.dlg-foto {
+    width: min(560px, calc(100% - var(--sp-8)));
+    padding: var(--sp-4);
+    text-align: center;
+}
+
+.dlg-foto img {
+    display: block;
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: var(--radio);
+    background: var(--surface-2);
+}
+
+.dlg-foto .acciones {
+    margin-top: var(--sp-3);
+    justify-content: center;
+}
