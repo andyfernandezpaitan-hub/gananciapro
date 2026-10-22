@@ -184,6 +184,8 @@
         return elemento;
     }
 
+    const gruposAbiertos = new Set();
+
     function pintar() {
         $("btnNuevoProducto").disabled = !puedeEscribir();
         $("btnVenta").disabled = !puedeEscribir();
@@ -219,7 +221,7 @@
             return;
         }
 
-        for (const producto of mostrados) {
+        function filaProducto(producto, enGrupo) {
             const fila = document.createElement("li");
             const info = document.createElement("div");
             const titulo = document.createElement("strong");
@@ -232,12 +234,18 @@
             fila.dataset.estado = estado;
 
             info.className = "prod-info";
-            titulo.textContent = producto.nombre;
-            detalle.textContent = [
-                producto.talla && `Talla ${producto.talla}`,
-                producto.color,
-                producto.codigo && `Cód. ${producto.codigo}`
-            ].filter(Boolean).join(" · ");
+            if (enGrupo) {
+                titulo.textContent = [producto.talla && `Talla ${producto.talla}`, producto.color]
+                    .filter(Boolean).join(" · ") || "Única";
+                detalle.textContent = producto.codigo ? `Cód. ${producto.codigo}` : "";
+            } else {
+                titulo.textContent = producto.nombre;
+                detalle.textContent = [
+                    producto.talla && `Talla ${producto.talla}`,
+                    producto.color,
+                    producto.codigo && `Cód. ${producto.codigo}`
+                ].filter(Boolean).join(" · ");
+            }
 
             if (producto.categoria_id) {
                 const nombreCat = nombreCategoria(producto.categoria_id);
@@ -287,7 +295,77 @@
             }
 
             fila.append(info, insignia, acciones);
-            lista.appendChild(fila);
+            return fila;
+        }
+
+        /* Productos con el mismo nombre (tallas o colores distintos) se agrupan y se despliegan */
+        const grupos = new Map();
+        for (const producto of mostrados) {
+            const clave = sinTildes(producto.nombre).trim();
+            if (!grupos.has(clave)) grupos.set(clave, []);
+            grupos.get(clave).push(producto);
+        }
+
+        for (const [clave, items] of grupos) {
+            if (items.length === 1) {
+                lista.appendChild(filaProducto(items[0], false));
+                continue;
+            }
+
+            const total = items.reduce((suma, p) => suma + p.stock, 0);
+            const estados = items.map(estadoStock);
+            const estadoGrupo = estados.every((e) => e === "agotado")
+                ? "agotado"
+                : estados.some((e) => e !== "ok") ? "poco" : "ok";
+            const abierto = gruposAbiertos.has(clave);
+
+            const grupo = document.createElement("li");
+            grupo.className = "grupo-producto";
+            grupo.dataset.estado = estadoGrupo;
+
+            const cabecera = document.createElement("button");
+            cabecera.type = "button";
+            cabecera.className = "grupo-cabecera";
+            cabecera.setAttribute("aria-expanded", String(abierto));
+
+            const textos = document.createElement("span");
+            textos.className = "grupo-textos";
+            const nombre = document.createElement("strong");
+            nombre.textContent = items[0].nombre;
+            const resumen = document.createElement("span");
+            const agotadas = estados.filter((e) => e === "agotado").length;
+            resumen.textContent = `${items.length} variantes` +
+                (agotadas ? ` · ${agotadas} agotada${agotadas === 1 ? "" : "s"}` : "");
+            textos.append(nombre, resumen);
+
+            const cifra = document.createElement("span");
+            cifra.className = `estado-stock estado-${estadoGrupo === "poco" ? "poco" : estadoGrupo}`;
+            const numero = document.createElement("b");
+            const unidad = document.createElement("small");
+            numero.textContent = entero.format(total);
+            unidad.textContent = "en total";
+            cifra.append(numero, unidad);
+
+            const flecha = document.createElement("span");
+            flecha.className = "grupo-flecha";
+            flecha.setAttribute("aria-hidden", "true");
+
+            cabecera.append(textos, cifra, flecha);
+
+            const variantes = document.createElement("ul");
+            variantes.className = "variantes";
+            variantes.hidden = !abierto;
+            for (const p of items) variantes.appendChild(filaProducto(p, true));
+
+            cabecera.addEventListener("click", () => {
+                const ahora = variantes.hidden;
+                variantes.hidden = !ahora;
+                cabecera.setAttribute("aria-expanded", String(ahora));
+                if (ahora) gruposAbiertos.add(clave); else gruposAbiertos.delete(clave);
+            });
+
+            grupo.append(cabecera, variantes);
+            lista.appendChild(grupo);
         }
 
         if (visibles.length > mostrados.length) {
