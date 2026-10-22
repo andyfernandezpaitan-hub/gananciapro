@@ -213,6 +213,9 @@
     const TEXTO_SOLO_LECTURA =
         "Puedes ver y descargar tus datos, pero no registrar nada nuevo hasta que te suscribas.";
 
+    /* Mensaje que no debe borrarse mientras se espera la confirmación de un pago */
+    let mensajeFijo = null;
+
     function aplicarAcceso(info) {
         const aviso = $("avisoSuscripcion");
         let texto = "";
@@ -232,6 +235,11 @@
         window.GP_ACCESO = Object.freeze({ acceso: info.acceso, estado: info.estado, dias: info.dias });
         document.body.dataset.acceso = info.acceso ? "si" : "no";
 
+        if (mensajeFijo) {
+            texto = mensajeFijo;
+            nivel = "info";
+        }
+
         $("textoSuscripcion").textContent = texto;
         aviso.dataset.nivel = nivel;
         aviso.hidden = texto === "";
@@ -241,6 +249,9 @@
         const registrar = $("formOperacion")?.querySelector('button[type="submit"]');
         if (registrar) registrar.disabled = !info.acceso;
         if ($("mensajeOperacion") && !info.acceso) $("mensajeOperacion").textContent = TEXTO_SOLO_LECTURA;
+
+        /* "Gestionar suscripción": solo para quien ya pagó alguna vez (no en prueba ni cortesía) */
+        $("btnGestionar").hidden = !["activa", "cancelada", "sin_suscripcion"].includes(info.estado);
 
         document.dispatchEvent(new CustomEvent("gp-acceso"));
     }
@@ -256,6 +267,83 @@
 
     const dlgPlanes = $("dlgPlanes");
 
+    /* Pide al servidor el pago de ESTE cliente y lo abre (solo direcciones https de Polar) */
+    async function abrirPago() {
+        const boton = $("btnSuscribirme");
+        boton.disabled = true;
+        boton.textContent = "Abriendo pago…";
+        $("textoEstadoPlan").textContent = "";
+
+        try {
+            const url = await Nube.crearPago();
+            const destino = new URL(url);
+
+            if (destino.protocol !== "https:" || !/(^|\.)polar\.sh$/.test(destino.hostname)) {
+                throw new Error("No se pudo abrir el pago. Inténtalo de nuevo en unos minutos.");
+            }
+
+            window.location.assign(destino.href);
+        } catch (error) {
+            $("textoEstadoPlan").textContent = error.message;
+            boton.disabled = false;
+            boton.textContent = "Suscribirme";
+        }
+    }
+
+    /* Portal de Polar: cancelar, cambiar tarjeta, facturas (solo direcciones https de Polar) */
+    $("btnGestionar").addEventListener("click", async () => {
+        const boton = $("btnGestionar");
+        boton.disabled = true;
+        $("mensajeCuenta").textContent = "";
+
+        try {
+            const destino = new URL(await Nube.abrirPortal());
+
+            if (destino.protocol !== "https:" || !/(^|\.)polar\.sh$/.test(destino.hostname)) {
+                throw new Error("No se pudo abrir el portal. Inténtalo de nuevo en unos minutos.");
+            }
+
+            window.location.assign(destino.href);
+        } catch (error) {
+            $("mensajeCuenta").textContent = error.message;
+            boton.disabled = false;
+        }
+    });
+
+    /* Al volver del pago: el aviso de Polar puede tardar unos segundos en llegar */
+    async function esperarActivacion() {
+        const parametros = new URLSearchParams(window.location.search);
+
+        if (parametros.get("pago") !== "ok") return;
+
+        parametros.delete("pago");
+        const resto = parametros.toString();
+        window.history.replaceState(null, "", window.location.pathname + (resto ? `?${resto}` : "") + window.location.hash);
+
+        const aviso = $("avisoSuscripcion");
+        mensajeFijo = "Pago recibido. Estamos activando tu suscripción…";
+        $("textoSuscripcion").textContent = mensajeFijo;
+        aviso.dataset.nivel = "info";
+        aviso.hidden = false;
+
+        for (let intento = 0; intento < 10; intento++) {
+            await new Promise((resolver) => setTimeout(resolver, 3000));
+            await cargarAcceso();
+
+            if (window.GP_ACCESO?.estado === "activa") {
+                mensajeFijo = "¡Suscripción activa! Gracias por confiar en GananciaPro.";
+                $("textoSuscripcion").textContent = mensajeFijo;
+                aviso.hidden = false;
+                return;
+            }
+        }
+
+        mensajeFijo =
+            "Recibimos tu pago, pero la activación está tardando. Recarga la página en un minuto; si sigue igual, escríbenos.";
+        $("textoSuscripcion").textContent = mensajeFijo;
+        aviso.hidden = false;
+    }
+
     $("btnVerPlanes").addEventListener("click", () => {
         $("textoPrecio").textContent = cfg.PRECIO_TEXTO || "El precio mensual se anunciará al activar los pagos.";
         $("textoEstadoPlan").textContent = $("textoSuscripcion").textContent;
@@ -264,9 +352,16 @@
         const listo = /^https:\/\//.test(url);
         const boton = $("btnSuscribirme");
 
-        boton.disabled = !listo;
-        boton.textContent = listo ? "Suscribirme" : "Suscribirme (próximamente)";
-        boton.onclick = listo ? () => window.open(url, "_blank", "noopener,noreferrer") : null;
+        if (cfg.PAGOS_ACTIVOS === true) {
+            boton.disabled = false;
+            boton.textContent = "Suscribirme";
+            boton.onclick = abrirPago;
+        } else {
+            boton.disabled = !listo;
+            boton.textContent = listo ? "Suscribirme" : "Suscribirme (próximamente)";
+            boton.onclick = listo ? () => window.open(url, "_blank", "noopener,noreferrer") : null;
+        }
+
         dlgPlanes.showModal();
     });
 
@@ -299,6 +394,7 @@
             $("cuenta").hidden = false;
             await cargarAcceso();
             estado("si");
+            esperarActivacion();
             revisarMigracion(sesion.user.id);
         } catch (error) {
             usuarioCargado = null;

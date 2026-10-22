@@ -203,6 +203,70 @@
             return data;
         },
 
+        /* Abre el pago de Polar: lo crea una función del servidor con la sesión del cliente */
+        async crearPago() {
+            const { data } = comprobar(await cliente.auth.getSession());
+            const token = data.session?.access_token;
+
+            if (!token) throw new Error("Tu sesión venció. Inicia sesión de nuevo.");
+
+            let respuesta;
+
+            try {
+                respuesta = await fetch(`${cfg.SUPABASE_URL}/functions/v1/crear-pago`, {
+                    method: "POST",
+                    headers: {
+                        apikey: cfg.SUPABASE_CLAVE_PUBLICA,
+                        authorization: `Bearer ${token}`,
+                        "content-type": "application/json"
+                    },
+                    body: "{}"
+                });
+            } catch (error) {
+                throw new Error("No hay conexión con el servidor. Revisa tu internet.");
+            }
+
+            const resultado = await respuesta.json().catch(() => ({}));
+
+            if (!respuesta.ok) {
+                throw new Error(resultado.mensaje || "No se pudo abrir el pago. Inténtalo de nuevo.");
+            }
+
+            return resultado.url;
+        },
+
+        /* Portal de Polar: cancelar, cambiar tarjeta y ver facturas (lo abre una función del servidor) */
+        async abrirPortal() {
+            const { data } = comprobar(await cliente.auth.getSession());
+            const token = data.session?.access_token;
+
+            if (!token) throw new Error("Tu sesión venció. Inicia sesión de nuevo.");
+
+            let respuesta;
+
+            try {
+                respuesta = await fetch(`${cfg.SUPABASE_URL}/functions/v1/gestionar-suscripcion`, {
+                    method: "POST",
+                    headers: {
+                        apikey: cfg.SUPABASE_CLAVE_PUBLICA,
+                        authorization: `Bearer ${token}`,
+                        "content-type": "application/json"
+                    },
+                    body: "{}"
+                });
+            } catch (error) {
+                throw new Error("No hay conexión con el servidor. Revisa tu internet.");
+            }
+
+            const resultado = await respuesta.json().catch(() => ({}));
+
+            if (!respuesta.ok) {
+                throw new Error(resultado.mensaje || "No se pudo abrir el portal. Inténtalo de nuevo.");
+            }
+
+            return resultado.url;
+        },
+
         /* ----- Consentimiento ----- */
         async tieneConsentimiento() {
             const { data } = comprobar(
