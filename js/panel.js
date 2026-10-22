@@ -85,9 +85,21 @@
         }
 
         const W = 640, H = 240, izq = 46, der = 12, arr = 12, aba = 28;
-        const maximo = Math.max(1, ...ing, ...gas);
+        const bruto = Math.max(1, ...ing, ...gas);
+        const potencia = Math.pow(10, Math.floor(Math.log10(bruto)));
+        const f = bruto / potencia;
+        const maximo = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * potencia;
         const x = (i) => izq + (dias === 1 ? 0 : (i / (dias - 1)) * (W - izq - der));
         const y = (v) => arr + (1 - v / maximo) * (H - arr - aba);
+
+        const defs = el("defs", {});
+        for (const [id, clase] of [["gradIng", "ing"], ["gradGas", "gas"]]) {
+            const g = el("linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 });
+            g.appendChild(el("stop", { offset: "0%", class: "parada-" + clase, "stop-opacity": "0.38" }));
+            g.appendChild(el("stop", { offset: "100%", class: "parada-" + clase, "stop-opacity": "0" }));
+            defs.appendChild(g);
+        }
+        svg.appendChild(defs);
 
         for (let k = 0; k <= 4; k++) {
             const v = (maximo / 4) * k;
@@ -103,7 +115,9 @@
         }
 
         const trazo = (serie) => serie.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("");
-        svg.appendChild(el("path", { class: "area-ing", d: trazo(ing) + "L" + x(dias - 1) + " " + y(0) + "L" + x(0) + " " + y(0) + "Z" }));
+        const cierre = "L" + x(dias - 1) + " " + y(0) + "L" + x(0) + " " + y(0) + "Z";
+        svg.appendChild(el("path", { class: "area area-gas", fill: "url(#gradGas)", d: trazo(gas) + cierre }));
+        svg.appendChild(el("path", { class: "area area-ing", fill: "url(#gradIng)", d: trazo(ing) + cierre }));
         for (const [clase, serie] of [["linea-gas", gas], ["linea-ing", ing]]) {
             const p = el("path", { class: "linea " + clase + (reducido ? "" : " dibuja"), d: trazo(serie), pathLength: "1" });
             svg.appendChild(p);
@@ -252,6 +266,12 @@
         margen.removeAttribute("data-signo");
         margen.textContent = ingresos > 0 ? "Margen " + ((ganancia / ingresos) * 100).toFixed(0) + "%" : "";
         if (ingresos > 0) margen.setAttribute("data-signo", ganancia >= 0 ? "bien" : "mal");
+
+        const anillo = $("anilloMargen");
+        if (anillo) {
+            const pct = ingresos > 0 ? Math.max(0, Math.min(100, (ganancia / ingresos) * 100)) : 0;
+            anillo.style.setProperty("--pct", pct.toFixed(1));
+        }
 
         dibujarLinea(datos.dias, mes, codigo);
         barras($("topGastos"), datos.top_gastos.map((f) => ({ nombre: f.nombre || "Sin descripción", valor: Number(f.valor) })), (v) => moneda(v, codigo));

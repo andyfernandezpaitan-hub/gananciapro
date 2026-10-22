@@ -3030,3 +3030,302 @@ button.miniatura:focus-visible {
     margin-top: var(--sp-3);
     justify-content: center;
 }
+
+
+/* ==========================================================================
+   23. OSCURO PREMIUM
+   Fondo profundo con brillos cálidos, tarjetas con borde de luz, iconos y
+   gráficos con degradado. Es el aspecto por defecto; el botón de tema vuelve al claro.
+   ========================================================================== */
+
+/* --- Iconos y anillo de los indicadores (ambos temas) --- */
+.kpi {
+    position: relative;
+}
+
+.kpi-ico {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: var(--sp-3);
+    border-radius: 12px;
+    color: var(--acento);
+    background: var(--surface-2);
+}
+
+.kpi-ico svg {
+    width: 20px;
+    height: 20px;
+}
+
+.kpi-ing .kpi-ico { color: var(--ok); background: var(--ok-fondo); }
+.kpi-gas .kpi-ico { color: var(--mal); background: var(--mal-fondo); }
+.kpi-gan .kpi-ico { color: var(--aviso, #d99a1f); background: var(--aviso-fondo, #fbf0d4); }
+.kpi-ops .kpi-ico { color: var(--info); background: var(--info-fondo); }
+
+.kpi-anillo {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 46px;
+    height: 46px;
+    transform: rotate(-90deg);
+}
+
+.kpi-anillo circle {
+    fill: none;
+    stroke-width: 4;
+}
+
+.anillo-pista {
+    stroke: var(--borde);
+}
+
+.anillo-valor {
+    stroke: var(--ok);
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: calc(100 - var(--pct, 0));
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Gráfico: degradados bajo las líneas (ambos temas) --- */
+.grafico .area-ing,
+.grafico .area-gas {
+    opacity: 1;
+}
+
+.grafico .area-ing { fill: url(#gradIng); }
+.grafico .area-gas { fill: url(#gradGas); }
+.parada-ing { stop-color: var(--ok); }
+.parada-gas { stop-color: var(--mal); }
+
+@media (prefers-reduced-motion: reduce) {
+    .anillo-valor { transition: none; }
+}
+
+/* --- Paleta oscura premium --- */
+:root[data-theme="dark"] {
+    --bg: #0b0807;
+    --surface: #16100d;
+    --surface-2: #1d1612;
+    --texto: #f8eee2;
+    --texto-suave: #bda993;
+    --borde: rgba(255, 255, 255, 0.08);
+    --borde-fuerte: rgba(255, 255, 255, 0.16);
+    --acento: #ff9f68;
+    --acento-hover: #ffb98c;
+    --oro: #f2c46d;
+    --ok: #6fe0a0;
+    --ok-fondo: rgba(111, 224, 160, 0.13);
+    --mal: #ff8f84;
+    --mal-fondo: rgba(255, 143, 132, 0.13);
+    --aviso: #f7c35a;
+    --aviso-fondo: rgba(247, 195, 90, 0.14);
+    --cab-fondo: rgba(14, 10, 8, 0.72);
+    --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --sombra: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 16px 36px rgba(0, 0, 0, 0.5);
+    --sombra-lg: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 28px 60px rgba(0, 0, 0, 0.6);
+}
+
+:root[data-theme="dark"] body {
+    background:
+        radial-gradient(1000px 560px at 90% -12%, rgba(255, 140, 70, 0.20), transparent 62%),
+        radial-gradient(800px 520px at -10% 28%, rgba(242, 196, 109, 0.10), transparent 62%),
+        radial-gradient(700px 500px at 50% 115%, rgba(255, 120, 60, 0.08), transparent 65%),
+        var(--bg);
+    background-attachment: fixed;
+}
+
+:root[data-theme="dark"] .encabezado {
+    background: var(--cab-fondo);
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(90deg, transparent, rgba(242, 196, 109, 0.35), transparent) 1;
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    backdrop-filter: saturate(180%) blur(18px);
+}
+
+/* Tarjetas con borde de luz */
+:root[data-theme="dark"] .tarjeta,
+:root[data-theme="dark"] .bienvenida,
+:root[data-theme="dark"] .kpi,
+:root[data-theme="dark"] .tablero-tarjeta,
+:root[data-theme="dark"] .operaciones,
+:root[data-theme="dark"] .historial,
+:root[data-theme="dark"] .almacen-hist,
+:root[data-theme="dark"] .acceso-tarjeta,
+:root[data-theme="dark"] .caja-precio,
+:root[data-theme="dark"] .tarjeta-portada,
+:root[data-theme="dark"] .pasos-portada li,
+:root[data-theme="dark"] .lista-productos li,
+:root[data-theme="dark"] .faq details,
+:root[data-theme="dark"] dialog {
+    background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012) 55%),
+        var(--surface);
+    border-color: var(--borde);
+    box-shadow: var(--sombra);
+}
+
+:root[data-theme="dark"] .kpi,
+:root[data-theme="dark"] .tablero-tarjeta,
+:root[data-theme="dark"] .tarjeta {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+:root[data-theme="dark"] .kpi:hover,
+:root[data-theme="dark"] .tablero-tarjeta:hover,
+:root[data-theme="dark"] .tarjeta:hover {
+    transform: translateY(-3px);
+    border-color: rgba(242, 196, 109, 0.28);
+    box-shadow: var(--sombra-lg), 0 0 36px rgba(255, 140, 70, 0.10);
+}
+
+/* La tarjeta de ganancia y los productos conservan su carácter */
+:root[data-theme="dark"] .tarjeta-balance {
+    background:
+        radial-gradient(520px 260px at 100% 0%, rgba(255, 190, 120, 0.35), transparent 60%),
+        linear-gradient(135deg, #b8470f, #7a2a08);
+    border-color: rgba(255, 190, 120, 0.3);
+    box-shadow: 0 24px 60px rgba(184, 71, 15, 0.35), 0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+:root[data-theme="dark"] .lista-productos li.grupo-producto,
+:root[data-theme="dark"] .variantes > li {
+    background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01) 60%),
+        var(--surface);
+}
+
+:root[data-theme="dark"] .variantes > li {
+    background: rgba(255, 255, 255, 0.035);
+}
+
+:root[data-theme="dark"] .lista-productos li[data-estado="agotado"],
+:root[data-theme="dark"] .variantes > li[data-estado="agotado"] {
+    background:
+        linear-gradient(160deg, rgba(255, 143, 132, 0.14), rgba(255, 143, 132, 0.04) 60%),
+        var(--surface);
+}
+
+/* Cifras con degradado cálido */
+:root[data-theme="dark"] .kpi-valor,
+:root[data-theme="dark"] .precio-grande {
+    background: linear-gradient(180deg, #fff6e8 20%, #f2c46d 130%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Botones principales con brillo */
+:root[data-theme="dark"] button:not(.btn-secundario):not(.btn-tema):not(.btn-salir):not(.btn-google):not(.btn-peligro):not(.btn-enlace):not(.chip-elegir):not(.grupo-cabecera):not(.miniatura):not([role="tab"]),
+:root[data-theme="dark"] .btn-cta {
+    background: linear-gradient(135deg, #ffb27c 0%, #f2793c 100%);
+    color: #2a1208;
+    border-color: transparent;
+    box-shadow: 0 10px 28px rgba(242, 121, 60, 0.35), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+:root[data-theme="dark"] .btn-cta:hover,
+:root[data-theme="dark"] button:not(.btn-secundario):not(.btn-tema):not(.btn-salir):not(.btn-google):not(.btn-peligro):not(.btn-enlace):not(.chip-elegir):not(.grupo-cabecera):not(.miniatura):not([role="tab"]):hover {
+    background: linear-gradient(135deg, #ffc197 0%, #ff8a4c 100%);
+    box-shadow: 0 14px 34px rgba(242, 121, 60, 0.45), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+}
+
+:root[data-theme="dark"] .prod-acciones .btn-mover {
+    background: linear-gradient(135deg, #ffb27c, #f2793c);
+    color: #2a1208;
+    border-color: transparent;
+}
+
+/* Pestañas como píldoras */
+:root[data-theme="dark"] .nav-app {
+    border-bottom: 0;
+    gap: var(--sp-2);
+}
+
+:root[data-theme="dark"] .nav-app button {
+    border-radius: 999px;
+    border: 1px solid transparent;
+    padding-inline: 18px;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+:root[data-theme="dark"] .nav-app button[aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(255, 159, 104, 0.22), rgba(242, 196, 109, 0.12));
+    border-color: rgba(255, 159, 104, 0.4);
+    color: var(--acento-hover);
+    box-shadow: 0 0 24px rgba(255, 140, 70, 0.18);
+}
+
+:root[data-theme="dark"] .nav-app button[aria-selected="true"]::after {
+    display: none;
+}
+
+/* Gráfico con brillo */
+:root[data-theme="dark"] .grafico .linea {
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+:root[data-theme="dark"] .grafico .linea-ing { stroke: var(--ok); color: var(--ok); }
+:root[data-theme="dark"] .grafico .linea-gas { stroke: var(--mal); color: var(--mal); }
+
+:root[data-theme="dark"] .grafico .eje {
+    stroke-dasharray: 2 5;
+}
+
+:root[data-theme="dark"] .punto-ing { box-shadow: 0 0 8px var(--ok); }
+:root[data-theme="dark"] .punto-gas { box-shadow: 0 0 8px var(--mal); }
+
+:root[data-theme="dark"] .barras .relleno {
+    background: linear-gradient(90deg, var(--acento), var(--oro));
+    box-shadow: 0 0 12px rgba(255, 159, 104, 0.45);
+}
+
+:root[data-theme="dark"] .barras[data-tipo="gasto"] .relleno {
+    background: linear-gradient(90deg, #ff7a6e, #ffb08a);
+    box-shadow: 0 0 12px rgba(255, 143, 132, 0.45);
+}
+
+:root[data-theme="dark"] .barras[data-tipo="ingreso"] .relleno {
+    background: linear-gradient(90deg, #4fd18a, #b6f0a0);
+    box-shadow: 0 0 12px rgba(111, 224, 160, 0.4);
+}
+
+:root[data-theme="dark"] .barras .pista {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+:root[data-theme="dark"] .anillo-valor {
+    stroke: var(--oro);
+    filter: drop-shadow(0 0 4px rgba(242, 196, 109, 0.7));
+}
+
+/* Portada */
+:root[data-theme="dark"] .hero-fondo .mancha {
+    opacity: 0.5;
+}
+
+:root[data-theme="dark"] .portada-titulo {
+    background: linear-gradient(180deg, #fff6e8 30%, #f4c98a 120%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+:root[data-theme="dark"] .portada-titulo .resaltado {
+    background: linear-gradient(90deg, #ff9f68, #f2c46d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+:root[data-theme="dark"] .icono-portada,
+:root[data-theme="dark"] .kpi-ico {
+    box-shadow: 0 0 22px rgba(255, 159, 104, 0.18);
+}
+
+.tablero-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+}

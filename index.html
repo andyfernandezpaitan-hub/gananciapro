@@ -22,6 +22,9 @@
     <defs>
         <clipPath id="ilu-toldo"><rect x="30" y="40" width="180" height="40" rx="10"/></clipPath>
     </defs>
+    <symbol id="ico-sube" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-baja" viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-lista" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="ico-finanzas" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="ico-almacen" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v9l-9 5-9-5zM3 8l9 5 9-5M12 13v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="ico-moneda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M14.5 9.5c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.5 5 1.3 5 3.9 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2-.4-2.6-1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -611,10 +614,10 @@
             <p id="tabMensaje" class="nota" role="status"></p>
 
             <div class="kpis">
-                <article class="kpi"><p class="kpi-etiqueta">Ingresos</p><p class="kpi-valor" id="kpiIngresos">–</p><p class="kpi-delta" id="kpiIngresosD"></p></article>
-                <article class="kpi"><p class="kpi-etiqueta">Gastos</p><p class="kpi-valor" id="kpiGastos">–</p><p class="kpi-delta" id="kpiGastosD"></p></article>
-                <article class="kpi"><p class="kpi-etiqueta">Ganancia</p><p class="kpi-valor" id="kpiGanancia">–</p><p class="kpi-delta" id="kpiMargen"></p></article>
-                <article class="kpi"><p class="kpi-etiqueta">Operaciones</p><p class="kpi-valor" id="kpiOps">–</p><p class="kpi-delta" id="kpiOpsD"></p></article>
+                <article class="kpi kpi-ing"><span class="kpi-ico" aria-hidden="true"><svg><use href="#ico-sube"/></svg></span><p class="kpi-etiqueta">Ingresos</p><p class="kpi-valor" id="kpiIngresos">–</p><p class="kpi-delta" id="kpiIngresosD"></p></article>
+                <article class="kpi kpi-gas"><span class="kpi-ico" aria-hidden="true"><svg><use href="#ico-baja"/></svg></span><p class="kpi-etiqueta">Gastos</p><p class="kpi-valor" id="kpiGastos">–</p><p class="kpi-delta" id="kpiGastosD"></p></article>
+                <article class="kpi kpi-gan"><span class="kpi-ico" aria-hidden="true"><svg><use href="#ico-moneda"/></svg></span><svg class="kpi-anillo" viewBox="0 0 44 44" aria-hidden="true"><circle class="anillo-pista" cx="22" cy="22" r="18"/><circle class="anillo-valor" id="anilloMargen" cx="22" cy="22" r="18" pathLength="100"/></svg><p class="kpi-etiqueta">Ganancia</p><p class="kpi-valor" id="kpiGanancia">–</p><p class="kpi-delta" id="kpiMargen"></p></article>
+                <article class="kpi kpi-ops"><span class="kpi-ico" aria-hidden="true"><svg><use href="#ico-lista"/></svg></span><p class="kpi-etiqueta">Operaciones</p><p class="kpi-valor" id="kpiOps">–</p><p class="kpi-delta" id="kpiOpsD"></p></article>
             </div>
 
             <div class="tablero-grid">
