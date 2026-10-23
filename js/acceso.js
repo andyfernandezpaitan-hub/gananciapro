@@ -505,6 +505,56 @@
         }
     });
 
+    /* ----- Restaurar operaciones desde el respaldo JSON (sin duplicar las que ya existen) ----- */
+    const MAX_RESTAURAR = 5000;
+    const clave = (o) => [o.fecha, o.tipo, o.descripcion, Number(o.importe), o.moneda].join("|");
+
+    $("btnRestaurarCuenta").addEventListener("click", () => $("archivoRestaurar").click());
+
+    $("archivoRestaurar").addEventListener("change", async (evento) => {
+        const archivo = evento.target.files[0];
+        const boton = $("btnRestaurarCuenta");
+        const salida = $("mensajeCuenta");
+        evento.target.value = "";
+        if (!archivo) return;
+
+        ocupado(boton, true);
+        try {
+            if (archivo.size > 5 * 1024 * 1024) throw new Error("El archivo es demasiado grande.");
+            const datos = JSON.parse(await archivo.text());
+            if (!datos || !Array.isArray(datos.operaciones)) throw new Error("Este archivo no es un respaldo de GananciaPro.");
+            if (datos.operaciones.length > MAX_RESTAURAR) throw new Error(`Máximo ${MAX_RESTAURAR} operaciones por restauración.`);
+
+            const validas = datos.operaciones.map((o, i) => {
+                const importe = Number(o && o.importe);
+                const descripcion = String((o && o.descripcion) || "").trim();
+                if (
+                    !o || !/^\d{4}-\d{2}-\d{2}$/.test(String(o.fecha)) ||
+                    !["ingreso", "gasto"].includes(o.tipo) ||
+                    !/^[A-Z]{3}$/.test(String(o.moneda)) ||
+                    !Number.isFinite(importe) || importe <= 0 || importe > 100000000 ||
+                    !descripcion || descripcion.length > 100
+                ) throw new Error(`La operación ${i + 1} del respaldo no es válida. No se restauró nada.`);
+                return { fecha: o.fecha, tipo: o.tipo, descripcion, importe, moneda: o.moneda };
+            });
+
+            const existentes = new Set((await Nube.listarOperaciones()).map(clave));
+            const nuevas = validas.filter((o) => !existentes.has(clave(o)));
+            if (nuevas.length === 0) {
+                salida.textContent = "Tu respaldo no trae nada nuevo: todo ya estaba en tu cuenta.";
+                return;
+            }
+
+            await Nube.crearOperaciones(nuevas);
+            salida.textContent = `Se restauraron ${nuevas.length} operaciones. Recargando…`;
+            setTimeout(() => window.location.reload(), 900);
+        } catch (error) {
+            salida.textContent = error instanceof SyntaxError ? "El archivo no se puede leer." : `No se pudo restaurar: ${error.message}`;
+        } finally {
+            ocupado(boton, false);
+        }
+    });
+
     /* ----- Eliminar cuenta (derecho de supresión) ----- */
     $("btnEliminarCuenta").addEventListener("click", async () => {
         const respuesta = window.prompt(
