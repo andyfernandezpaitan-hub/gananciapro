@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mejoras.css">
     <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/app.css">
     <script src="js/tema.js"></script>
 </head>
 <body data-sesion="cargando" data-vista="finanzas">
@@ -342,6 +343,8 @@
             <button type="button" id="navPanel" role="tab" aria-selected="false">Panel</button>
         </nav>
 
+        <h1 class="app-titulo">Finanzas</h1>
+
         <section class="bienvenida">
             <svg class="ilustracion ilu-bienvenida" aria-hidden="true" focusable="false"><use href="#ilu-tienda"/></svg>
             <p class="etiqueta">TU NEGOCIO, BAJO CONTROL</p>
@@ -579,7 +582,7 @@
                     <p>Selecciona un respaldo exportado por GananciaPro.</p>
                 </div>
 
-                <button id="btnImportarCSV" type="button">
+                <button id="btnImportarCSV" type="button" class="btn-secundario">
                     Importar y reemplazar operaciones
                 </button>
 
@@ -663,7 +666,7 @@
         <section id="tablero" class="tablero" aria-labelledby="tituloTablero">
             <div class="tablero-cab">
                 <div>
-                    <h2 id="tituloTablero">Panel</h2>
+                    <h1 id="tituloTablero">Panel</h1>
                     <p class="nota">Cómo va tu negocio en el mes elegido.</p>
                 </div>
                 <div class="tablero-filtros">
@@ -729,7 +732,7 @@
         <section id="almacen" class="almacen" aria-labelledby="tituloAlmacen">
             <div class="almacen-cab">
                 <div>
-                    <h2 id="tituloAlmacen">Almacén</h2>
+                    <h1 id="tituloAlmacen">Almacén</h1>
                     <p class="nota">Controla tus productos y su stock.</p>
                 </div>
                 <div class="acciones">

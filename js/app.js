@@ -636,7 +636,8 @@ let botonExportarCSV = document.getElementById("btnExportarCSV");
 
 if (!botonExportarCSV) {
     botonExportarCSV = document.createElement("button");
-    botonExportarCSV.id = "btnExportarCSV";
+    botonExportarCSV.type = "button";
+    botonExportarCSV.className = "btn-secundario";
     botonExportarCSV.type = "button";
     botonExportarCSV.textContent = "Exportar respaldo CSV";
 

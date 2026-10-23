@@ -1,0 +1,236 @@
+/* ==========================================================================
+   GananciaPro · la app por dentro (Finanzas, Almacén, Panel)
+   Mismo lenguaje que la portada: superficies planas, un tono por capa,
+   verde solo en la acción principal, menta = entra, rosa = sale.
+   Se carga al final y solo actúa cuando hay sesión (no en la portada).
+   ========================================================================== */
+
+body:not([data-sesion="no"]) {
+    --font: "Schibsted Grotesk", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-display: var(--font);
+    --bg: #f8f8f8;
+    --surface: #ffffff;
+    --surface-2: #eeeeee;
+    --texto: #0a0a0a;
+    --texto-suave: #565656;
+    --borde: transparent;
+    --borde-fuerte: #c9c9c9;
+    --acento: #1f6b3a;
+    --acento-hover: #175530;
+    --acento-texto: #ffffff;
+    --anillo: rgba(31, 107, 58, 0.4);
+    --ok: #1f6b3a;
+    --ok-fondo: #c3edce;
+    --mal: #a8262f;
+    --mal-fondo: #f8c7c9;
+    --aviso: #7a4f00;
+    --aviso-fondo: #f6e4b8;
+    --info: #1f6b3a;
+    --info-fondo: #c3edce;
+    --neutro-fondo: #eeeeee;
+    --sombra-sm: none;
+    --sombra: none;
+    --sombra-lg: none;
+    --cab-fondo: #f8f8f8;
+    --cab-texto: #0a0a0a;
+    --cab-suave: #565656;
+    --cab-borde: transparent;
+    --radio-sm: 12px;
+    --radio: 16px;
+    --radio-lg: 24px;
+    --chart-ing: #2f9e5c;
+    --chart-gas: #e0525c;
+    background: var(--bg) !important;
+    background-image: none !important;
+    color: var(--texto);
+    font-family: var(--font);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) body:not([data-sesion="no"]) {
+        --bg: #0d0d0d; --surface: #181818; --surface-2: #242424; --texto: #f5f5f5; --texto-suave: #b4b4b4;
+        --borde-fuerte: #3a3a3a; --acento: #8fe0aa; --acento-hover: #a6ebbc; --acento-texto: #06210f; --anillo: rgba(143, 224, 170, 0.45);
+        --ok: #8fe0aa; --ok-fondo: #17402a; --mal: #ff9aa2; --mal-fondo: #4a2327; --aviso: #f0cd7a; --aviso-fondo: #3d3210;
+        --info: #8fe0aa; --info-fondo: #17402a; --neutro-fondo: #242424; --cab-fondo: #0d0d0d; --cab-texto: #f5f5f5; --cab-suave: #b4b4b4;
+        --chart-ing: #5fd08a; --chart-gas: #ff7d88;
+    }
+}
+:root[data-theme="dark"] body:not([data-sesion="no"]) {
+    --bg: #0d0d0d; --surface: #181818; --surface-2: #242424; --texto: #f5f5f5; --texto-suave: #b4b4b4;
+    --borde-fuerte: #3a3a3a; --acento: #8fe0aa; --acento-hover: #a6ebbc; --acento-texto: #06210f; --anillo: rgba(143, 224, 170, 0.45);
+    --ok: #8fe0aa; --ok-fondo: #17402a; --mal: #ff9aa2; --mal-fondo: #4a2327; --aviso: #f0cd7a; --aviso-fondo: #3d3210;
+    --info: #8fe0aa; --info-fondo: #17402a; --neutro-fondo: #242424; --cab-fondo: #0d0d0d; --cab-texto: #f5f5f5; --cab-suave: #b4b4b4;
+    --chart-ing: #5fd08a; --chart-gas: #ff7d88;
+}
+
+/* Todo lo que dentro de la app usa la letra del diseño, nunca la serif */
+body:not([data-sesion="no"]) h1, body:not([data-sesion="no"]) h2, body:not([data-sesion="no"]) h3,
+body:not([data-sesion="no"]) .marca-nombre, body:not([data-sesion="no"]) .tarjeta h3,
+body:not([data-sesion="no"]) .kpi-valor, body:not([data-sesion="no"]) .precio-grande {
+    font-family: var(--font) !important;
+    letter-spacing: -0.03em;
+}
+body:not([data-sesion="no"]) h2 { font-weight: 800; letter-spacing: -0.04em; }
+
+/* ---------- Encabezado: barra plana, sin cristal ---------- */
+body:not([data-sesion="no"]) .encabezado {
+    background: var(--cab-fondo) !important; background-image: none !important; color: var(--cab-texto);
+    -webkit-backdrop-filter: none; backdrop-filter: none; /* taste-skill-ignore */ border-bottom: 0; box-shadow: none !important; /* taste-skill-ignore */
+}
+body:not([data-sesion="no"]) .logo { background: #1f6b3a !important; background-image: none !important; box-shadow: none !important; /* taste-skill-ignore */ }
+body:not([data-sesion="no"]) .logo::after { display: none; }
+body:not([data-sesion="no"]) .marca-pro { color: var(--acento); }
+body:not([data-sesion="no"]) .marca-nombre { font-weight: 800; }
+body:not([data-sesion="no"]) .marca p:not(.marca-nombre) { color: var(--texto-suave); }
+body:not([data-sesion="no"]) .encabezado .btn-tema, body:not([data-sesion="no"]) .btn-salir {
+    background: var(--surface-2) !important; color: var(--texto) !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */
+}
+
+/* ---------- Navegación de la app: texto, con una píldora gris en la activa ---------- */
+body:not([data-sesion="no"]) .nav-app button {
+    background: transparent !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ color: var(--texto-suave) !important;
+    border-radius: 999px; font-weight: 600;
+}
+body:not([data-sesion="no"]) .nav-app button[aria-selected="true"] {
+    background: var(--surface-2) !important; color: var(--texto) !important;
+}
+
+/* ---------- Superficies planas ---------- */
+body:not([data-sesion="no"]) .bienvenida,
+body:not([data-sesion="no"]) .operaciones,
+body:not([data-sesion="no"]) .historial,
+body:not([data-sesion="no"]) .panel-cuenta,
+body:not([data-sesion="no"]) .tarjeta,
+body:not([data-sesion="no"]) .tablero-tarjeta,
+body:not([data-sesion="no"]) .kpi,
+body:not([data-sesion="no"]) .almacen-hist,
+body:not([data-sesion="no"]) .aviso-tarjeta,
+body:not([data-sesion="no"]) .filtros,
+body:not([data-sesion="no"]) .filtros-almacen,
+body:not([data-sesion="no"]) .filtros-hist,
+body:not([data-sesion="no"]) .tarjeta-poco,
+body:not([data-sesion="no"]) .lista-productos > li,
+body:not([data-sesion="no"]) .lista-operaciones li,
+body:not([data-sesion="no"]) .lista-movimientos li {
+    background: var(--surface) !important; background-image: none !important;
+    border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ border-radius: var(--radio-lg);
+    color: var(--texto);
+}
+body:not([data-sesion="no"]) .filtros, body:not([data-sesion="no"]) .filtros-almacen, body:not([data-sesion="no"]) .filtros-hist { background: var(--surface-2) !important; }
+body:not([data-sesion="no"]) .tarjeta::before, body:not([data-sesion="no"]) .tarjeta::after { display: none; }
+body:not([data-sesion="no"]) .lista-operaciones li { border-radius: 16px; }
+
+/* Bienvenida: una franja discreta, sin ilustración */
+body:not([data-sesion="no"]) .bienvenida { background: var(--ok-fondo) !important; }
+body:not([data-sesion="no"]) .bienvenida .ilustracion, body:not([data-sesion="no"]) .bienvenida .etiqueta { display: none; }
+body:not([data-sesion="no"]) .bienvenida h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
+
+/* ---------- Resumen: la ganancia manda; ingresos y gastos son sus dos lados ---------- */
+body:not([data-sesion="no"]) .tarjeta-balance { background: var(--surface) !important; color: var(--texto) !important; }
+body:not([data-sesion="no"]) .tarjeta-balance h3, body:not([data-sesion="no"]) .tarjeta-balance p, body:not([data-sesion="no"]) .tarjeta-balance span { color: var(--texto) !important; }
+body:not([data-sesion="no"]) .tarjeta-balance h3 { font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 800; line-height: 1; }
+body:not([data-sesion="no"]) .tarjeta-ingresos { background: var(--ok-fondo) !important; }
+body:not([data-sesion="no"]) .tarjeta-gastos { background: var(--mal-fondo) !important; }
+body:not([data-sesion="no"]) .tarjeta-ingresos h3, body:not([data-sesion="no"]) .tarjeta-gastos h3 { color: var(--texto) !important; font-weight: 800; }
+body:not([data-sesion="no"]) .tarjeta .icono, body:not([data-sesion="no"]) .kpi-ico { display: none; }
+
+/* ---------- Botones: una forma, plana, redonda ---------- */
+body:not([data-sesion="no"]) button:not(.btn-secundario):not(.btn-tema):not(.btn-salir):not(.btn-enlace):not(.btn-peligro):not(.seg-btn):not(.btn-google):not([role="tab"]):not(.lp-btn):not(.grupo-cabecera):not(.miniatura):not(.chip-cat):not(.btn-eliminar),
+body:not([data-sesion="no"]) .btn-cta {
+    background: var(--acento) !important; background-image: none !important; color: var(--acento-texto) !important;
+    border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ border-radius: 999px; font-weight: 600;
+}
+body:not([data-sesion="no"]) .btn-secundario, body:not([data-sesion="no"]) .btn-chico:not(.btn-peligro) {
+    background: var(--surface-2) !important; background-image: none !important; color: var(--texto) !important;
+    border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ border-radius: 999px;
+}
+body:not([data-sesion="no"]) .btn-peligro {
+    background: var(--mal-fondo) !important; color: var(--mal) !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ border-radius: 999px;
+}
+body:not([data-sesion="no"]) button:hover:not(:disabled) { transform: translateY(-1px); }
+body:not([data-sesion="no"]) .seg-btn { background: transparent !important; color: var(--texto-suave) !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ }
+body:not([data-sesion="no"]) .seg-btn[aria-pressed="true"] { background: var(--surface) !important; color: var(--texto) !important; }
+body:not([data-sesion="no"]) .segmento { background: var(--surface-2) !important; border: 0 !important; border-radius: 999px; }
+
+/* ---------- Campos: rellenos, sin marco ---------- */
+body:not([data-sesion="no"]) main input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+body:not([data-sesion="no"]) main select,
+body:not([data-sesion="no"]) main textarea,
+body:not([data-sesion="no"]) dialog input:not([type="checkbox"]):not([type="radio"]),
+body:not([data-sesion="no"]) dialog select,
+body:not([data-sesion="no"]) dialog textarea {
+    background-color: var(--surface-2) !important; color: var(--texto) !important;
+    border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ border-radius: 14px;
+}
+body:not([data-sesion="no"]) .filtros input, body:not([data-sesion="no"]) .filtros select,
+body:not([data-sesion="no"]) .filtros-almacen input, body:not([data-sesion="no"]) .filtros-almacen select,
+body:not([data-sesion="no"]) .filtros-hist select { background-color: var(--surface) !important; }
+body:not([data-sesion="no"]) input:focus-visible, body:not([data-sesion="no"]) select:focus-visible,
+body:not([data-sesion="no"]) textarea:focus-visible, body:not([data-sesion="no"]) button:focus-visible {
+    outline: 3px solid var(--texto); outline-offset: 2px; box-shadow: none !important; /* taste-skill-ignore */
+}
+
+/* ---------- Operaciones y productos: color solo en el dato ---------- */
+body:not([data-sesion="no"]) .lista-productos > li { border-left: 0 !important; }
+body:not([data-sesion="no"]) .lista-productos > li::before { display: none; }
+body:not([data-sesion="no"]) .variantes > li { background: var(--surface-2) !important; background-image: none !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ }
+body:not([data-sesion="no"]) .chip-cat { background: var(--surface-2) !important; border: 0 !important; color: var(--texto) !important; }
+
+/* ---------- Gráficos y barras ---------- */
+body:not([data-sesion="no"]) .barras .relleno,
+body:not([data-sesion="no"]) .barras[data-tipo="ingreso"] .relleno { background: var(--chart-ing) !important; background-image: none !important; box-shadow: none !important; /* taste-skill-ignore */ }
+body:not([data-sesion="no"]) .barras[data-tipo="gasto"] .relleno { background: var(--chart-gas) !important; background-image: none !important; }
+body:not([data-sesion="no"]) .kpi { background: var(--surface) !important; }
+body:not([data-sesion="no"]) .kpi-ing { background: var(--ok-fondo) !important; }
+body:not([data-sesion="no"]) .kpi-gas { background: var(--mal-fondo) !important; }
+
+/* ---------- Diálogos (flotan: sí pueden proyectar sombra) ---------- */
+body:not([data-sesion="no"]) dialog { background: var(--surface) !important; background-image: none !important; color: var(--texto); border: 0 !important; border-radius: 28px; }
+body:not([data-sesion="no"]) dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+
+/* ---------- Pie ---------- */
+body:not([data-sesion="no"]) footer { background: transparent; border-top: 0; color: var(--texto-suave); }
+body:not([data-sesion="no"]) footer a, body:not([data-sesion="no"]) .panel-cuenta a { color: var(--texto); }
+body:not([data-sesion="no"]) .contenedor { background: transparent; }
+
+body:not([data-sesion="no"]) .encabezado::after, body:not([data-sesion="no"]) .encabezado::before { display: none; }
+body:not([data-sesion="no"]) .grupo-cabecera, body:not([data-sesion="no"]) .miniatura, body:not([data-sesion="no"]) .btn-eliminar {
+    background: transparent !important; background-image: none !important; color: inherit !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */
+}
+body:not([data-sesion="no"]) .btn-eliminar { color: var(--mal) !important; }
+body:not([data-sesion="no"]) .miniatura img { border-radius: 14px; }
+body:not([data-sesion="no"]) .estado-stock { background: var(--surface-2) !important; border: 0 !important; border-radius: 14px; }
+body:not([data-sesion="no"]) .estado-stock.estado-ok, body:not([data-sesion="no"]) .estado-ok { background: var(--ok-fondo) !important; }
+body:not([data-sesion="no"]) .estado-stock.estado-poco, body:not([data-sesion="no"]) .estado-poco { background: var(--aviso-fondo) !important; }
+body:not([data-sesion="no"]) .estado-stock.estado-agotado, body:not([data-sesion="no"]) .estado-agotado { background: var(--mal-fondo) !important; }
+body:not([data-sesion="no"]) .estado-stock b, body:not([data-sesion="no"]) .estado-stock small { color: var(--texto) !important; }
+
+body:not([data-sesion="no"]) [class^="filtros"] input:not([type="checkbox"]), body:not([data-sesion="no"]) [class^="filtros"] select { background-color: var(--surface) !important; }
+body:not([data-sesion="no"]) .almacen-hist { padding: 24px; }
+
+/* Cifras grandes con números normales; las columnas conservan los tabulares */
+body:not([data-sesion="no"]) .kpi-valor, body:not([data-sesion="no"]) .tarjeta h3, body:not([data-sesion="no"]) .tarjeta h3 div,
+body:not([data-sesion="no"]) svg text { font-variant-numeric: normal; font-family: var(--font); }
+body:not([data-sesion="no"]) .parada-ing { stop-color: var(--chart-ing); }
+body:not([data-sesion="no"]) .parada-gas { stop-color: var(--chart-gas); }
+body:not([data-sesion="no"]) .parada-gan { stop-color: var(--texto); }
+body:not([data-sesion="no"]) .barras[data-tipo="stock"] .relleno { background: var(--chart-gas) !important; }
+body:not([data-sesion="no"]) .punto-rayas { background-image: none !important; background: var(--chart-gas) !important; }
+
+body:not([data-sesion="no"]) .encabezado { border-image: none !important; border-bottom: 0 !important; }
+body:not([data-sesion="no"]) .kpi-valor, body:not([data-sesion="no"]) .kpi-etiqueta { color: var(--texto) !important; }
+body:not([data-sesion="no"]) .anillo-valor { stroke: var(--chart-ing) !important; }
+body:not([data-sesion="no"]) .anillo-pista { stroke: var(--surface-2) !important; }
+body:not([data-sesion="no"]) .kpi-delta { color: var(--texto-suave) !important; }
+body:not([data-sesion="no"]) input[type="file"]::file-selector-button { background: var(--surface) !important; color: var(--texto); border: 0; border-radius: 999px; padding: 8px 16px; margin-right: 12px; font: inherit; font-weight: 600; cursor: pointer; }
+
+/* Título de cada pantalla (un h1 por vista) */
+body:not([data-sesion="no"]) .app-titulo, body:not([data-sesion="no"]) .tablero-cab h1, body:not([data-sesion="no"]) .almacen-cab h1 {
+    font: 800 clamp(1.5rem, 2.4vw, 2rem)/1.1 var(--font); letter-spacing: -0.04em; margin: 0; color: var(--texto);
+}
+body:not([data-sesion="no"]) .app-titulo { margin: 8px 0 16px; }
+body:not([data-sesion="si"]) .app-titulo, body[data-vista="almacen"] .app-titulo, body[data-vista="panel"] .app-titulo { display: none; }
+/* Sin texto con degradado */
+body:not([data-sesion="no"]) [class*="kpi"], body:not([data-sesion="no"]) .tarjeta h3, body:not([data-sesion="no"]) .precio-grande {
+    background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important; -webkit-text-fill-color: currentColor !important;
+}

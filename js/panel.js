@@ -282,8 +282,9 @@
         const defs = el("defs", {});
         for (const [id, clase] of [["barIng", "ing"], ["barGas", "gas"], ["areaGan", "gan"]]) {
             const g = el("linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 });
-            const arriba = id === "areaGan" ? "0.35" : "1";
-            const abajo = id === "areaGan" ? "0" : "0.62";
+            /* Relleno plano: sin degradados */
+            const arriba = id === "areaGan" ? "0.16" : "1";
+            const abajo = arriba;
             g.appendChild(el("stop", { offset: "0%", class: "parada-" + clase, "stop-opacity": arriba }));
             g.appendChild(el("stop", { offset: "100%", class: "parada-" + clase, "stop-opacity": abajo }));
             defs.appendChild(g);
