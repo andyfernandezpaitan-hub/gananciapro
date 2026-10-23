@@ -227,7 +227,8 @@ p {
     box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
 }
 
-.marca h1 {
+.marca h1,
+.marca .marca-nombre {
     margin: 0;
     font-size: var(--fs-md);
     font-weight: 700;
@@ -1657,7 +1658,8 @@ body {
 h1,
 h2,
 .tarjeta h3,
-.marca h1 {
+.marca h1,
+.marca .marca-nombre {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.01em;

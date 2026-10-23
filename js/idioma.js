@@ -24,6 +24,53 @@
     /* ---------- Diccionario exacto (español → inglés) ---------- */
     const D = {
         // Portada y cabecera
+        "Eliminar mi cuenta": "Delete my account",
+        "14 días de prueba, sin tarjeta.": "14-day trial, no card needed.",
+        "14 días gratis, sin tarjeta. Cancela cuando quieras.": "14 days free, no card needed. Cancel anytime.",
+        "9 USD": "9 USD",
+        "Anota cada movimiento en segundos y ve tu ganancia al instante.": "Log every sale or expense in seconds and see your profit instantly.",
+        "Anota ventas y gastos, controla tu almacén y mira lo que de verdad te queda. En tu moneda, desde cualquier dispositivo. 14 días gratis, sin tarjeta.": "Log sales and expenses, control your warehouse and see what you really keep. In your currency, on any device. 14 days free, no card needed.",
+        "Después": "After",
+        "Entra": "In",
+        "Sale": "Out",
+        "Hoy": "Today",
+        "Entradas, salidas y aviso cuando queda poco.": "Stock in, stock out and an alert when it runs low.",
+        "Entró S/ 5 100 · Salió S/ 1 650": "In S/ 5 100 · Out S/ 1 650",
+        "Exporta": "Export",
+        "Finanzas y almacén completos. Cancela cuando quieras y conserva el acceso hasta el final del periodo pagado. Exporta o borra tus datos en cualquier momento.": "Full finances and warehouse. Cancel anytime and keep access until the end of the paid period. Export or delete your data whenever you want.",
+        "Ingresos y gastos por día, semana o mes.": "Income and expenses by day, week or month.",
+        "Lo que entra hoy en ventas": "What comes in today from sales",
+        "Lo que sale hoy en gastos": "What goes out today in expenses",
+        "Lo que incluye": "What's included",
+        "Mensual": "Monthly",
+        "Monedas": "Currencies",
+        "Pagos": "Payments",
+        "Panel con gráfico": "Dashboard with chart",
+        "Paso de 3": "Step of 3",
+        "Planes": "Plans",
+        "Preguntas frecuentes": "Frequently asked questions",
+        "Primero, crea tu cuenta.": "First, create your account.",
+        "Luego, registra tu día.": "Then, log your day.",
+        "Al final, mira tu ganancia.": "Finally, see your profit.",
+        "Prueba": "Trial",
+        "Prueba con tu día": "Try it with your day",
+        "Quedan 3": "3 left",
+        "Sabe cuánto ganas hoy.": "Know what you earn today.",
+        "Soles, dólares, euros y más.": "Soles, dollars, euros and more.",
+        "Te queda": "You keep",
+        "Te falta": "You're short",
+        "Tela": "Fabric",
+        "Tu ganancia del mes": "Your profit this month",
+        "Tu ganancia real, al día.": "Your real profit, every day.",
+        "Tus datos, cuando los quieras.": "Your data, whenever you want it.",
+        "Una copia completa en un archivo, o borrado definitivo. Tú decides.": "A full copy in one file, or permanent deletion. You decide.",
+        "Venta falda": "Skirt sale",
+        "Venta medias": "Socks sale",
+        "Ventas y gastos": "Sales and expenses",
+        "al mes": "per month",
+        "tu@correo.com": "you@email.com",
+        "Usa todo sin tarjeta. Al terminar puedes seguir viendo y descargando tus datos; para seguir registrando te suscribes.": "Use everything with no card. When it ends you can still view and download your data; to keep logging you subscribe.",
+        "14 días": "14 days",
         "Control inteligente de tu negocio": "Smart control of your business",
         "Qué incluye": "What's included", "Cómo funciona": "How it works", "Precio": "Pricing", "Preguntas": "FAQ",
         "Iniciar sesión": "Log in", "Cerrar sesión": "Log out",
@@ -348,7 +395,7 @@
 
     function nodoTexto(nodo) {
         const p = nodo.parentElement;
-        if (!p || p.closest("script,style,textarea,.marca h1,[data-no-traducir]")) return;
+        if (!p || p.closest("script,style,textarea,.marca h1,.marca-nombre,[data-no-traducir]")) return;
         const valor = nodo.nodeValue;
         const reg = textos.get(nodo);
 

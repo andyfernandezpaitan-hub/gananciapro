@@ -15,6 +15,7 @@
     <title>GananciaPro | Panel de control</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mejoras.css">
+    <link rel="stylesheet" href="css/landing.css">
     <script src="js/tema.js"></script>
 </head>
 <body data-sesion="cargando" data-vista="finanzas">
@@ -71,7 +72,7 @@
                 </svg>
             </div>
             <div>
-                <h1>Ganancia<span class="marca-pro">Pro</span></h1>
+                <p class="marca-nombre">Ganancia<span class="marca-pro">Pro</span></p>
                 <p>Control inteligente de tu negocio</p>
             </div>
         </div>
@@ -98,82 +99,139 @@
             <button type="button" id="btnVerPlanes" class="btn-secundario btn-chico">Ver planes</button>
         </div>
 
-        <div class="portada-zona">
-        <section class="portada portada-hero" aria-labelledby="tituloPortada">
-            <div class="hero-fondo" aria-hidden="true"><span class="mancha mancha-1" data-parallax="0.18"></span><span class="mancha mancha-2" data-parallax="-0.12"></span></div>
-            <p class="portada-sobre" data-aparece>Prueba gratis 14 días · Sin tarjeta</p>
-            <h2 id="tituloPortada" class="portada-titulo" data-aparece style="--i:1">Tus ingresos, gastos y almacén, <span class="resaltado">en un solo lugar.</span></h2>
-            <p class="portada-sub" data-aparece style="--i:2">Registra cada venta y cada gasto, controla tu inventario y mira tu ganancia real. En tu moneda, desde cualquier dispositivo.</p>
-            <div class="portada-acciones" data-aparece style="--i:3">
-                <button type="button" class="btn-cta" data-cta="crear">Empezar gratis</button>
-                <a class="enlace-cta" href="#como">Ver cómo funciona</a>
+        <div class="portada-zona lp">
+        <section class="lp-hero" aria-labelledby="tituloPortada">
+            <div class="lp-hero-texto">
+                <h1 id="tituloPortada" class="lp-h1" data-aparece>Tu ganancia real, al día.</h1>
+                <p class="lp-lead" data-aparece style="--i:1">Anota ventas y gastos, controla tu almacén y mira lo que de verdad te queda. En tu moneda, desde cualquier dispositivo. 14 días gratis, sin tarjeta.</p>
+                <div class="lp-acciones" data-aparece style="--i:2">
+                    <button type="button" class="lp-btn" data-cta="crear">Empezar gratis</button>
+                    <a class="lp-enlace" href="#como">Ver cómo funciona</a>
+                </div>
             </div>
-            <svg class="ilustracion ilu-hero" data-aparece style="--i:4" aria-hidden="true" focusable="false"><use href="#ilu-tienda"/></svg>
+            <div class="lp-escenario">
+                <span class="lp-disco" aria-hidden="true"></span>
+                <form class="lp-calc" data-ui data-aparece style="--i:3" aria-labelledby="calcTitulo">
+                    <p class="lp-calc-titulo" id="calcTitulo">Prueba con tu día</p>
+                    <label class="lp-fila"><span class="lp-punto lp-punto-menta" aria-hidden="true"></span><span class="lp-fila-nombre">Entra</span><span class="lp-prefijo">S/</span><input id="calcIngreso" type="text" inputmode="decimal" maxlength="12" value="1240" autocomplete="off" aria-label="Lo que entra hoy en ventas"></label>
+                    <label class="lp-fila"><span class="lp-punto lp-punto-rosa" aria-hidden="true"></span><span class="lp-fila-nombre">Sale</span><span class="lp-prefijo">S/</span><input id="calcGasto" type="text" inputmode="decimal" maxlength="12" value="380" autocomplete="off" aria-label="Lo que sale hoy en gastos"></label>
+                    <p class="lp-res" aria-live="polite"><span id="calcEtiqueta">Te queda</span><output id="calcGanancia" for="calcIngreso calcGasto">S/ 860</output></p>
+                </form>
+            </div>
         </section>
 
-        <section id="incluye" class="portada portada-seccion" aria-labelledby="tituloIncluye">
-            <h2 id="tituloIncluye" class="portada-h2" data-aparece>Todo lo que tu negocio necesita.</h2>
-            <div class="tarjetas-portada">
-                <article class="tarjeta-portada" data-aparece style="--i:1">
-                    <svg class="icono-portada" aria-hidden="true" focusable="false"><use href="#ico-finanzas"/></svg>
-                    <h3>Finanzas claras</h3>
-                    <p>Anota ingresos y gastos en segundos y ve tu ganancia al instante. Filtra, busca y exporta a CSV cuando quieras.</p>
+        <section id="incluye" class="lp-sec lp-incluye" aria-labelledby="tituloIncluye">
+            <div class="lp-tablero">
+                <div class="lp-teja lp-t-titulo" data-aparece>
+                    <h2 id="tituloIncluye" class="lp-h2">Lo que incluye</h2>
+                </div>
+                <article class="lp-teja lp-t-ventas" data-aparece style="--i:1">
+                    <div class="lp-el lp-el-venta" data-ui aria-hidden="true"><span>Venta falda</span><strong>+S/ 320</strong><span>Tela</span><strong class="lp-neg">−S/ 85</strong></div>
+                    <h3>Ventas y gastos</h3>
+                    <p>Anota cada movimiento en segundos y ve tu ganancia al instante.</p>
                 </article>
-                <article class="tarjeta-portada" data-aparece style="--i:2">
-                    <svg class="icono-portada" aria-hidden="true" focusable="false"><use href="#ico-almacen"/></svg>
-                    <h3>Almacén con control</h3>
-                    <p>Productos con categoría automática, entradas y salidas, y cuánto te queda. Cada venta se suma sola a tus finanzas.</p>
+                <article class="lp-teja lp-t-stock" data-aparece style="--i:2">
+                    <div class="lp-el lp-el-stock" data-ui aria-hidden="true"><span>Quedan 3</span></div>
+                    <h3>Almacén</h3>
+                    <p>Entradas, salidas y aviso cuando queda poco.</p>
                 </article>
-                <article class="tarjeta-portada" data-aparece style="--i:3">
-                    <svg class="icono-portada" aria-hidden="true" focusable="false"><use href="#ico-moneda"/></svg>
+                <article class="lp-teja lp-t-moneda" data-aparece style="--i:3">
+                    <div class="lp-el lp-el-moneda" data-ui aria-hidden="true"><span>USD</span></div>
                     <h3>Tu moneda</h3>
-                    <p>Trabaja en soles, dólares, euros y más. Cada cliente elige la moneda de su negocio.</p>
+                    <p>Soles, dólares, euros y más.</p>
+                </article>
+                <article class="lp-teja lp-t-grafico" data-aparece style="--i:4">
+                    <div class="lp-el lp-el-barras" data-ui aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                    <h3>Panel con gráfico</h3>
+                    <p>Ingresos y gastos por día, semana o mes.</p>
+                </article>
+                <article class="lp-teja lp-t-csv" data-aparece style="--i:5">
+                    <div class="lp-el lp-el-tecla" data-ui aria-hidden="true"><kbd>CSV</kbd></div>
+                    <h3>Exporta</h3>
+                    <p>Tus datos, cuando los quieras.</p>
                 </article>
             </div>
         </section>
 
-        <section id="como" class="portada escena" aria-labelledby="tituloComo">
-            <div class="escena-marco">
-                <h2 id="tituloComo" class="portada-h2" data-aparece>Empieza en tres pasos.</h2>
-                <p class="escena-numero" id="pasoNumero" aria-hidden="true">1</p>
-                <ol class="pasos-portada">
-                    <li data-paso="1"><h3>Crea tu cuenta</h3><p>Con tu correo o con Google. Tus 14 días de prueba empiezan solos.</p></li>
-                    <li data-paso="2"><h3>Registra tu día</h3><p>Anota ventas y gastos, y mueve tu almacén con entradas y salidas.</p></li>
-                    <li data-paso="3"><h3>Mira tu ganancia</h3><p>Resumen claro de lo que entra, lo que sale y lo que te queda.</p></li>
+        <section id="como" class="lp-sec lp-como" aria-labelledby="tituloComo">
+            <div class="lp-como-campo lp-como-texto">
+                <h2 id="tituloComo" class="lp-clausula" aria-live="polite"><span id="comoClausula">Primero, crea tu cuenta.</span></h2>
+            </div>
+            <div class="lp-como-campo lp-como-vista">
+                <div class="lp-vista" id="comoVista" data-ui data-paso="0">
+                    <div class="lp-vista-p" data-vp="0">
+                        <p class="lp-input-falso">tu@correo.com</p>
+                        <p class="lp-boton-falso">Empezar gratis</p>
+                        <p class="lp-vista-n">14 días de prueba, sin tarjeta.</p>
+                    </div>
+                    <div class="lp-vista-p" data-vp="1" hidden>
+                        <p class="lp-vista-t">Hoy</p>
+                        <p class="lp-op"><span><i class="lp-punto lp-punto-menta"></i>Venta falda</span><b>+S/ 320</b></p>
+                        <p class="lp-op"><span><i class="lp-punto lp-punto-rosa"></i>Tela</span><b>−S/ 85</b></p>
+                        <p class="lp-op"><span><i class="lp-punto lp-punto-menta"></i>Venta medias</span><b>+S/ 120</b></p>
+                    </div>
+                    <div class="lp-vista-p" data-vp="2" hidden>
+                        <p class="lp-vista-t">Tu ganancia del mes</p>
+                        <p class="lp-vista-cifra">S/ 3 450</p>
+                        <p class="lp-vista-n">Entró S/ 5 100 · Salió S/ 1 650</p>
+                    </div>
+                </div>
+            </div>
+            <div class="lp-control">
+                <ol class="lp-pasos">
+                    <li data-n="0" aria-current="true">Crea tu cuenta</li>
+                    <li data-n="1">Registra tu día</li>
+                    <li data-n="2">Mira tu ganancia</li>
                 </ol>
+                <input type="range" id="comoRango" min="0" max="2" step="1" value="0" aria-label="Paso de 3">
             </div>
         </section>
 
-        <section id="precio" class="portada portada-seccion" aria-labelledby="tituloPrecio">
-            <h2 id="tituloPrecio" class="portada-h2" data-aparece>Un precio simple.</h2>
-            <div class="caja-precio" data-aparece style="--i:1">
-                <p class="precio-grande" data-precio>9 USD al mes</p>
-                <ul class="lista-precio">
-                    <li>14 días de prueba gratis, sin tarjeta</li>
-                    <li>Finanzas y almacén incluidos</li>
-                    <li>Cancela cuando quieras</li>
-                    <li>Exporta o borra tus datos en cualquier momento</li>
-                </ul>
-                <button type="button" class="btn-cta" data-cta="crear">Empezar gratis</button>
-                <p class="precio-nota">El precio final, con los impuestos de tu país, se te muestra antes de pagar. <a href="terminos.html#suscripcion">Condiciones de la suscripción</a>.</p>
+        <section id="precio" class="lp-sec lp-precio" aria-labelledby="tituloPrecio">
+            <h2 id="tituloPrecio" class="lp-solo-lector">Precio</h2>
+            <div class="lp-planes" role="tablist" aria-label="Planes">
+                <button type="button" role="tab" class="lp-plan" id="planPrueba" aria-selected="false" aria-controls="planEscena" data-plan="prueba">Prueba</button>
+                <button type="button" role="tab" class="lp-plan" id="planMensual" aria-selected="true" aria-controls="planEscena" data-plan="mensual">Mensual</button>
+            </div>
+            <div class="lp-plan-escena" id="planEscena" role="tabpanel" aria-labelledby="planMensual">
+                <p class="lp-cifra"><span id="planCifra" data-precio-cifra>9 USD</span><span class="lp-periodo" id="planPeriodo">al mes</span></p>
+                <p class="lp-plan-texto" id="planTexto">Finanzas y almacén completos. Cancela cuando quieras y conserva el acceso hasta el final del periodo pagado. Exporta o borra tus datos en cualquier momento.</p>
+                <button type="button" class="lp-btn" id="planBoton" data-cta="crear">Empezar gratis</button>
+                <p class="lp-nota">El precio final, con los impuestos de tu país, se te muestra antes de pagar. <a href="terminos.html#suscripcion">Condiciones de la suscripción</a>.</p>
             </div>
         </section>
 
-        <section id="datos" class="portada portada-seccion" aria-labelledby="tituloDatos">
-            <h2 id="tituloDatos" class="portada-h2" data-aparece>Tus datos son tuyos.</h2>
-            <p class="portada-sub" data-aparece style="--i:1">Cada cuenta ve solo su información. Puedes descargarla o eliminarla cuando quieras desde tu panel. Consulta la <a href="privacidad.html">política de privacidad</a>.</p>
-        </section>
-
-        <section id="preguntas" class="portada portada-seccion" aria-labelledby="tituloPreguntas">
-            <h2 id="tituloPreguntas" class="portada-h2" data-aparece>Preguntas frecuentes.</h2>
-            <div class="faq" data-aparece style="--i:1">
-                <details><summary>¿Necesito tarjeta para probar?</summary><p>No. Creas tu cuenta y tienes 14 días para usar todo.</p></details>
-                <details><summary>¿Qué pasa cuando termina la prueba?</summary><p>Puedes seguir viendo y descargando tus datos. Para seguir registrando necesitas suscribirte.</p></details>
-                <details><summary>¿Puedo cancelar?</summary><p>Sí, cuando quieras desde tu cuenta. Conservas el acceso hasta el final del periodo pagado.</p></details>
-                <details><summary>¿Puedo usar otra moneda que no sea el sol?</summary><p>Sí. Cada operación se guarda con la moneda que elijas.</p></details>
-                <details><summary>¿Dónde se pagan las suscripciones?</summary><p>Con Polar, un procesador de pagos seguro. GananciaPro no guarda los datos de tu tarjeta.</p></details>
+        <section id="datos" class="lp-sec lp-datos" aria-labelledby="tituloDatos">
+            <h2 id="tituloDatos" class="lp-h2">Tus datos son tuyos.</h2>
+            <p class="lp-lead">Cada cuenta ve solo su información. Puedes descargarla o eliminarla cuando quieras desde tu panel. Consulta la <a href="privacidad.html">política de privacidad</a>.</p>
+            <div class="lp-cuenta" data-ui aria-hidden="true">
+                <p class="lp-vista-t">Tu cuenta y tus datos</p>
+                <p class="lp-boton-falso lp-boton-claro">Descargar mis datos</p>
+                <p class="lp-boton-falso lp-boton-claro">Eliminar mi cuenta</p>
+                <p class="lp-vista-n">Una copia completa en un archivo, o borrado definitivo. Tú decides.</p>
             </div>
         </section>
+
+        <section id="preguntas" class="lp-sec lp-faq" aria-labelledby="tituloPreguntas">
+            <h2 id="tituloPreguntas" class="lp-h2">Preguntas frecuentes</h2>
+            <div class="lp-fichas">
+                <details name="faq" class="lp-ficha" open><summary><span class="lp-pestana">Prueba</span><span class="lp-pregunta">¿Necesito tarjeta para probar?</span></summary><p>No. Creas tu cuenta y tienes 14 días para usar todo.</p></details>
+                <details name="faq" class="lp-ficha"><summary><span class="lp-pestana">Después</span><span class="lp-pregunta">¿Qué pasa cuando termina la prueba?</span></summary><p>Puedes seguir viendo y descargando tus datos. Para seguir registrando necesitas suscribirte.</p></details>
+                <details name="faq" class="lp-ficha"><summary><span class="lp-pestana">Cancelar</span><span class="lp-pregunta">¿Puedo cancelar?</span></summary><p>Sí, cuando quieras desde tu cuenta. Conservas el acceso hasta el final del periodo pagado.</p></details>
+                <details name="faq" class="lp-ficha"><summary><span class="lp-pestana">Monedas</span><span class="lp-pregunta">¿Puedo usar otra moneda que no sea el sol?</span></summary><p>Sí. Cada operación se guarda con la moneda que elijas.</p></details>
+                <details name="faq" class="lp-ficha"><summary><span class="lp-pestana">Pagos</span><span class="lp-pregunta">¿Dónde se pagan las suscripciones?</span></summary><p>Con Polar, un procesador de pagos seguro. GananciaPro no guarda los datos de tu tarjeta.</p></details>
+            </div>
+        </section>
+
+        <section class="lp-sec lp-cierre" aria-labelledby="tituloCierre">
+            <h2 id="tituloCierre" class="lp-h1">Sabe cuánto ganas hoy.</h2>
+            <div class="lp-cierre-acc">
+                <button type="button" class="lp-btn" data-cta="crear">Empezar gratis</button>
+                <p class="lp-nota">14 días gratis, sin tarjeta. Cancela cuando quieras.</p>
+            </div>
+        </section>
+
+        <div class="lp-marca" aria-hidden="true"><b>G</b><b>a</b><b>n</b><b>a</b><b>n</b><b>c</b><b>i</b><b>a</b><b>P</b><b>r</b><b>o</b></div>
         </div>
 
         <section id="acceso" class="acceso" aria-labelledby="tituloAcceso">
