@@ -242,7 +242,7 @@ function actualizarOpcionesMoneda() {
 function pasaFiltros(operacion) {
     const texto = sinTildes(filtroBusqueda?.value.trim());
 
-    if (texto && !sinTildes(operacion.descripcion).includes(texto)) {
+    if (texto && !sinTildes(operacion.descripcion).includes(texto) && !sinTildes(operacion.categoria).includes(texto)) {
         return false;
     }
 
@@ -265,6 +265,27 @@ function pasaFiltros(operacion) {
     return true;
 }
 
+const MAX_CATEGORIA = 30;
+
+function limpiarCategoria(valor) {
+    return String(valor ?? "")
+        .replace(/[\u0000-\u001f\u007f]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, MAX_CATEGORIA);
+}
+
+function actualizarListaCategorias() {
+    const lista = document.getElementById("listaCategorias");
+    if (!lista) return;
+    const conteo = new Map();
+    for (const operacion of operaciones) {
+        if (operacion.categoria) conteo.set(operacion.categoria, (conteo.get(operacion.categoria) || 0) + 1);
+    }
+    const nombres = [...conteo].sort((a, b) => b[1] - a[1]).slice(0, 30).map(([nombre]) => nombre);
+    lista.replaceChildren(...nombres.map((nombre) => { const o = document.createElement("option"); o.value = nombre; return o; }));
+}
+
 function mostrarOperaciones() {
     const lista = obtenerCampo(
         "#listaOperaciones",
@@ -284,6 +305,7 @@ function mostrarOperaciones() {
     }
 
     actualizarOpcionesMoneda();
+    actualizarListaCategorias();
     lista.replaceChildren();
 
     if (operaciones.length === 0) {
@@ -344,6 +366,13 @@ function mostrarOperaciones() {
 
         detalle.className = "detalle";
         detalle.append(etiqueta, texto);
+
+        if (operacion.categoria) {
+            const marca = document.createElement("span");
+            marca.className = "etiqueta-categoria";
+            marca.textContent = operacion.categoria;
+            detalle.append(marca);
+        }
 
         importe.className = `importe-${operacion.tipo}`;
         importe.textContent =
@@ -530,6 +559,8 @@ if (formulario) {
             '[name="moneda"]'
         );
 
+        const campoCategoria = document.getElementById("categoriaOperacion");
+        const categoria = limpiarCategoria(campoCategoria?.value);
         const tipo = campoTipo?.value;
         const descripcion = campoDescripcion?.value.trim() || "";
         const importe = Number(campoImporte?.value);
@@ -556,7 +587,8 @@ if (formulario) {
             descripcion,
             importe,
             fecha,
-            moneda
+            moneda,
+            categoria
         };
 
         const botonRegistrar = formulario.querySelector('button[type="submit"]');
@@ -603,14 +635,15 @@ function protegerValorCSV(valor) {
 }
 
 function exportarCSV() {
-    const encabezados = ["Fecha", "Tipo", "Descripción", "Moneda", "Importe"];
+    const encabezados = ["Fecha", "Tipo", "Descripción", "Moneda", "Importe", "Categoría"];
 
     const filas = operaciones.map((operacion) => [
         operacion.fecha,
         operacion.tipo,
         operacion.descripcion,
         operacion.moneda,
-        operacion.importe.toFixed(2)
+        operacion.importe.toFixed(2),
+        operacion.categoria || ""
     ]);
 
     const contenido = [encabezados, ...filas]
@@ -706,6 +739,9 @@ function analizarCSV(texto) {
         ? encabezados.indexOf("descripción")
         : encabezados.indexOf("descripcion");
     const indiceMoneda = encabezados.indexOf("moneda");
+    const indiceCategoria = encabezados.indexOf("categoría") !== -1
+        ? encabezados.indexOf("categoría")
+        : encabezados.indexOf("categoria");
 
     let indiceImporte = encabezados.indexOf("importe (pen)");
 
@@ -784,7 +820,10 @@ function analizarCSV(texto) {
             tipo,
             descripcion,
             importe,
-            moneda
+            moneda,
+            categoria: indiceCategoria === -1
+                ? ""
+                : limpiarCategoria(columnas[indiceCategoria].replace(/^'/, ""))
         });
     }
 

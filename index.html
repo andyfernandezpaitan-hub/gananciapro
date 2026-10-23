@@ -390,6 +390,20 @@
                 </div>
 
                 <div class="campo">
+                    <label for="categoriaOperacion">Categoría (opcional)</label>
+                    <input
+                        type="text"
+                        id="categoriaOperacion"
+                        name="categoria"
+                        maxlength="30"
+                        list="listaCategorias"
+                        placeholder="Ej.: Alquiler, Transporte"
+                        autocomplete="off"
+                    >
+                    <datalist id="listaCategorias"></datalist>
+                </div>
+
+                <div class="campo">
                     <label for="importe">Importe</label>
                     <input
                         type="number"
@@ -724,7 +738,11 @@
                     <h3>Mayores ingresos</h3>
                     <ul id="topIngresos" class="barras"></ul>
                 </article>
-                <article class="tablero-tarjeta tablero-ancha">
+                <article class="tablero-tarjeta">
+                    <h3>Gastos por categoría</h3>
+                    <ul id="topCategorias" class="barras"></ul>
+                </article>
+                <article class="tablero-tarjeta">
                     <h3>Stock bajo en el almacén</h3>
                     <ul id="stockBajo" class="barras"></ul>
                 </article>

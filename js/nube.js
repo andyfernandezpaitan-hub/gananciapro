@@ -23,7 +23,19 @@
         }
     );
 
-    const COLUMNAS = "id, fecha, tipo, descripcion, importe, moneda";
+    const COLUMNAS_BASE = "id, fecha, tipo, descripcion, importe, moneda";
+    /* La categoría necesita el SQL 11; si aún no está instalado se trabaja sin ella */
+    let categoriasActivas = true;
+    let sondeoCategorias = null;
+    const columnasOp = () => categoriasActivas ? COLUMNAS_BASE + ", categoria" : COLUMNAS_BASE;
+    function detectarCategorias() {
+        if (!sondeoCategorias) {
+            sondeoCategorias = cliente.from("operaciones").select("categoria").limit(1)
+                .then(({ error }) => { if (error) categoriasActivas = false; })
+                .catch(() => { categoriasActivas = false; });
+        }
+        return sondeoCategorias;
+    }
     const COLUMNAS_BASE_PRODUCTO = "id, nombre, talla, color, codigo, stock, activo, categoria_id";
     /* La foto necesita el SQL 06; si aún no está instalado se trabaja sin fotos */
     let fotosActivas = true;
@@ -100,18 +112,21 @@
             tipo: fila.tipo,
             descripcion: fila.descripcion,
             importe: Number(fila.importe),
-            moneda: fila.moneda
+            moneda: fila.moneda,
+            categoria: String(fila.categoria || "")
         };
     }
 
     function aFila(operacion) {
-        return {
+        const fila = {
             fecha: operacion.fecha,
             tipo: operacion.tipo,
             descripcion: operacion.descripcion,
             importe: operacion.importe,
             moneda: operacion.moneda
         };
+        if (categoriasActivas && operacion.categoria) fila.categoria = String(operacion.categoria).slice(0, 30);
+        return fila;
     }
 
     const Nube = {
@@ -295,6 +310,14 @@
         },
 
         /* Totales por día entre dos fechas (YYYY-MM-DD), para el gráfico de 3 meses y año */
+        /* Gastos (o ingresos) del mes por categoría; requiere el SQL 11 */
+        async resumenCategorias(mes, moneda, tipo) {
+            const { data } = comprobar(
+                await cliente.rpc("resumen_categorias", { p_mes: `${mes}-01`, p_moneda: moneda, p_tipo: tipo || "gasto" })
+            );
+            return data;
+        },
+
         async resumenRango(desde, hasta, moneda) {
             const { data } = comprobar(
                 await cliente.rpc("resumen_rango", { p_desde: desde, p_hasta: hasta, p_moneda: moneda })
@@ -310,12 +333,13 @@
         /* ----- Operaciones (cada cliente solo ve las suyas: RLS) ----- */
         async listarOperaciones() {
             const todas = [];
+            await detectarCategorias();
 
             for (let desde = 0; ; desde += TAMANO_PAGINA) {
                 const { data } = comprobar(
                     await cliente
                         .from("operaciones")
-                        .select(COLUMNAS)
+                        .select(columnasOp())
                         .order("fecha", { ascending: true })
                         .order("creado_en", { ascending: true })
                         .range(desde, desde + TAMANO_PAGINA - 1)
@@ -331,7 +355,7 @@
 
         async crearOperacion(operacion) {
             const { data } = comprobar(
-                await cliente.from("operaciones").insert([aFila(operacion)]).select(COLUMNAS).single()
+                await cliente.from("operaciones").insert([aFila(operacion)]).select(columnasOp()).single()
             );
             return aOperacion(data);
         },
@@ -344,7 +368,7 @@
                 for (let i = 0; i < lista.length; i += TAMANO_LOTE) {
                     const lote = lista.slice(i, i + TAMANO_LOTE).map(aFila);
                     const { data } = comprobar(
-                        await cliente.from("operaciones").insert(lote).select(COLUMNAS)
+                        await cliente.from("operaciones").insert(lote).select(columnasOp())
                     );
                     creadas.push(...data.map(aOperacion));
                 }

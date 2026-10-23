@@ -508,6 +508,7 @@
     /* ----- Restaurar operaciones desde el respaldo JSON (sin duplicar las que ya existen) ----- */
     const MAX_RESTAURAR = 5000;
     const clave = (o) => [o.fecha, o.tipo, o.descripcion, Number(o.importe), o.moneda].join("|");
+    const limpia = (t) => String(t || "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 30);
 
     $("btnRestaurarCuenta").addEventListener("click", () => $("archivoRestaurar").click());
 
@@ -535,7 +536,7 @@
                     !Number.isFinite(importe) || importe <= 0 || importe > 100000000 ||
                     !descripcion || descripcion.length > 100
                 ) throw new Error(`La operación ${i + 1} del respaldo no es válida. No se restauró nada.`);
-                return { fecha: o.fecha, tipo: o.tipo, descripcion, importe, moneda: o.moneda };
+                return { fecha: o.fecha, tipo: o.tipo, descripcion, importe, moneda: o.moneda, categoria: limpia(o.categoria) };
             });
 
             const existentes = new Set((await Nube.listarOperaciones()).map(clave));

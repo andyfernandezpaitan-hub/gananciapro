@@ -146,7 +146,7 @@
         "Cargando…": "Loading…", "Abriendo Google…": "Opening Google…", "Creando tu cuenta…": "Creating your account…",
         "Tu cuenta y tus datos": "Your account and data",
         "Puedes descargar una copia de tus datos o eliminar tu cuenta de forma definitiva. Más información en la": "You can download a copy of your data or permanently delete your account. More information in the",
-        "Descargar mis datos": "Download my data", "Restaurar desde mi respaldo": "Restore from my backup", "Eliminar mi cuenta y mis datos": "Delete my account and data",
+        "Descargar mis datos": "Download my data", "Restaurar desde mi respaldo": "Restore from my backup", "Categoría (opcional)": "Category (optional)", "Gastos por categoría": "Expenses by category", "Sin categoría": "No category", "Ej.: Alquiler, Transporte": "E.g.: Rent, Transport", "Escribe una categoría al registrar un gasto para verlo aquí.": "Add a category when you record an expense to see it here.", "Eliminar mi cuenta y mis datos": "Delete my account and data",
         "Gestionar suscripción": "Manage subscription", "Suscribirme (próximamente)": "Subscribe (coming soon)", "Suscribirme": "Subscribe",
         "Si no te suscribes,": "If you don't subscribe,", "tus datos siguen siendo tuyos": "your data is still yours",
         ": puedes verlos, descargarlos o eliminar tu cuenta cuando quieras.": ": you can view them, download them or delete your account whenever you want.",

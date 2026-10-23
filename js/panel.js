@@ -521,6 +521,43 @@
     }
 
     /* ----- Pintar todo ----- */
+    /* Gastos por categoría: la base de datos (SQL 11) o, sin ella, las operaciones ya cargadas */
+    async function pintarCategorias(mes, codigo, mio) {
+        const ul = $("topCategorias");
+        if (!ul) return;
+        const tarjeta = ul.closest(".tablero-tarjeta");
+        let filas;
+        try {
+            if (usaServidor) {
+                filas = (await window.Nube.resumenCategorias(mes, codigo, "gasto"))
+                    .map((f) => ({ nombre: String(f.nombre || ""), valor: Number(f.valor) }));
+            } else {
+                const mapa = new Map();
+                for (const o of del(mes, codigo)) {
+                    if (o.tipo !== "gasto") continue;
+                    const n = String(o.categoria || "");
+                    mapa.set(n, (mapa.get(n) || 0) + Number(o.importe || 0));
+                }
+                filas = [...mapa].map(([nombre, valor]) => ({ nombre, valor })).sort((p, q) => q.valor - p.valor).slice(0, 8);
+            }
+        } catch (e) {
+            if (tarjeta) tarjeta.hidden = true;   // el SQL 11 aún no está instalado
+            return;
+        }
+        if (mio !== pedido) return;
+        if (tarjeta) tarjeta.hidden = false;
+        ul.dataset.tipo = "gasto";
+        if (!filas.some((f) => f.nombre)) {
+            ul.replaceChildren();
+            const li = document.createElement("li");
+            li.className = "vacio";
+            li.textContent = filas.length ? "Escribe una categoría al registrar un gasto para verlo aquí." : "Sin datos este mes.";
+            ul.appendChild(li);
+            return;
+        }
+        barras(ul, filas.map((f) => ({ nombre: f.nombre || "Sin categoría", valor: f.valor })), (v) => moneda(v, codigo));
+    }
+
     async function pintar() {
         const selMes = $("tabMes");
         const selMon = $("tabMoneda");
@@ -575,6 +612,7 @@
         barras($("topIngresos"), datos.top_ingresos.map((f) => ({ nombre: f.nombre || "Sin descripción", valor: Number(f.valor) })), (v) => moneda(v, codigo));
         $("topGastos").dataset.tipo = "gasto";
         $("topIngresos").dataset.tipo = "ingreso";
+        pintarCategorias(mes, codigo, mio);
 
         const bajos = productos
             .filter((p) => p.activo !== false && Number(p.stock) <= 5)

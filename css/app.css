@@ -234,3 +234,18 @@ body:not([data-sesion="si"]) .app-titulo, body[data-vista="almacen"] .app-titulo
 body:not([data-sesion="no"]) [class*="kpi"], body:not([data-sesion="no"]) .tarjeta h3, body:not([data-sesion="no"]) .precio-grande {
     background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important; -webkit-text-fill-color: currentColor !important;
 }
+
+/* Categoría de la operación (chip discreto junto a la descripción) */
+body:not([data-sesion="no"]) .etiqueta-categoria {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: var(--neutro-fondo);
+    color: var(--texto-suave);
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
