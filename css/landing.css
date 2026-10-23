@@ -339,3 +339,7 @@ body[data-sesion="no"] .acceso-tarjeta button, body[data-sesion="no"] .btn-googl
 
 body[data-sesion="no"] .encabezado .btn-chico { white-space: nowrap; flex: none; }
 @media (max-width: 1000px) { body[data-sesion="no"] .marca p:not(.marca-nombre) { display: none; } }
+
+/* Verificación anti-bots (Cloudflare Turnstile) en los formularios de acceso */
+.captcha-caja { min-height: 65px; display: flex; justify-content: center; }
+.captcha-caja:empty { min-height: 0; }

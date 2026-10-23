@@ -83,11 +83,13 @@
         decir("Entrando…", "info");
 
         try {
-            await Nube.iniciarSesion($("correoEntrar").value.trim(), $("claveEntrar").value);
+            const token = await window.GP_CAPTCHA.token("formEntrar");
+            await Nube.iniciarSesion($("correoEntrar").value.trim(), $("claveEntrar").value, token);
             /* El resto ocurre en alCambiarSesion */
         } catch (error) {
             decir(error.message, "error");
         } finally {
+            window.GP_CAPTCHA.reiniciar("formEntrar");
             ocupado(boton, false);
         }
     });
@@ -124,7 +126,8 @@
         decir("Creando tu cuenta…", "info");
 
         try {
-            await Nube.registrar(correo, clave, cfg.VERSION_POLITICA);
+            const token = await window.GP_CAPTCHA.token("formCrear");
+            await Nube.registrar(correo, clave, cfg.VERSION_POLITICA, token);
             formularios.crear.reset();
             mostrar("entrar");
             decir(
@@ -135,6 +138,7 @@
         } catch (error) {
             decir(error.message, "error");
         } finally {
+            window.GP_CAPTCHA.reiniciar("formCrear");
             ocupado(boton, false);
         }
     });
@@ -147,13 +151,15 @@
         ocupado(boton, true);
 
         try {
-            await Nube.recuperarClave($("correoRecuperar").value.trim());
+            const token = await window.GP_CAPTCHA.token("formRecuperar");
+            await Nube.recuperarClave($("correoRecuperar").value.trim(), token);
             mostrar("entrar");
             /* Mismo mensaje exista o no la cuenta (no revela quién está registrado) */
             decir("Si el correo está registrado, recibirás un enlace para crear una nueva contraseña.", "ok");
         } catch (error) {
             decir(error.message, "error");
         } finally {
+            window.GP_CAPTCHA.reiniciar("formRecuperar");
             ocupado(boton, false);
         }
     });
