@@ -379,6 +379,13 @@ function mostrarOperaciones() {
             (operacion.tipo === "ingreso" ? "+ " : "− ") +
             formatoMoneda(operacion.importe, operacion.moneda);
 
+        const botonEditar = document.createElement("button");
+        botonEditar.type = "button";
+        botonEditar.className = "btn-editar";
+        botonEditar.textContent = "Editar";
+        botonEditar.setAttribute("aria-label", `Editar ${operacion.tipo}: ${operacion.descripcion}`);
+        botonEditar.addEventListener("click", () => iniciarEdicion(operacion));
+
         botonEliminar.type = "button";
         botonEliminar.className = "btn-eliminar";
         botonEliminar.textContent = "Eliminar";
@@ -399,6 +406,10 @@ function mostrarOperaciones() {
             try {
                 await window.Nube.borrarOperacion(operacion.id);
                 operaciones = operaciones.filter((existente) => existente !== operacion);
+                if (operacionEditando === operacion) {
+                    salirDeEdicion();
+                    formulario.reset();
+                }
                 mostrarOperaciones();
 
                 if (mensajeOperacion) {
@@ -416,7 +427,7 @@ function mostrarOperaciones() {
             }
         });
 
-        elemento.append(detalle, importe, botonEliminar);
+        elemento.append(detalle, importe, botonEditar, botonEliminar);
         lista.appendChild(elemento);
     }
 
@@ -471,6 +482,47 @@ let iniciandoRegistro = false;
 if (seccionOperaciones && seccionBienvenida) {
     seccionOperaciones.classList.add("plegada");
 }
+
+/* ----- Editar una operación: se carga en el mismo formulario ----- */
+let operacionEditando = null;
+const botonCancelarEdicion = document.getElementById("btnCancelarEdicion");
+const botonGuardarForm = formulario?.querySelector('button[type="submit"]');
+
+function salirDeEdicion() {
+    operacionEditando = null;
+    if (botonGuardarForm) botonGuardarForm.textContent = "Registrar operación";
+    if (botonCancelarEdicion) botonCancelarEdicion.hidden = true;
+}
+
+function iniciarEdicion(operacion) {
+    if (!formulario) return;
+    operacionEditando = operacion;
+
+    const poner = (id, valor) => { const campo = document.getElementById(id); if (campo) campo.value = valor; };
+    poner("fechaOperacion", operacion.fecha);
+    poner("tipoOperacion", operacion.tipo);
+    poner("descripcion", operacion.descripcion);
+    poner("categoriaOperacion", operacion.categoria || "");
+    poner("importe", String(operacion.importe));
+    poner("monedaOperacion", operacion.moneda);
+
+    if (botonGuardarForm) botonGuardarForm.textContent = "Guardar cambios";
+    if (botonCancelarEdicion) botonCancelarEdicion.hidden = false;
+    if (mensajeOperacion) mensajeOperacion.textContent = "Editando una operación. Cambia lo que necesites y guarda.";
+
+    seccionOperaciones?.classList.remove("plegada");
+    seccionBienvenida?.classList.add("oculta");
+    formulario.scrollIntoView({ behavior: "smooth", block: "center" });
+    document.getElementById("descripcion")?.focus({ preventScroll: true });
+}
+
+botonCancelarEdicion?.addEventListener("click", () => {
+    salirDeEdicion();
+    formulario.reset();
+    const f = document.getElementById("fechaOperacion");
+    if (f) f.value = fechaLocal();
+    if (mensajeOperacion) mensajeOperacion.textContent = "";
+});
 
 function mostrarRegistro() {
     seccionBienvenida.classList.remove("saliendo");
@@ -596,8 +648,14 @@ if (formulario) {
         if (botonRegistrar) botonRegistrar.disabled = true;
 
         try {
-            const creada = await window.Nube.crearOperacion(nuevaOperacion);
-            operaciones = [...operaciones, creada];
+            const editada = operacionEditando;
+            const creada = editada
+                ? await window.Nube.actualizarOperacion(editada.id, nuevaOperacion)
+                : await window.Nube.crearOperacion(nuevaOperacion);
+            operaciones = editada
+                ? operaciones.map((existente) => (existente === editada ? creada : existente))
+                : [...operaciones, creada];
+            salirDeEdicion();
 
             formulario.reset();
 
@@ -608,8 +666,9 @@ if (formulario) {
             mostrarOperaciones();
 
             if (mensajeOperacion) {
-                mensajeOperacion.textContent =
-                    "Operación registrada correctamente.";
+                mensajeOperacion.textContent = editada
+                    ? "Operación actualizada correctamente."
+                    : "Operación registrada correctamente.";
             }
         } catch (error) {
             console.error("No se pudo guardar la operación:", error);
@@ -918,6 +977,7 @@ window.GananciaApp = Object.freeze({
     },
 
     limpiar() {
+        salirDeEdicion();
         operaciones = [];
         limiteFilas = PASO_FILAS;
 

@@ -326,6 +326,16 @@ button:disabled {
     }
 }
 
+.btn-editar {
+    margin: 0;
+    padding: var(--sp-1) var(--sp-3);
+    background: transparent;
+    color: var(--texto-suave);
+    border-color: transparent;
+    font-size: var(--fs-xs);
+    box-shadow: none;
+}
+
 .btn-eliminar {
     margin: 0;
     padding: var(--sp-1) var(--sp-3);
@@ -621,7 +631,7 @@ button:disabled {
 
 .lista-operaciones li {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
     align-items: center;
     gap: var(--sp-4);
     padding: var(--sp-3) var(--sp-3);
@@ -794,7 +804,7 @@ footer p {
     }
 
     .lista-operaciones li {
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto auto;
     }
 
     .lista-operaciones .detalle {

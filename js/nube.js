@@ -353,6 +353,16 @@
             return todas;
         },
 
+        /* Corrige una operación propia (la base de datos exige que sea tuya y que tengas acceso) */
+        async actualizarOperacion(id, operacion) {
+            const fila = aFila(operacion);
+            if (categoriasActivas) fila.categoria = String(operacion.categoria || "").slice(0, 30);
+            const { data } = comprobar(
+                await cliente.from("operaciones").update(fila).eq("id", id).select(columnasOp()).single()
+            );
+            return aOperacion(data);
+        },
+
         async crearOperacion(operacion) {
             const { data } = comprobar(
                 await cliente.from("operaciones").insert([aFila(operacion)]).select(columnasOp()).single()

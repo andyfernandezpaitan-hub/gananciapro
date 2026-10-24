@@ -135,7 +135,7 @@ body:not([data-sesion="no"]) .tarjeta-ingresos h3, body:not([data-sesion="no"]) 
 body:not([data-sesion="no"]) .tarjeta .icono, body:not([data-sesion="no"]) .kpi-ico { display: none; }
 
 /* ---------- Botones: una forma, plana, redonda ---------- */
-body:not([data-sesion="no"]) button:not(.btn-secundario):not(.btn-tema):not(.btn-salir):not(.btn-enlace):not(.btn-peligro):not(.seg-btn):not(.btn-google):not([role="tab"]):not(.lp-btn):not(.grupo-cabecera):not(.miniatura):not(.chip-cat):not(.btn-eliminar),
+body:not([data-sesion="no"]) button:not(.btn-secundario):not(.btn-tema):not(.btn-salir):not(.btn-enlace):not(.btn-peligro):not(.seg-btn):not(.btn-google):not([role="tab"]):not(.lp-btn):not(.grupo-cabecera):not(.miniatura):not(.chip-cat):not(.btn-eliminar):not(.btn-editar),
 body:not([data-sesion="no"]) .btn-cta {
     background: var(--acento) !important; background-image: none !important; color: var(--acento-texto) !important;
     border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */ border-radius: 999px; font-weight: 600;
@@ -194,10 +194,12 @@ body:not([data-sesion="no"]) footer a, body:not([data-sesion="no"]) .panel-cuent
 body:not([data-sesion="no"]) .contenedor { background: transparent; }
 
 body:not([data-sesion="no"]) .encabezado::after, body:not([data-sesion="no"]) .encabezado::before { display: none; }
-body:not([data-sesion="no"]) .grupo-cabecera, body:not([data-sesion="no"]) .miniatura, body:not([data-sesion="no"]) .btn-eliminar {
+body:not([data-sesion="no"]) .grupo-cabecera, body:not([data-sesion="no"]) .miniatura, body:not([data-sesion="no"]) .btn-eliminar, body:not([data-sesion="no"]) .btn-editar {
     background: transparent !important; background-image: none !important; color: inherit !important; border: 0 !important; box-shadow: none !important; /* taste-skill-ignore */
 }
 body:not([data-sesion="no"]) .btn-eliminar { color: var(--mal) !important; }
+body:not([data-sesion="no"]) .btn-editar { color: var(--texto-suave) !important; }
+body:not([data-sesion="no"]) .btn-editar:hover { color: var(--texto) !important; text-decoration: underline; }
 body:not([data-sesion="no"]) .miniatura img { border-radius: 14px; }
 body:not([data-sesion="no"]) .estado-stock { background: var(--surface-2) !important; border: 0 !important; border-radius: 14px; }
 body:not([data-sesion="no"]) .estado-stock.estado-ok, body:not([data-sesion="no"]) .estado-ok { background: var(--ok-fondo) !important; }
@@ -248,4 +250,9 @@ body:not([data-sesion="no"]) .etiqueta-categoria {
     max-width: 12rem;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Botones de la lista: área táctil cómoda en pantallas táctiles */
+@media (pointer: coarse) {
+    body:not([data-sesion="no"]) .btn-editar, body:not([data-sesion="no"]) .btn-eliminar { min-height: 40px; min-width: 44px; }
 }
