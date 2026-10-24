@@ -211,6 +211,8 @@ function actualizarResumen() {
 const filtroBusqueda = document.getElementById("filtroBusqueda");
 const filtroTipo = document.getElementById("filtroTipo");
 const filtroMoneda = document.getElementById("filtroMoneda");
+const filtroCategoria = document.getElementById("filtroCategoria");
+const SIN_CATEGORIA = "__sin";
 const filtroDesde = document.getElementById("filtroDesde");
 const filtroHasta = document.getElementById("filtroHasta");
 const botonLimpiarFiltros = document.getElementById("btnLimpiarFiltros");
@@ -239,6 +241,23 @@ function actualizarOpcionesMoneda() {
     filtroMoneda.value = usadas.includes(seleccionada) ? seleccionada : "";
 }
 
+function actualizarOpcionesCategoria() {
+    if (!filtroCategoria) return;
+
+    const seleccionada = filtroCategoria.value;
+    const usadas = [...new Set(operaciones.map((operacion) => operacion.categoria).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "es"));
+    const haySin = operaciones.some((operacion) => !operacion.categoria);
+
+    const opciones = [new Option("Todas", "")];
+    for (const nombre of usadas) opciones.push(new Option(nombre, nombre));
+    if (usadas.length && haySin) opciones.push(new Option("Sin categoría", SIN_CATEGORIA));
+
+    filtroCategoria.replaceChildren(...opciones);
+    const sigue = seleccionada === SIN_CATEGORIA ? usadas.length && haySin : usadas.includes(seleccionada);
+    filtroCategoria.value = sigue ? seleccionada : "";
+}
+
 function pasaFiltros(operacion) {
     const texto = sinTildes(filtroBusqueda?.value.trim());
 
@@ -252,6 +271,13 @@ function pasaFiltros(operacion) {
 
     if (filtroMoneda?.value && operacion.moneda !== filtroMoneda.value) {
         return false;
+    }
+
+    if (filtroCategoria?.value) {
+        const quiereSin = filtroCategoria.value === SIN_CATEGORIA;
+        if (quiereSin ? Boolean(operacion.categoria) : operacion.categoria !== filtroCategoria.value) {
+            return false;
+        }
     }
 
     if (filtroDesde?.value && operacion.fecha < filtroDesde.value) {
@@ -305,6 +331,7 @@ function mostrarOperaciones() {
     }
 
     actualizarOpcionesMoneda();
+    actualizarOpcionesCategoria();
     actualizarListaCategorias();
     lista.replaceChildren();
 
@@ -456,7 +483,7 @@ function alCambiarFiltro() {
     mostrarOperaciones();
 }
 
-for (const filtro of [filtroBusqueda, filtroTipo, filtroMoneda, filtroDesde, filtroHasta]) {
+for (const filtro of [filtroBusqueda, filtroTipo, filtroMoneda, filtroCategoria, filtroDesde, filtroHasta]) {
     if (filtro) {
         filtro.addEventListener("input", alCambiarFiltro);
         filtro.addEventListener("change", alCambiarFiltro);
@@ -468,6 +495,7 @@ if (botonLimpiarFiltros) {
         if (filtroBusqueda) filtroBusqueda.value = "";
         if (filtroTipo) filtroTipo.value = "";
         if (filtroMoneda) filtroMoneda.value = "";
+        if (filtroCategoria) filtroCategoria.value = "";
         if (filtroDesde) filtroDesde.value = "";
         if (filtroHasta) filtroHasta.value = "";
         limiteFilas = PASO_FILAS;
@@ -992,7 +1020,7 @@ window.GananciaApp = Object.freeze({
         operaciones = [];
         limiteFilas = PASO_FILAS;
 
-        for (const filtro of [filtroBusqueda, filtroTipo, filtroMoneda, filtroDesde, filtroHasta]) {
+        for (const filtro of [filtroBusqueda, filtroTipo, filtroMoneda, filtroCategoria, filtroDesde, filtroHasta]) {
             if (filtro) filtro.value = "";
         }
 
