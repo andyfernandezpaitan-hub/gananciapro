@@ -18,6 +18,10 @@
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="GananciaPro">
     <link rel="canonical" href="https://andyfernandezpaitan-hub.github.io/gananciapro/">
     <title>GananciaPro | Ingresos, gastos y almacén</title>
     <link rel="stylesheet" href="css/styles.css">
@@ -689,11 +693,13 @@
             <p class="nota">Puedes descargar una copia de tus datos o eliminar tu cuenta de forma definitiva. Más información en la <a href="privacidad.html">Política de privacidad</a>.</p>
             <div class="acciones">
                 <button type="button" id="btnGestionar" class="btn-secundario" hidden>Gestionar suscripción</button>
+                <button type="button" id="btnInstalar" class="btn-secundario" hidden>Instalar en tu celular</button>
                 <button type="button" id="btnExportarCuenta" class="btn-secundario">Descargar mis datos</button>
                 <button type="button" id="btnRestaurarCuenta" class="btn-secundario">Restaurar desde mi respaldo</button>
                 <input type="file" id="archivoRestaurar" accept=".json,application/json" hidden>
                 <button type="button" id="btnEliminarCuenta" class="btn-peligro">Eliminar mi cuenta y mis datos</button>
             </div>
+            <p id="pistaInstalar" class="nota" hidden>Para instalarla en tu iPhone: toca Compartir y luego «Agregar a inicio».</p>
             <p id="mensajeCuenta" class="mensaje-acceso" role="status" aria-live="polite"></p>
         </section>
         <section id="tablero" class="tablero" aria-labelledby="tituloTablero">
@@ -1028,5 +1034,6 @@
     <script src="js/almacen.js"></script>
     <script src="js/panel.js"></script>
     <script src="js/portada.js"></script>
+    <script src="js/instalar.js"></script>
 </body>
 </html>
