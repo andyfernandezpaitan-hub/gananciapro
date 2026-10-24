@@ -468,7 +468,8 @@ button:disabled {
     padding: var(--sp-6);
 }
 
-.historial {
+.historial,
+.gastos-fijos {
     margin-top: var(--sp-6);
     padding: var(--sp-6);
 }
@@ -1121,6 +1122,7 @@ body[data-vista="almacen"] .bienvenida,
 body[data-vista="almacen"] .operaciones,
 body[data-vista="almacen"] .resumen,
 body[data-vista="almacen"] .historial,
+body[data-vista="almacen"] .gastos-fijos,
 body[data-vista="almacen"] .panel-cuenta,
 body[data-vista="almacen"] #migracion {
     display: none;
@@ -2279,6 +2281,7 @@ body[data-vista="panel"] .bienvenida,
 body[data-vista="panel"] .operaciones,
 body[data-vista="panel"] .resumen,
 body[data-vista="panel"] .historial,
+body[data-vista="panel"] .gastos-fijos,
 body[data-vista="panel"] .panel-cuenta,
 body[data-vista="panel"] #migracion {
     display: none;

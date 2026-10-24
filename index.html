@@ -694,6 +694,36 @@
             <p id="contadorHistorial" class="nota" role="status" aria-live="polite"></p>
             <ul id="listaOperaciones" class="lista-operaciones"></ul>
         </section>
+        <section id="gastosFijos" class="gastos-fijos" aria-labelledby="tituloFijos" hidden>
+            <h2 id="tituloFijos">Gastos fijos</h2>
+            <p class="nota">Gastos que se repiten cada mes, como el alquiler o el internet. Se registran solos desde el día que elijas, una vez al mes, cuando abres la app. Los meses que ya pasaron no se rellenan.</p>
+            <ul id="listaFijos" class="lista-fijos"></ul>
+            <form id="formFijo" class="form-fijo">
+                <div class="campo">
+                    <label for="fijoDescripcion">Descripción</label>
+                    <input type="text" id="fijoDescripcion" maxlength="100" placeholder="Ej.: Alquiler del local" required>
+                </div>
+                <div class="campo">
+                    <label for="fijoCategoria">Categoría (opcional)</label>
+                    <input type="text" id="fijoCategoria" maxlength="30" list="listaCategoriasOp" autocomplete="off">
+                </div>
+                <div class="campo">
+                    <label for="fijoImporte">Importe</label>
+                    <input type="number" inputmode="decimal" id="fijoImporte" min="0.01" max="100000000" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="campo">
+                    <label for="fijoMoneda">Moneda</label>
+                    <select id="fijoMoneda"></select>
+                </div>
+                <div class="campo">
+                    <label for="fijoDia">Día del mes (1 a 28)</label>
+                    <input type="number" inputmode="numeric" id="fijoDia" min="1" max="28" step="1" value="1" required>
+                </div>
+                <button type="submit">Agregar gasto fijo</button>
+            </form>
+            <p id="mensajeFijo" class="mensaje-acceso" role="status" aria-live="polite"></p>
+        </section>
+
         <section id="panelCuenta" class="panel-cuenta" aria-labelledby="tituloCuenta">
             <h2 id="tituloCuenta">Tu cuenta y tus datos</h2>
             <p class="nota">Puedes descargar una copia de tus datos o eliminar tu cuenta de forma definitiva. Más información en la <a href="privacidad.html">Política de privacidad</a>.</p>
@@ -1041,5 +1071,6 @@
     <script src="js/panel.js"></script>
     <script src="js/portada.js"></script>
     <script src="js/instalar.js"></script>
+    <script src="js/gastosfijos.js"></script>
 </body>
 </html>

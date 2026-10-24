@@ -99,6 +99,7 @@ body:not([data-sesion="no"]) .nav-app button[aria-selected="true"] {
 body:not([data-sesion="no"]) .bienvenida,
 body:not([data-sesion="no"]) .operaciones,
 body:not([data-sesion="no"]) .historial,
+body:not([data-sesion="no"]) .gastos-fijos,
 body:not([data-sesion="no"]) .panel-cuenta,
 body:not([data-sesion="no"]) .tarjeta,
 body:not([data-sesion="no"]) .tablero-tarjeta,
@@ -267,3 +268,15 @@ body:not([data-sesion="no"]) .resumen-lista { display: grid; gap: 0.5rem; margin
 body:not([data-sesion="no"]) .resumen-lista div { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--borde-fuerte); }
 body:not([data-sesion="no"]) .resumen-lista div:last-child { border-bottom: 0; font-weight: 700; }
 body:not([data-sesion="no"]) .resumen-lista dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+/* Gastos fijos */
+body:not([data-sesion="no"]) .lista-fijos { list-style: none; margin: 1rem 0; padding: 0; display: grid; gap: 0.5rem; }
+body:not([data-sesion="no"]) .lista-fijos li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 16px; background: var(--surface-2); }
+body:not([data-sesion="no"]) .lista-fijos li.pausado { opacity: 0.65; }
+body:not([data-sesion="no"]) .lista-fijos li.vacio { display: block; background: transparent; padding: 0.25rem 0; color: var(--texto-suave); }
+body:not([data-sesion="no"]) .form-fijo { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; align-items: end; }
+body:not([data-sesion="no"]) .form-fijo button[type="submit"] { grid-column: 1 / -1; justify-self: start; }
+@media (max-width: 640px) {
+    body:not([data-sesion="no"]) .lista-fijos li { grid-template-columns: minmax(0, 1fr) auto auto; }
+    body:not([data-sesion="no"]) .lista-fijos .fijo-texto { grid-column: 1 / -1; }
+}

@@ -363,6 +363,45 @@
             return aOperacion(data);
         },
 
+        /* ----- Gastos fijos (SQL 13). Si la tabla aún no existe, devuelven null / 0 ----- */
+        async listarGastosFijos() {
+            const { data, error } = await cliente
+                .from("gastos_fijos")
+                .select("id, descripcion, categoria, importe, moneda, dia, activo")
+                .order("dia", { ascending: true })
+                .order("creado_en", { ascending: true });
+            if (error) return null;
+            return data.map((f) => ({ ...f, importe: Number(f.importe) }));
+        },
+
+        async crearGastoFijo(fijo) {
+            const { data } = comprobar(
+                await cliente.from("gastos_fijos").insert([{
+                    descripcion: fijo.descripcion,
+                    categoria: String(fijo.categoria || "").slice(0, 30),
+                    importe: fijo.importe,
+                    moneda: fijo.moneda,
+                    dia: fijo.dia,
+                    ultimo_mes: fijo.ultimo_mes || null
+                }]).select("id, descripcion, categoria, importe, moneda, dia, activo").single()
+            );
+            return { ...data, importe: Number(data.importe) };
+        },
+
+        async cambiarActivoGastoFijo(id, activo) {
+            comprobar(await cliente.from("gastos_fijos").update({ activo }).eq("id", id));
+        },
+
+        async borrarGastoFijo(id) {
+            comprobar(await cliente.from("gastos_fijos").delete().eq("id", id));
+        },
+
+        /* Registra los gastos fijos que toquen este mes. Devuelve cuántos se crearon (0 si no aplica). */
+        async generarGastosFijos(hoy) {
+            const { data, error } = await cliente.rpc("generar_gastos_fijos", { p_hoy: hoy });
+            return error ? 0 : Number(data) || 0;
+        },
+
         async crearOperacion(operacion) {
             const { data } = comprobar(
                 await cliente.from("operaciones").insert([aFila(operacion)]).select(columnasOp()).single()
@@ -635,7 +674,7 @@
 
         /* Todos los datos del usuario, para descargarlos (derecho de portabilidad) */
         async exportarTodo() {
-            const tablas = ["operaciones", "almacen_categorias", "almacen_productos", "almacen_ventas",
+            const tablas = ["operaciones", "gastos_fijos", "almacen_categorias", "almacen_productos", "almacen_ventas",
                 "almacen_venta_detalles", "almacen_movimientos", "consentimientos", "suscripciones"];
             const salida = { generado_en: new Date().toISOString(), version: 1 };
 

@@ -999,9 +999,12 @@ mostrarOperaciones();
 /* Puente con acceso.js (inicio y cierre de sesión) */
 window.GananciaApp = Object.freeze({
     async cargar() {
+        /* Primero se registran los gastos fijos del mes (si toca), luego se leen las operaciones */
+        if (window.GastosFijos) await window.GastosFijos.generar();
         operaciones = await window.Nube.listarOperaciones();
         limiteFilas = PASO_FILAS;
         mostrarOperaciones();
+        if (window.GastosFijos) window.GastosFijos.cargar();
 
         /* Quien ya tiene operaciones entra directo al formulario; la bienvenida es solo para cuentas nuevas */
         if (operaciones.length > 0 && seccionOperaciones && seccionBienvenida) {
@@ -1011,6 +1014,7 @@ window.GananciaApp = Object.freeze({
     },
 
     limpiar() {
+        if (window.GastosFijos) window.GastosFijos.limpiar();
         if (seccionOperaciones && seccionBienvenida) {
             seccionBienvenida.classList.remove("oculta", "saliendo");
             seccionOperaciones.classList.add("plegada");
