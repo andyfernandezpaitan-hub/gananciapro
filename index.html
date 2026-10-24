@@ -352,7 +352,7 @@
                 <button type="button" id="btnOmitirMigracion" class="btn-secundario">Ahora no</button>
             </div>
         </section>
-        <nav id="navApp" class="nav-app" aria-label="Secciones de la aplicación">
+        <nav id="navApp" class="nav-app" role="tablist" aria-label="Secciones de la aplicación">
             <button type="button" id="navFinanzas" role="tab" aria-selected="true">Finanzas</button>
             <button type="button" id="navAlmacen" role="tab" aria-selected="false">Almacén</button>
             <button type="button" id="navPanel" role="tab" aria-selected="false">Panel</button>
@@ -767,6 +767,7 @@
                 <article class="kpi kpi-ops"><span class="kpi-ico" aria-hidden="true"><svg><use href="#ico-lista"/></svg></span><p class="kpi-etiqueta">Operaciones</p><p class="kpi-valor" id="kpiOps">–</p><p class="kpi-delta" id="kpiOpsD"></p></article>
             </div>
 
+            <h2 class="solo-lector">Gráficos y resúmenes</h2>
             <div class="tablero-grid">
                 <article class="tablero-tarjeta tablero-ancha">
                     <div class="graf-cabecera">
@@ -838,6 +839,7 @@
                 </div>
             </div>
 
+            <h2 class="solo-lector">Resumen del almacén</h2>
             <div class="tarjetas tarjetas-almacen" aria-label="Resumen del almacén">
                 <article class="tarjeta"><p>Productos activos</p><h3 id="almProductos">0</h3></article>
                 <article class="tarjeta"><p>Unidades en stock</p><h3 id="almUnidades">0</h3></article>
