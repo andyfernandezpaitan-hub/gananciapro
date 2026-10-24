@@ -412,11 +412,11 @@
                         id="categoriaOperacion"
                         name="categoria"
                         maxlength="30"
-                        list="listaCategorias"
+                        list="listaCategoriasOp"
                         placeholder="Ej.: Alquiler, Transporte"
                         autocomplete="off"
                     >
-                    <datalist id="listaCategorias"></datalist>
+                    <datalist id="listaCategoriasOp"></datalist>
                 </div>
 
                 <div class="campo">
@@ -759,6 +759,15 @@
                     <h3>Gastos por categoría</h3>
                     <ul id="topCategorias" class="barras"></ul>
                 </article>
+                <article class="tablero-tarjeta" id="tarjetaAlmacen" hidden>
+                    <h3>Ganancia del almacén</h3>
+                    <dl id="gananciaAlmacen" class="resumen-lista"></dl>
+                    <p id="notaAlmacen" class="nota"></p>
+                </article>
+                <article class="tablero-tarjeta" id="tarjetaMasVendidos" hidden>
+                    <h3>Productos más vendidos</h3>
+                    <ul id="masVendidos" class="barras"></ul>
+                </article>
                 <article class="tablero-tarjeta">
                     <h3>Stock bajo en el almacén</h3>
                     <ul id="stockBajo" class="barras"></ul>
@@ -895,6 +904,11 @@
                 <div class="campo">
                     <label for="prodCodigo">Código (opcional)</label>
                     <input type="text" id="prodCodigo" maxlength="60">
+                </div>
+                <div class="campo">
+                    <label for="prodCosto">Costo por unidad (opcional)</label>
+                    <input type="number" inputmode="decimal" id="prodCosto" min="0" max="100000000" step="0.01" placeholder="0.00">
+                    <p>Lo que te costó cada unidad, en la moneda de tus ventas. Sirve para calcular tu ganancia en el Panel.</p>
                 </div>
                 <div class="campo" id="campoCantidadInicial">
                     <label for="prodCantidad">Cantidad inicial (stock)</label>

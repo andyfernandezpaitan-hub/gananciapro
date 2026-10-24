@@ -487,6 +487,24 @@
             return true;
         },
 
+        /* Costo por unidad (SQL 12). undefined = no disponible todavía */
+        async costoProducto(id) {
+            const { data, error } = await cliente.from("almacen_productos").select("costo").eq("id", id).maybeSingle();
+            if (error || !data) return undefined;
+            return data.costo === null ? null : Number(data.costo);
+        },
+
+        async ponerCostoProductos(ids, costo) {
+            comprobar(await cliente.from("almacen_productos").update({ costo }).in("id", ids));
+        },
+
+        async resumenAlmacen(mes, moneda) {
+            const { data } = comprobar(
+                await cliente.rpc("resumen_almacen", { p_mes: `${mes}-01`, p_moneda: moneda })
+            );
+            return data;
+        },
+
         async actualizarProducto(id, cambios) {
             const { data } = comprobar(
                 await cliente.from("almacen_productos").update(cambios).eq("id", id).select(columnasProducto()).single()

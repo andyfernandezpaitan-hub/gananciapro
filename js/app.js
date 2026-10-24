@@ -276,7 +276,7 @@ function limpiarCategoria(valor) {
 }
 
 function actualizarListaCategorias() {
-    const lista = document.getElementById("listaCategorias");
+    const lista = document.getElementById("listaCategoriasOp");
     if (!lista) return;
     const conteo = new Map();
     for (const operacion of operaciones) {

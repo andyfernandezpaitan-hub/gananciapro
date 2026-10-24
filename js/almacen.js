@@ -25,6 +25,16 @@
     let cargado = false;
     let limiteFilas = PASO_FILAS;
     let productoEnEdicion = null;
+    let costoOriginal;   // undefined = aún no se sabe (o el SQL 12 no está instalado)
+
+    /* Costo por unidad: vacío = sin costo; si no, número de 0 a 100,000,000 con 2 decimales */
+    function leerCosto() {
+        const texto = $("prodCosto").value.trim();
+        if (texto === "") return { ok: true, valor: null };
+        const numero = Number(texto);
+        if (!Number.isFinite(numero) || numero < 0 || numero > 100000000) return { ok: false };
+        return { ok: true, valor: Math.round(numero * 100) / 100 };
+    }
     let productoEnMovimiento = null;
     let movimientos = [];
     let hayMasMovimientos = false;
@@ -827,6 +837,15 @@
         $("prodTalla").value = producto?.talla || "";
         $("prodColor").value = producto?.color || "";
         $("prodCodigo").value = producto?.codigo || "";
+        $("prodCosto").value = "";
+        costoOriginal = undefined;
+        if (producto) {
+            Nube.costoProducto(producto.id).then((valor) => {
+                if (productoEnEdicion !== producto) return;
+                costoOriginal = valor;
+                if (typeof valor === "number") $("prodCosto").value = String(valor);
+            });
+        }
         $("prodCategoria").value = producto?.categoria_id ? nombreCategoria(producto.categoria_id) : "";
         $("mensajeProducto").textContent = "";
         $("campoCantidadInicial").hidden = Boolean(producto);
@@ -937,6 +956,10 @@
 
         if (!filas.length) return error("Agrega al menos una talla.");
 
+        const costo = leerCosto();
+        if (!costo.ok) return error("El costo debe ser un número de 0 a 100,000,000.");
+        const idsNuevos = [];
+
         const vistas = new Set();
         for (const f of filas) {
             if (!f.talla) return error("Hay una cantidad sin talla.");
@@ -972,6 +995,7 @@
                     tallas: filas.map((f) => ({ talla: f.talla, cantidad: f.cantidad }))
                 });
                 productos = [...productos, ...lista.map((p) => ({ ...p, stock: Number(p.stock) }))];
+                idsNuevos.push(...lista.map((p) => p.id));
                 creadas = lista.length;
                 atomico = true;
             } catch (e) {
@@ -996,6 +1020,7 @@
                         ...(rutaFoto ? { imagen_path: rutaFoto } : {})
                     });
                     creadas += 1;
+                    idsNuevos.push(creado.id);
                     let stock = 0;
 
                     if (f.cantidad > 0) {
@@ -1014,6 +1039,14 @@
             error(e.message);
             guardar.disabled = false;
             return;
+        }
+
+        if (costo.valor !== null && idsNuevos.length) {
+            try {
+                await Nube.ponerCostoProductos(idsNuevos, costo.valor);
+            } catch (e) {
+                fallos.push(`costo (${e.message})`);
+            }
         }
 
         productos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
@@ -1074,6 +1107,13 @@
             return;
         }
 
+        const costo = leerCosto();
+        if (!costo.ok) {
+            $("mensajeProducto").textContent = "El costo debe ser un número de 0 a 100,000,000.";
+            $("mensajeProducto").dataset.tipo = "error";
+            return;
+        }
+
         const textoCantidad = $("prodCantidad").value.trim();
         const cantidadInicial = textoCantidad === "" ? 0 : Number(textoCantidad);
 
@@ -1095,6 +1135,13 @@
                 color: normalizarColor($("prodColor").value),
                 codigo: $("prodCodigo").value.trim() || null
             };
+
+            /* El costo solo se envía si cambió (así nada falla si el SQL 12 aún no está instalado) */
+            if (productoEnEdicion) {
+                if (costo.valor !== null ? costo.valor !== costoOriginal : typeof costoOriginal === "number") datos.costo = costo.valor;
+            } else if (costo.valor !== null) {
+                datos.costo = costo.valor;
+            }
 
             let productoNuevo = null;
             const fotoAnterior = productoEnEdicion?.imagen_path || null;

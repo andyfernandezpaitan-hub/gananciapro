@@ -558,6 +558,59 @@
         barras(ul, filas.map((f) => ({ nombre: f.nombre || "Sin categoría", valor: f.valor })), (v) => moneda(v, codigo));
     }
 
+    /* Ganancia de las ventas del almacén y productos más vendidos (SQL 12) */
+    async function pintarAlmacen(mes, codigo, mio) {
+        const tarjetaG = $("tarjetaAlmacen");
+        const tarjetaV = $("tarjetaMasVendidos");
+        if (!tarjetaG || !tarjetaV) return;
+        let datos;
+        try {
+            if (!usaServidor) throw new Error("sin servidor");
+            datos = await window.Nube.resumenAlmacen(mes, codigo);
+        } catch (e) {
+            tarjetaG.hidden = true;   // el SQL 12 aún no está instalado
+            tarjetaV.hidden = true;
+            return;
+        }
+        if (mio !== pedido) return;
+        tarjetaG.hidden = false;
+        tarjetaV.hidden = false;
+
+        const ventas = Number(datos.ventas);
+        const costo = Number(datos.costo);
+        const sinCosto = Number(datos.sin_costo);
+        const lista = $("gananciaAlmacen");
+        const nota = $("notaAlmacen");
+        lista.replaceChildren();
+
+        if (ventas <= 0) {
+            nota.textContent = "Sin ventas del almacén este mes.";
+        } else {
+            const ganancia = ventas - costo;
+            const filas = [
+                ["Ventas", moneda(ventas, codigo)],
+                ["Costo de lo vendido", moneda(costo, codigo)],
+                ["Ganancia", moneda(ganancia, codigo) + (ventas > 0 ? " · " + ((ganancia / ventas) * 100).toFixed(0) + "%" : "")]
+            ];
+            for (const [nombre, valor] of filas) {
+                const fila = document.createElement("div");
+                const dt = document.createElement("dt");
+                dt.textContent = nombre;
+                const dd = document.createElement("dd");
+                dd.textContent = valor;
+                fila.append(dt, dd);
+                lista.appendChild(fila);
+            }
+            nota.textContent = sinCosto > 0
+                ? `A ${sinCosto} ${sinCosto === 1 ? "producto vendido" : "productos vendidos"} le falta el costo. Agrégalo en Almacén para una ganancia exacta.`
+                : "";
+        }
+
+        const ul = $("masVendidos");
+        ul.dataset.tipo = "ingreso";
+        barras(ul, (datos.top || []).map((f) => ({ nombre: f.nombre, valor: Number(f.unidades) })), (v) => v + " u.");
+    }
+
     async function pintar() {
         const selMes = $("tabMes");
         const selMon = $("tabMoneda");
@@ -613,6 +666,7 @@
         $("topGastos").dataset.tipo = "gasto";
         $("topIngresos").dataset.tipo = "ingreso";
         pintarCategorias(mes, codigo, mio);
+        pintarAlmacen(mes, codigo, mio);
 
         const bajos = productos
             .filter((p) => p.activo !== false && Number(p.stock) <= 5)
