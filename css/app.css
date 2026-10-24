@@ -272,7 +272,7 @@ body:not([data-sesion="no"]) .resumen-lista dd { margin: 0; font-variant-numeric
 /* Gastos fijos */
 body:not([data-sesion="no"]) .lista-fijos { list-style: none; margin: 1rem 0; padding: 0; display: grid; gap: 0.5rem; }
 body:not([data-sesion="no"]) .lista-fijos li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 16px; background: var(--surface-2); }
-body:not([data-sesion="no"]) .lista-fijos li.pausado { background: transparent; box-shadow: inset 0 0 0 1.5px var(--borde, #bbb); border-style: dashed; }
+body:not([data-sesion="no"]) .lista-fijos li.pausado { background: transparent; border: 1.5px dashed var(--borde-fuerte); }
 body:not([data-sesion="no"]) .lista-fijos li.vacio { display: block; background: transparent; padding: 0.25rem 0; color: var(--texto-suave); }
 body:not([data-sesion="no"]) .form-fijo { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; align-items: end; }
 body:not([data-sesion="no"]) .form-fijo button[type="submit"] { grid-column: 1 / -1; justify-self: start; }
