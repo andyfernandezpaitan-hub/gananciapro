@@ -974,9 +974,20 @@ window.GananciaApp = Object.freeze({
         operaciones = await window.Nube.listarOperaciones();
         limiteFilas = PASO_FILAS;
         mostrarOperaciones();
+
+        /* Quien ya tiene operaciones entra directo al formulario; la bienvenida es solo para cuentas nuevas */
+        if (operaciones.length > 0 && seccionOperaciones && seccionBienvenida) {
+            seccionBienvenida.classList.add("oculta");
+            seccionOperaciones.classList.remove("plegada");
+        }
     },
 
     limpiar() {
+        if (seccionOperaciones && seccionBienvenida) {
+            seccionBienvenida.classList.remove("oculta", "saliendo");
+            seccionOperaciones.classList.add("plegada");
+            iniciandoRegistro = false;
+        }
         salirDeEdicion();
         operaciones = [];
         limiteFilas = PASO_FILAS;
