@@ -3670,3 +3670,27 @@ button.miniatura:focus-visible {
         grid-template-columns: 1fr;
     }
 }
+
+/* Reporte mensual (solo se ve al imprimir / guardar como PDF) */
+.reporte-impresion { display: none; }
+
+@media print {
+    body.imprimiendo-reporte > *:not(#reporteImpresion) { display: none !important; }
+    body.imprimiendo-reporte { background: #fff !important; }
+    body.imprimiendo-reporte .reporte-impresion {
+        display: block;
+        color: #111;
+        font: 12pt/1.45 system-ui, sans-serif;
+        padding: 0;
+    }
+    .reporte-impresion h1 { font-size: 20pt; margin: 0 0 4pt; }
+    .reporte-impresion h2 { font-size: 13pt; margin: 18pt 0 6pt; break-after: avoid; }
+    .reporte-impresion .rep-nota { color: #555; margin: 0 0 12pt; }
+    .reporte-impresion .rep-tabla { width: 100%; border-collapse: collapse; margin-bottom: 12pt; }
+    .reporte-impresion .rep-tabla caption { text-align: left; font-weight: 600; padding: 4pt 0; }
+    .reporte-impresion th, .reporte-impresion td { text-align: left; padding: 4pt 6pt; border-bottom: 0.5pt solid #bbb; }
+    .reporte-impresion th { border-bottom: 1pt solid #111; }
+    .reporte-impresion .num { text-align: right; white-space: nowrap; }
+    .reporte-impresion .rep-total { font-weight: 700; }
+    .reporte-impresion tr { break-inside: avoid; }
+}

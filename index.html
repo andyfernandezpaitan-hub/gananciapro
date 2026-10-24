@@ -655,6 +655,15 @@
         <section class="historial">
             <h2>Historial de operaciones</h2>
 
+            <div class="reporte-mes">
+                <div class="campo">
+                    <label for="reporteMes">Reporte del mes</label>
+                    <input type="month" id="reporteMes">
+                </div>
+                <button type="button" id="btnReporte" class="btn-secundario">Guardar reporte en PDF</button>
+                <p id="mensajeReporte" class="nota" role="status" aria-live="polite"></p>
+            </div>
+
             <div class="filtros" role="search" aria-label="Filtrar historial">
                 <div class="campo">
                     <label for="filtroBusqueda">Buscar</label>
@@ -1071,6 +1080,8 @@
     <script src="js/panel.js"></script>
     <script src="js/portada.js"></script>
     <script src="js/instalar.js"></script>
+    <div id="reporteImpresion" class="reporte-impresion" aria-hidden="true"></div>
     <script src="js/gastosfijos.js"></script>
+    <script src="js/reporte.js"></script>
 </body>
 </html>

@@ -280,3 +280,7 @@ body:not([data-sesion="no"]) .form-fijo button[type="submit"] { grid-column: 1 /
     body:not([data-sesion="no"]) .lista-fijos li { grid-template-columns: minmax(0, 1fr) auto auto; }
     body:not([data-sesion="no"]) .lista-fijos .fijo-texto { grid-column: 1 / -1; }
 }
+
+/* Reporte del mes */
+body:not([data-sesion="no"]) .reporte-mes { display: flex; flex-wrap: wrap; align-items: end; gap: 0.75rem; margin-bottom: 1rem; }
+body:not([data-sesion="no"]) .reporte-mes .nota { flex-basis: 100%; margin: 0; }

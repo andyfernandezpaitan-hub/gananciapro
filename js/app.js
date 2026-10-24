@@ -998,6 +998,11 @@ mostrarOperaciones();
 
 /* Puente con acceso.js (inicio y cierre de sesión) */
 window.GananciaApp = Object.freeze({
+    /* Copia de las operaciones para el reporte mensual */
+    listar() {
+        return operaciones.map((o) => ({ ...o }));
+    },
+
     async cargar() {
         /* Primero se registran los gastos fijos del mes (si toca), luego se leen las operaciones */
         if (window.GastosFijos) await window.GastosFijos.generar();
