@@ -284,3 +284,11 @@ body:not([data-sesion="no"]) .form-fijo button[type="submit"] { grid-column: 1 /
 /* Reporte del mes */
 body:not([data-sesion="no"]) .reporte-mes { display: flex; flex-wrap: wrap; align-items: end; gap: 0.75rem; margin-bottom: 1rem; }
 body:not([data-sesion="no"]) .reporte-mes .nota { flex-basis: 100%; margin: 0; }
+
+/* Escáner de códigos */
+.escaner { border: 0; border-radius: 20px; padding: 1.25rem; width: min(92vw, 28rem); background: var(--surface); color: var(--texto); }
+.escaner::backdrop { background: rgba(0, 0, 0, 0.6); }
+.escaner h2 { margin: 0 0 0.75rem; font-size: 1.25rem; }
+.escaner video { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; background: #000; display: block; }
+.escaner .nota { margin: 0.75rem 0; min-height: 2.6em; }
+body:not([data-sesion="no"]) .btn-escanear { margin-top: 0.5rem; }
