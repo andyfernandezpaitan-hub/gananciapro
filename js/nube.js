@@ -223,6 +223,13 @@
             return data;
         },
 
+        /* Plan de la cuenta y sus límites (null si el paso 14 de SQL aún no está instalado) */
+        async miPlan() {
+            const { data, error } = await cliente.rpc("mi_plan");
+            if (error || !data || typeof data.plan !== "string") return null;
+            return { plan: data.plan, variantes: data.variantes ?? null, gastosFijos: data.gastos_fijos ?? null };
+        },
+
         /* Abre el pago de Polar: lo crea una función del servidor con la sesión del cliente */
         async crearPago() {
             const { data } = comprobar(await cliente.auth.getSession());

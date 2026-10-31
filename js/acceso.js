@@ -262,7 +262,33 @@
         document.dispatchEvent(new CustomEvent("gp-acceso"));
     }
 
+    const NOMBRES_PLAN = { basico: "Básico", estandar: "Estándar", premium: "Premium" };
+
+    function limiteTexto(n, singular, plural) {
+        return n === null ? `${plural} sin límite` : `hasta ${n} ${n === 1 ? singular : plural}`;
+    }
+
+    async function cargarPlan() {
+        const texto = $("textoPlan");
+        try {
+            const info = await Nube.miPlan();
+            if (!info || !NOMBRES_PLAN[info.plan]) throw new Error("sin plan");
+            document.body.dataset.plan = info.plan;
+            if (texto) {
+                const almacen = info.variantes === 0
+                    ? "sin almacén"
+                    : limiteTexto(info.variantes, "producto", "productos");
+                texto.textContent = `Tu plan: ${NOMBRES_PLAN[info.plan]} · ${almacen} y ${limiteTexto(info.gastosFijos, "gasto fijo", "gastos fijos")}.`;
+                texto.hidden = false;
+            }
+        } catch (error) {
+            delete document.body.dataset.plan;
+            if (texto) { texto.textContent = ""; texto.hidden = true; }
+        }
+    }
+
     async function cargarAcceso() {
+        cargarPlan();
         try {
             aplicarAcceso(calcularAcceso(await Nube.miAcceso()));
         } catch (error) {
