@@ -10,10 +10,10 @@
     // Aplicar la elección guardada antes de pintar la página (evita parpadeos)
     try {
         const guardado = localStorage.getItem(CLAVE_TEMA);
-        /* Sin elección guardada, la primera visita se ve en oscuro premium */
-        raiz.setAttribute("data-theme", guardado === "light" ? "light" : "dark");
+        /* Sin elección guardada, la primera visita se ve en claro (limpio y profesional) */
+        raiz.setAttribute("data-theme", guardado === "dark" ? "dark" : "light");
     } catch (error) {
-        raiz.setAttribute("data-theme", "dark");
+        raiz.setAttribute("data-theme", "light");
     }
 
     function temaActual() {

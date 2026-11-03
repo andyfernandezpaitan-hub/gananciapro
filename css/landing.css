@@ -33,7 +33,7 @@ body[data-sesion="no"],
     --acento-hover: #175530;
     --acento-texto: #ffffff;
     --anillo: rgba(31, 107, 58, 0.4);
-    --cab-fondo: #0a0a0a;
+    --cab-fondo: #ffffff; --cab-texto: #14140f; --cab-suave: #55555a; --cab-borde: #e6e6e1;
     background: var(--lp-bg);
     color: var(--lp-ink);
     font-family: "Schibsted Grotesk", var(--font);
@@ -44,12 +44,14 @@ body[data-sesion="no"],
     :root:not([data-theme="light"]) .lp {
         --lp-bg: #0d0d0d; --lp-surface: #1b1b1b; --lp-ink: #f5f5f5; --lp-muted: #b4b4b4;
         --lp-accent: #8fe0aa; --lp-accent-ink: #06210f; --lp-mint: #17402a; --lp-pink: #4a2327; --lp-white: #181818;
+        --cab-fondo: #0d0d0d; --cab-texto: #f5f5f5; --cab-suave: #b4b4b4; --cab-borde: #262626;
     }
 }
 :root[data-theme="dark"] body[data-sesion="no"],
 :root[data-theme="dark"] .lp {
     --lp-bg: #0d0d0d; --lp-surface: #1b1b1b; --lp-ink: #f5f5f5; --lp-muted: #b4b4b4;
     --lp-accent: #8fe0aa; --lp-accent-ink: #06210f; --lp-mint: #17402a; --lp-pink: #4a2327; --lp-white: #181818;
+    --cab-fondo: #0d0d0d; --cab-texto: #f5f5f5; --cab-suave: #b4b4b4; --cab-borde: #262626;
 }
 
 /* El marco de la página: la portada ocupa todo el ancho; el acceso queda centrado */
@@ -295,9 +297,10 @@ body[data-sesion="no"] footer a { color: var(--lp-ink); }
 
 /* Encabezado de la portada: mismo lenguaje (menta/verde, misma letra) */
 body[data-sesion="no"] .marca .marca-nombre { font-family: "Schibsted Grotesk", var(--font); font-weight: 800; letter-spacing: -0.04em; }
-body[data-sesion="no"] .marca-pro { color: #c3edce; }
+body[data-sesion="no"] .marca-pro { color: var(--acento); }
+:root[data-theme="dark"] body[data-sesion="no"] .marca-pro { color: #c3edce; }
 body[data-sesion="no"] .logo { background: #1f6b3a; box-shadow: none; /* taste-skill-ignore */ }
-body[data-sesion="no"] .marca p:not(.marca-nombre) { color: #b9b9b9; }
+body[data-sesion="no"] .marca p:not(.marca-nombre) { color: var(--cab-suave); }
 
 /* ---------- Acceso (inicio de sesión / crear cuenta) con el mismo lenguaje ---------- */
 body[data-sesion="no"] .acceso { min-height: 0; }
@@ -344,3 +347,10 @@ body[data-sesion="no"] .encabezado .btn-chico { white-space: nowrap; flex: none;
 /* Verificación anti-bots (Cloudflare Turnstile) en los formularios de acceso */
 .captcha-caja { min-height: 65px; display: flex; justify-content: center; }
 .captcha-caja:empty { min-height: 0; }
+
+/* Encabezado en claro: nombre en tinta, botón de entrar con color de marca */
+body[data-sesion="no"] .marca .marca-nombre { color: var(--cab-texto); }
+:root:not([data-theme="dark"]) body[data-sesion="no"] .encabezado .btn-chico:not(.btn-idioma):not(.btn-tema) {
+    background: var(--acento); color: var(--acento-texto); border-color: var(--acento);
+}
+:root:not([data-theme="dark"]) body[data-sesion="no"] .encabezado .btn-chico:not(.btn-idioma):not(.btn-tema):hover { background: var(--acento-hover); }
