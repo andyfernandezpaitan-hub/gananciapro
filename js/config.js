@@ -10,7 +10,7 @@ window.GANANCIAPRO_CONFIG = Object.freeze({
     VERSION_POLITICA: "2026-10-21",
 
     /* Cloudflare Turnstile: clave del SITIO (pública). La secreta va solo en Supabase. */
-    TURNSTILE_CLAVE_SITIO: "0x4AAAAAAFhvT7pN9mnQ_U6d",
+    TURNSTILE_CLAVE_SITIO: "0x4AAAAAAFxZRWq9xapAmDCi",
 
     /* Pon true SOLO cuando Google esté configurado en Supabase y la página esté publicada */
     GOOGLE_ACTIVO: true,
