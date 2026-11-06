@@ -222,6 +222,13 @@ body[data-sesion="no"] footer a { color: var(--lp-ink); }
 .lp-faq { padding: 0 var(--lp-m); }
 .lp-faq .lp-h2 { max-width: 20ch; margin-left: calc(25%); }
 .lp-fichas { margin: 40px 0 0 25%; width: 50%; }
+.lp-descarga { margin: 56px 0 0 25%; width: 50%; padding: 28px; border-radius: 28px; background: var(--lp-mint); }
+.lp-descarga-t { font-size: 1.375rem; font-weight: 700; margin: 0 0 8px; }
+.lp-descarga p { margin: 0 0 16px; max-width: 52ch; }
+.lp-descarga .lp-acciones { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 16px; }
+.lp-descarga a.lp-btn { display: inline-flex; align-items: center; text-decoration: none; }
+.lp-descarga-n { font-size: 0.9375rem; color: var(--lp-muted); margin: 0; }
+.lp-descarga a:not(.lp-btn) { color: var(--lp-ink); font-weight: 600; }
 .lp-ficha { position: relative; margin-top: -28px; padding-top: 0; border-radius: 0 28px 28px 28px; filter: none; }
 .lp-ficha:first-child { margin-top: 0; }
 .lp-ficha:nth-child(3n+1) { background: var(--lp-mint); }
@@ -283,6 +290,7 @@ body[data-sesion="no"] footer a { color: var(--lp-ink); }
     .lp-datos .lp-lead { margin-top: 24px; }
     .lp-cuenta { margin-top: 32px; }
     .lp-faq .lp-h2, .lp-fichas { margin-left: 0; width: auto; }
+    .lp-descarga { margin-left: 0; width: auto; padding: 22px; }
     .lp-ficha:nth-child(n) .lp-pestana { margin-left: calc((var(--k, 0)) * 36px); }
     .lp-ficha:nth-child(2) .lp-pestana { margin-left: 36px; } .lp-ficha:nth-child(3) .lp-pestana { margin-left: 72px; }
     .lp-ficha:nth-child(4) .lp-pestana { margin-left: 108px; } .lp-ficha:nth-child(5) .lp-pestana { margin-left: 144px; }
