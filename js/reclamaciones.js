@@ -5,7 +5,7 @@
    prepara un correo para el proveedor, con copia al consumidor. Todo el texto se
    inserta con textContent, nunca como HTML. */
 (function () {
-    const CORREO_PROVEEDOR = "paitan-andy@hotmail.com";
+    const CORREO_PROVEEDOR = "pukllay.studio24@gmail.com";
     const $ = (id) => document.getElementById(id);
     const form = $("formReclamo");
     if (!form) return;
