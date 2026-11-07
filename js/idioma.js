@@ -73,7 +73,7 @@
         "14 días": "14 days",
         "Control inteligente de tu negocio": "Smart control of your business",
         "Programa para PC · US$ 135": "PC program · US$ 135",
-        "Para Windows y Mac. Pagas una sola vez y es tuyo para siempre. Tus datos se guardan en tu computadora, sin internet y sin cuenta.": "For Windows and Mac. Pay once and it is yours for good. Your data stays on your computer, with no internet and no account.",
+        "Para Windows y Mac. Pagas una sola vez y es tuyo para siempre. Tus datos se guardan en tu computadora y funciona sin internet; solo necesitas conexión una vez para activarlo.": "For Windows and Mac. Pay once and it is yours for good. Your data stays on your computer and it works offline; you only need a connection once to activate it.",
         "Comprar el programa para PC": "Buy the PC program",
         "Si Windows muestra «Windows protegió su PC»:": "If Windows shows “Windows protected your PC”:",
         " pulsa «Más información» y luego «Ejecutar de todas formas». Es normal en programas nuevos y no afecta tu PC.": " click “More info” and then “Run anyway”. This is normal for new programs and does not affect your PC.",
