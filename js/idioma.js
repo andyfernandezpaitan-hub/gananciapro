@@ -75,6 +75,8 @@
         "Programa para PC · US$ 135": "PC program · US$ 135",
         "Para Windows y Mac. Pagas una sola vez y es tuyo para siempre. Tus datos se guardan en tu computadora, sin internet y sin cuenta.": "For Windows and Mac. Pay once and it is yours for good. Your data stays on your computer, with no internet and no account.",
         "Comprar el programa para PC": "Buy the PC program",
+        "Si Windows muestra «Windows protegió su PC»:": "If Windows shows “Windows protected your PC”:",
+        " pulsa «Más información» y luego «Ejecutar de todas formas». Es normal en programas nuevos y no afecta tu PC.": " click “More info” and then “Run anyway”. This is normal for new programs and does not affect your PC.",
         "Importante:": "Important:",
         " tus datos se guardan solo en tu PC, no en internet; haz copias de seguridad desde el programa. Al pagar recibes los instaladores y, por correo, tu código único para activarlo para siempre (ya no hace falta pedirlo). Dudas: ": " your data is stored only on your PC, not online; make backups from the program. When you pay you get the installers and, by email, your unique code to activate it forever (no need to request it). Questions: ",
         "Instalar": "Install", "Úsala como una app.": "Use it like an app.",
