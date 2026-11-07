@@ -1486,7 +1486,7 @@ dialog h2 {
 
 .venta-linea {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 96px auto;
+    grid-template-columns: minmax(0, 1fr) 80px 104px auto;
     gap: var(--sp-2);
     align-items: center;
 }
@@ -1516,7 +1516,11 @@ dialog h2 {
 
 @media (max-width: 640px) {
     .venta-linea {
-        grid-template-columns: minmax(0, 1fr) 88px;
+        grid-template-columns: minmax(0, 1fr) 72px 96px;
+    }
+
+    .venta-linea select {
+        grid-column: 1 / -1;
     }
 
     .venta-linea button {

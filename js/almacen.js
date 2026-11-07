@@ -622,8 +622,35 @@
             if ($("ventaLineas").children.length > 1) fila.remove();
         });
 
-        fila.append(select, cantidad, quitar);
+        const precio = document.createElement("input");
+        precio.type = "number";
+        precio.min = "0";
+        precio.step = "0.01";
+        precio.inputMode = "decimal";
+        precio.placeholder = "Precio c/u";
+        precio.className = "venta-precio";
+        precio.setAttribute("aria-label", "Precio por unidad");
+
+        cantidad.className = "venta-cant";
+        select.addEventListener("change", recalcularTotalVenta);
+        cantidad.addEventListener("input", recalcularTotalVenta);
+        precio.addEventListener("input", recalcularTotalVenta);
+        quitar.addEventListener("click", recalcularTotalVenta);
+
+        fila.append(select, cantidad, precio, quitar);
         $("ventaLineas").appendChild(fila);
+    }
+
+    /* Total = suma de (cantidad × precio por unidad) de cada línea */
+    function recalcularTotalVenta() {
+        let total = 0;
+        let hay = false;
+        for (const fila of $("ventaLineas").children) {
+            const c = Number(fila.querySelector(".venta-cant")?.value);
+            const pr = Number(fila.querySelector(".venta-precio")?.value);
+            if (c > 0 && pr > 0) { total += c * pr; hay = true; }
+        }
+        if (hay) $("ventaImporte").value = (Math.round(total * 100) / 100).toFixed(2);
     }
 
     function abrirVenta() {
@@ -664,7 +691,7 @@
 
         const items = [...$("ventaLineas").children].map((fila) => ({
             producto_id: fila.querySelector("select").value,
-            cantidad: Number(fila.querySelector("input").value)
+            cantidad: Number(fila.querySelector(".venta-cant").value)
         }));
 
         if (items.some((item) => !item.producto_id)) return errorVenta("Elige un producto en cada línea.");
